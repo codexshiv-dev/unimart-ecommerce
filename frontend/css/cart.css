@@ -66,6 +66,7 @@ body {
   margin: 10px 0;
 }
 
+
 .qty-control button {
   border: none;
   background: #f1f1f1;
@@ -110,6 +111,20 @@ body {
 
 .qty-control button:hover {
   background: #ddd;
+}
+
+.btn-primary {
+  background: #25D366; /* WhatsApp color */
+  color: white;
+  border: none;
+  padding: 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.btn-primary:hover {
+  background: #1ebe5d;
 }
 
 /* MOBILE RESPONSIVE */

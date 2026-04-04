@@ -135,3 +135,23 @@ document.addEventListener("DOMContentLoaded", () => {
   updateCartCount();
   loadCart();
 });
+
+//add whatsapp order funciton;
+function checkoutWhatsApp() {
+  const cart = getCart();
+
+  let message = "🛒 Order Details:\n\n";
+
+  cart.forEach(item => {
+    message += `${item.name} x ${item.qty} = ₹${item.price * item.qty}\n`;
+  });
+
+  const total = cart.reduce((sum, item) => sum + item.price * item.qty, 0);
+
+  message += `\nTotal: ₹${total}`;
+
+  const phone = "977XXXXXXXXXX"; // your number
+  const url = `https://wa.me/${phone}?text=${encodeURIComponent(message)}`;
+
+  window.open(url, "_blank");
+}
