@@ -85,7 +85,7 @@ body {
   background: red;
   color: white;
   border: none;
-  padding: 6px 12px;
+  padding: 4px 8px;
   border-radius: 6px;
   cursor: pointer;
 }
@@ -114,7 +114,7 @@ body {
 }
 
 .btn-primary {
-  background: #25D366; /* WhatsApp color */
+  background: #25D366; 
   color: white;
   border: none;
   padding: 12px;
