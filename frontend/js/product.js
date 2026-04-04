@@ -13,13 +13,13 @@ if (window.location.pathname.includes("product.html")) {
   }
 
   // FETCH PRODUCT
-  fetch(`http://localhost:5000/api/products/${productId}`)
+  fetch(`https://unimart-ecommerce.onrender.com/api/products/${productId}`)
     .then(res => res.json())
     .then(product => {
 
     let quantity = 1;
       // RELATED PRODUCTS 
-      fetch("http://localhost:5000/api/products")
+      fetch("https://unimart-ecommerce.onrender.com/api/products")
         .then(res => res.json())
         .then(allProducts => {
 
