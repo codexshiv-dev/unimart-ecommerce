@@ -95,8 +95,7 @@ function loadCart() {
     subtotal += item.price * item.qty;
 
     // Calculate what the price would have been without the discount
-    originalSubtotal += (item.oldPrice || item.price) * item.qty;
-
+    originalTotal += (item.oldPrice || item.price) * item.qty;
 
     // --- Generate Star Ratings ---
     let stars = "";
@@ -156,9 +155,9 @@ function loadCart() {
       removeItem(item._id);
     });
 
-    // div.querySelector(".qty-input").addEventListener("change", (e) => {
-    //   updateQtyInput(item._id, e.target.value);
-    // });
+    div.querySelector(".qty-input").addEventListener("change", (e) => {
+      updateQtyInput(item._id, e.target.value);
+    });
     
     cartContainer.appendChild(div);
   });
@@ -173,6 +172,7 @@ function loadCart() {
   //   <hr style="border:0; border-top:1px solid #eee; margin:10px 0;">
   //   <div style="font-size: 1.4rem; font-weight:bold; text-align: right;">Total: ${formatINR(grandTotal)}</div>
   // `;
+  if (totalPriceEl) {
   totalPriceEl.innerHTML = `
     <div style="font-size: 1rem; color: #212121; display: flex; justify-content: space-between; margin-bottom: 8px;">
         <span>Price (${cart.length} items)</span>
@@ -191,8 +191,9 @@ function loadCart() {
         You will save ${formatINR(delivery === 0 ? 40 : 0)} on this order
     </div>
   `;
-}
-// 5. UPDATE STICKY ACTION BAR (Flipkart style bottom bar)
+  }
+
+  // 5. UPDATE STICKY ACTION BAR (Flipkart style bottom bar)
   if (totalOldPriceEl && totalFinalPriceEl) {
     // Show total original price with strikethrough if there's a discount
     totalOldPriceEl.innerHTML = originalTotal > subtotal 
@@ -201,6 +202,8 @@ function loadCart() {
     // Show the final price they need to pay
     totalFinalPriceEl.textContent = formatINR(grandTotal);
   }
+
+}
 
 
 // =====================
