@@ -154,7 +154,7 @@ if (window.location.pathname.includes("product.html")) {
       // WHATSAPP
       // =====================
       document.getElementById("whatsappBtn").href =
-        `https://wa.me/9779700013011?text=${encodeURIComponent(
+        `https://wa.me/919170570583?text=${encodeURIComponent(
           `Hello 👋 I want to order ${product.name} - Rs.${product.price}`
         )}`;
 

@@ -63,7 +63,7 @@ function loadCart() {
         <span class="icon" style="font-size: 3rem; display: block; margin-bottom: 10px;">🛒</span>
         <h3>Your cart is empty!</h3>
         <p>Looks like you haven't added anything yet.</p>
-        <a href="index.html" class="shop-now-btn">Start Shopping</a>
+        <a href="../index.html" class="shop-now-btn">Start Shopping</a>
       </div>
     `;
     if(summaryDiv) summaryDiv.style.display = "none";
@@ -211,7 +211,7 @@ function handleCheckout() {
   message += `--------------------------\n`;
   message += `_Please confirm my order!_`;
 
-  const phone = "977XXXXXXXx"; 
+  const phone = "919170570583"; 
   const url = `https://wa.me/${phone}?text=${encodeURIComponent(message)}`;
 
   // Wait 2 seconds so the user sees the "Processing" screen, then redirect
