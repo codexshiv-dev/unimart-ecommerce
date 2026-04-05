@@ -61,13 +61,16 @@
         </div>
       </section>
 
-      <section class="cart-summary">
-        <div id="totalDisplay"></div>
-        <button
-          class="btn btn-primary"
-          id="whatsappBtn"
-          onclick="handleCheckout()">
-          Order on WhatsApp 📲
+      <section class="cart-action-bar">
+        <div class="price-container">
+          <div class="old-price-row" id="totalOldPrice"></div>
+          <div class="final-price-row">
+            <span class="grand-total" id="totalFinalPrice">₹0</span>
+            <span class="info-icon">ⓘ</span>
+          </div>
+        </div>
+        <button class="btn-checkout" onclick="handleCheckout()">
+          Place Order
         </button>
       </section>
     </main>

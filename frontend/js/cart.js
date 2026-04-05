@@ -51,6 +51,11 @@ function loadCart() {
   const paymentMethod = document.getElementById("paymentMethod"); // Future proof ID
   const summaryDiv = document.querySelector(".cart-summary");
 
+  // New Sticky Bar Elements (Left side of the bottom bar)
+  const totalOldPriceEl = document.getElementById("totalOldPrice");
+  const totalFinalPriceEl = document.getElementById("totalFinalPrice");
+  const actionBar = document.querySelector(".cart-action-bar");
+
   if (!cartContainer) return; 
 
   const cart = getCart();
@@ -69,6 +74,9 @@ function loadCart() {
     if(summaryDiv) summaryDiv.style.display = "none";
     if(shippingForm) shippingForm.style.display = "none";
     if (paymentMethod) paymentMethod.style.display = "none";
+
+    // Hide the sticky bar if cart is empty
+    if (actionBar) actionBar.style.display = "none";
     return;
   }
 
@@ -76,13 +84,19 @@ function loadCart() {
   if(summaryDiv) summaryDiv.style.display = "flex";
   if(shippingForm) shippingForm.style.display = "block";
   if (paymentMethod) paymentMethod.style.display = "block";
+  if (actionBar) actionBar.style.display = "flex";
 
 
   let subtotal = 0;
+  let originalTotal = 0;
 
   // 3. Render Items
   cart.forEach(item => {
     subtotal += item.price * item.qty;
+
+    // Calculate what the price would have been without the discount
+    originalSubtotal += (item.oldPrice || item.price) * item.qty;
+
 
     // --- Generate Star Ratings ---
     let stars = "";
@@ -142,9 +156,9 @@ function loadCart() {
       removeItem(item._id);
     });
 
-    div.querySelector(".qty-input").addEventListener("change", (e) => {
-      updateQtyInput(item._id, e.target.value);
-    });
+    // div.querySelector(".qty-input").addEventListener("change", (e) => {
+    //   updateQtyInput(item._id, e.target.value);
+    // });
     
     cartContainer.appendChild(div);
   });
@@ -178,6 +192,16 @@ function loadCart() {
     </div>
   `;
 }
+// 5. UPDATE STICKY ACTION BAR (Flipkart style bottom bar)
+  if (totalOldPriceEl && totalFinalPriceEl) {
+    // Show total original price with strikethrough if there's a discount
+    totalOldPriceEl.innerHTML = originalTotal > subtotal 
+      ? `<del style="color:#878787; font-size:0.9rem;">${formatINR(originalTotal + delivery)}</del>` 
+      : "";
+    // Show the final price they need to pay
+    totalFinalPriceEl.textContent = formatINR(grandTotal);
+  }
+
 
 // =====================
 // UPDATING HELPERS
