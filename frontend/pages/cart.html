@@ -1,7 +1,9 @@
 <!doctype html>
 <html>
   <head>
-    <title>Your Cart</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Your Cart | Checkout</title>
     <link rel="stylesheet" href="../css/style.css" />
     <link rel="stylesheet" href="../css/header.css" />
     <link rel="stylesheet" href="../css/product.css" />
@@ -12,34 +14,69 @@
   <body>
     <!-- header  -->
     <div id="header" class="site-header"></div>
-    <header class="header">
-      <a href="index.html">⬅ Back to Shop</a>
-    </header>
     <main class="cart-container">
       <h2>Your Cart 🛒</h2>
 
       <div id="cartItems" class="cart-items"></div>
 
-      <!-- <div class="cart-summary">
-        <h3><span id="totalPrice">0</span></h3>
-        <button class="checkout-btn">Checkout</button>
-        <button class="btn btn-primary" onclick="checkoutWhatsApp()">
-          Order on WhatsApp
-        </button>
-      </div> -->
-      <div class="cart-summary">
-        <h3><span id="totalPrice">0</span></h3>
+      <section id="shippingForm" class="shipping-form">
+        <h3>Shipping Details 🚚</h3>
+        <div class="form-group">
+          <input
+            type="text"
+            id="userName"
+            placeholder="Your Full Name"
+            required />
+          <textarea
+            id="userAddress"
+            placeholder="Full Delivery Address (House No, Street, City, Pincode)"
+            rows="2"
+            required></textarea>
+        </div>
+      </section>
 
-        <button class="btn btn-primary" onclick="checkoutWhatsApp()">
+      <section id="paymentMethod" class="payment-method-area">
+        <h3>Payment Method 💳</h3>
+        <div class="payment-options">
+          <label class="payment-card">
+            <input type="radio" name="payment" value="whatsapp" checked />
+            <div class="pay-info">
+              <strong>WhatsApp Order</strong>
+              <p>Confirm & Pay manually</p>
+            </div>
+          </label>
+          <label class="payment-card">
+            <input type="radio" name="payment" value="esewa" />
+            <div class="pay-info">
+              <strong>eSewa Wallet</strong>
+              <p>Coming Soon</p>
+            </div>
+          </label>
+        </div>
+      </section>
+
+      <section class="cart-summary">
+        <div id="totalDisplay"></div>
+        <button
+          class="btn btn-primary"
+          id="whatsappBtn"
+          onclick="handleCheckout()">
           Order on WhatsApp 📲
         </button>
-
-        <!-- <button class="checkout-btn">Checkout (Future 💳)</button> -->
-      </div>
+      </section>
     </main>
 
     <!-- footer  -->
     <div id="footer"></div>
+
+    <div id="orderOverlay" class="order-overlay">
+      <div class="overlay-content">
+        <div class="loader"></div>
+        <h2>Processing Order...</h2>
+        <!-- <p>Redirecting you to WhatsApp to confirm your items.</p> -->
+        <p>Opening WhatsApp to confirm your items.</p>
+      </div>
+    </div>
 
     <!-- link  -->
     <script src="../js/cart.js"></script>

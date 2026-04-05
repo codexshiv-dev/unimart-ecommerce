@@ -1,0 +1,208 @@
+/* PAGE */
+body {
+  font-family: Arial, sans-serif;
+  background: #f6f6f6;
+  margin: 0;
+}
+
+/* CONTAINER */
+.cart-container {
+  max-width: 900px;
+  margin: 10px auto;
+  padding: 10px;
+}
+
+/* TITLE */
+.cart-container h2 {
+  margin-bottom: 20px;
+margin-top: 0;
+  color:var(--primary);
+  font-weight: 600;
+  /* text-align: center; */
+}
+
+/* ITEM CARD */
+.cart-item {
+  display: flex;
+  gap: 15px;
+  padding: 15px;
+  border-radius: 12px;
+  background: #fff;
+  margin-bottom: 15px;
+  align-items: center;
+ transition: transform 0.3s ease, box-shadow 0.3s ease;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+}
+
+.cart-item:hover {
+  transform: scale(1.02); /* Subtle scale is more professional than 1.05 */
+  box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+}
+/* 2. Shipping Form Styling */
+.shipping-form {
+  background: white;
+  padding: 20px;
+  border-radius: 16px;
+  margin-top: 20px;
+  box-shadow: var(--shadow);
+}
+.shipping-form h3 { margin-top: 0; font-size: 1.1rem; }
+.form-group { display: flex; flex-direction: column; gap: 10px; }
+.form-group input, .form-group textarea {
+  padding: 12px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  font-family: inherit;
+}
+
+/* IMAGE */
+.cart-img {
+  width: 60px;
+  height: 60px;
+  object-fit: cover;
+  border-radius: 8px;
+}
+
+/* INFO */
+.cart-info {
+  flex: 1;
+}
+
+.cart-info h3 {
+  margin: 0;
+  font-size: 16px;
+}
+
+/* PRICE */
+.price {
+  color: #222;
+  font-weight: bold;
+}
+
+/* QUANTITY */
+.qty-control {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 10px 0;
+}
+
+
+.qty-control button {
+  border: none;
+  background: #f1f1f1;
+  border-radius: 6px;
+  padding: 6px 12px;
+  cursor: pointer;
+  border-radius: 5px;
+}
+
+.qty-control span {
+  font-weight: bold;
+}
+
+/* REMOVE BUTTON */
+.remove-btn {
+  background: red;
+  color: white;
+  border: none;
+  padding: 4px 8px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+/* SUMMARY */
+.cart-summary {
+  margin-top: 20px;
+  text-align: right;
+}
+
+.checkout-btn {
+  padding: 10px 20px;
+  background: black;
+  color: white;
+  border: none;
+  cursor: pointer;
+  border-radius: 6px;
+  margin-top: 10px;
+}
+.checkout-btn:hover {
+  background: #333;
+}
+
+.qty-control button:hover {
+  background: #ddd;
+}
+
+.btn-primary {
+  background: #25D366; 
+  color: white;
+  border: none;
+  margin-top: 10px;
+  padding: 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.btn-primary:hover {
+  background: #1ebe5d;
+}
+
+/* 4. Input for Qty styling */
+.qty-input {
+  width: 40px;
+  text-align: center;
+  border: none;
+  background: transparent;
+  font-weight: bold;
+  font-size: 1rem;
+}
+/* Hide arrows in number input */
+.qty-input::-webkit-inner-spin-button { -webkit-appearance: none; }
+
+
+
+/* MOBILE RESPONSIVE */
+@media (max-width: 600px) {
+  .cart-item {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .cart-img {
+    width: 100%;
+    height: 180px;
+  }
+
+  .cart-info {
+    width: 100%;
+  }
+
+  .cart-summary {
+    text-align: center;
+  }
+
+  .checkout-btn,
+  .btn-primary {
+    width: 100%;
+  }
+  .cart-summary {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background: white;
+    padding: 15px 20px;
+    box-shadow: 0 -5px 20px rgba(0,0,0,0.1);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-radius: 20px 20px 0 0;
+    z-index: 1000;
+    box-sizing: border-box;
+  }
+  .cart-container { padding-bottom: 100px; } /* Space for sticky bar */
+  #whatsappBtn { width: auto; margin-top: 0; padding: 10px 20px; }
+
+}
