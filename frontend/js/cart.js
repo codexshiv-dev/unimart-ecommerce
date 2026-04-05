@@ -255,7 +255,7 @@ function handleCheckout() {
 
   if (!name || !address) {
     alert("Please enter your name and address for delivery! 🚚");
-    // 2. MODERN REDIRECT: Smooth scroll to the form
+    //MODERN REDIRECT: Smooth scroll to the form
     if (shippingForm) {
       shippingForm.scrollIntoView({ behavior: 'smooth', block: 'center' });
       
@@ -324,8 +324,6 @@ function handleCheckout() {
     if (overlay) overlay.style.display = "none";
   }, 2000);
 
-
-  window.open(url, "_blank");
 }
 
 document.addEventListener("DOMContentLoaded", () => {
