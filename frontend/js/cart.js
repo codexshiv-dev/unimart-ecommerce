@@ -247,6 +247,7 @@ function removeItem(id) {
 function handleCheckout() {
   const nameInput = document.getElementById("userName");
   const addressInput = document.getElementById("userAddress");
+  const shippingForm = document.getElementById("shippingForm");
  
   // Validation for Inputs
   const name = nameInput ? nameInput.value.trim() : "";
@@ -254,8 +255,21 @@ function handleCheckout() {
 
   if (!name || !address) {
     alert("Please enter your name and address for delivery! 🚚");
+    // 2. MODERN REDIRECT: Smooth scroll to the form
+    if (shippingForm) {
+      shippingForm.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      
+      // 3. Highlight the fields to guide the user
+      nameInput.style.border = "2px solid #fb641b";
+      addressInput.style.border = "2px solid #fb641b";
+      
+      // Focus on the first empty field
+      if (!name) nameInput.focus();
+      else addressInput.focus();
+    }
     return;
   }
+  
 
   // Payment Method Selection
  const paymentEl = document.querySelector('input[name="payment"]:checked');
