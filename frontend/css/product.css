@@ -585,9 +585,9 @@
     justify-content: space-between;
   }
 
-  .btn-cart,
+  /* .btn-cart,
   .btn-whatsapp {
     flex: 1;
     min-width: unset;
-  }
+  } */
 }
