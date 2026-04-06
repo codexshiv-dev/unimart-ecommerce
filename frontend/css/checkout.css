@@ -1,5 +1,10 @@
+/* ==========================================================================
+   1. VARIABLES & RESET
+   ========================================================================== */
 :root {
     --primary-color: #25D366;
+    --flipkart-blue: #2874f0;
+    --flipkart-orange: #fb641b;
     --text-dark: #212121;
     --text-light: #878787;
     --bg-gray: #f1f3f6;
@@ -9,9 +14,12 @@
 body {
     background-color: var(--bg-gray);
     font-family: Roboto, Arial, sans-serif;
+    margin: 0;
 }
 
-/* Layout Container */
+/* ==========================================================================
+   2. LAYOUT
+   ========================================================================== */
 .checkout-container {
     display: flex;
     gap: 16px;
@@ -20,17 +28,17 @@ body {
     margin: 0 auto;
 }
 
-/* Left Section: 70% width */
 .checkout-left {
     flex: 2;
 }
 
-/* Right Section: 30% width */
 .checkout-right {
     flex: 1;
 }
 
-/* Modern Card Styling */
+/* ==========================================================================
+   3. COMPONENTS (Cards & Forms)
+   ========================================================================== */
 .checkout-card {
     background: #fff;
     padding: 24px;
@@ -50,7 +58,6 @@ body {
     gap: 10px;
 }
 
-/* Shipping Form Styling */
 .form-group {
     display: flex;
     flex-direction: column;
@@ -69,10 +76,12 @@ body {
 
 .form-group input:focus, 
 .form-group textarea:focus {
-    border-color: #2874f0; /* Blue focus like Flipkart */
+    border-color: var(--flipkart-blue);
 }
 
-/* Payment Method Options */
+/* ==========================================================================
+   4. PAYMENT OPTIONS
+   ========================================================================== */
 .payment-options {
     display: flex;
     flex-direction: column;
@@ -87,7 +96,7 @@ body {
     border-radius: 4px;
     cursor: pointer;
     transition: 0.2s;
-     position: relative;
+    position: relative;
 }
 
 .payment-card-option:hover {
@@ -114,7 +123,7 @@ body {
 
 .whatsapp-icon {
     margin-left: auto;
-    color: #25D366;
+    color: var(--primary-color);
     font-size: 1.5rem;
 }
 
@@ -124,10 +133,12 @@ body {
     cursor: not-allowed;
 }
 
-/* Price Details Summary */
+/* ==========================================================================
+   5. PRICE SUMMARY
+   ========================================================================== */
 .sticky-summary {
     position: sticky;
-    top: 80px; /* Adjust based on header height */
+    top: 80px;
 }
 
 .price-details-box {
@@ -154,10 +165,10 @@ body {
 .free { color: #388e3c; font-weight: bold; }
 .savings-text { color: #388e3c; font-size: 14px; font-weight: 500; }
 
-/* Place Order Button */
+/* Desktop Button */
 .btn-continue {
     width: 100%;
-    background: #fb641b;
+    background: var(--flipkart-orange);
     color: white;
     border: none;
     padding: 15px;
@@ -169,7 +180,9 @@ body {
     box-shadow: 0 1px 2px rgba(0,0,0,0.2);
 }
 
-/* Processing Overlay */
+/* ==========================================================================
+   6. OVERLAYS & LOADERS
+   ========================================================================== */
 .order-overlay {
     position: fixed;
     inset: 0;
@@ -185,7 +198,7 @@ body {
     width: 48px;
     height: 48px;
     border: 5px solid #f3f3f3;
-    border-top: 5px solid #fb641b;
+    border-top: 5px solid var(--flipkart-orange);
     border-radius: 50%;
     animation: spin 1s linear infinite;
 }
@@ -194,13 +207,103 @@ body {
     to { transform: rotate(360deg); }
 }
 
-/* Mobile Responsiveness */
+/* ==========================================================================
+   7. MOBILE NAVIGATION & STICKY BAR
+   ========================================================================== */
+.checkout-header-mobile {
+    display: none;
+    background: var(--flipkart-blue);
+    color: white;
+    padding: 12px 16px;
+    align-items: center;
+    gap: 16px;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.checkout-header-mobile h2 {
+    font-size: 18px;
+    font-weight: 500;
+    margin: 0;
+}
+
+.back-btn {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 20px;
+    cursor: pointer;
+}
+
+.mobile-bottom-bar {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: #fff;
+    height: 60px;
+    display: none; /* Controlled by Media Query */
+    box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
+    z-index: 1001;
+    padding: 0 16px;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.price-info {
+    display: flex;
+    flex-direction: column;
+}
+
+.final-price {
+    font-size: 18px;
+    font-weight: bold;
+    color: var(--text-dark);
+}
+
+.view-details {
+    font-size: 12px;
+    color: var(--flipkart-blue);
+    font-weight: 500;
+    cursor: pointer;
+}
+
+.mobile-place-order {
+    background: var(--flipkart-orange);
+    color: white;
+    border: none;
+    padding: 12px 25px;
+    font-size: 15px;
+    font-weight: bold;
+    border-radius: 2px;
+}
+
+/* ==========================================================================
+   8. RESPONSIVE MEDIA QUERIES
+   ========================================================================== */
 @media (max-width: 768px) {
     .checkout-container {
         flex-direction: column;
         padding: 10px;
+        gap: 10px;
+        padding-bottom: 80px; /* Space for sticky bar */
     }
-    .sticky-summary {
-        position: static;
+
+    .checkout-header-mobile {
+        display: flex;
+    }
+
+    .checkout-right {
+        display: block;
+    }
+
+    .sticky-summary .btn-continue {
+        display: none;
+    }
+
+    .mobile-bottom-bar {
+        display: flex;
     }
 }

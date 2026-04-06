@@ -11,7 +11,12 @@
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
   </head>
   <body>
-    <div id="header"></div>
+    <div class="checkout-header-mobile">
+      <button onclick="history.back()" class="back-btn" aria-label="Go Back">
+        <i class="fa-solid fa-arrow-left"></i>
+      </button>
+      <h2>Order Summary</h2>
+    </div>
 
     <main class="checkout-container">
       <div class="checkout-left">
@@ -64,6 +69,33 @@
         </div>
       </div>
     </main>
+    <div class="mobile-bottom-bar">
+      <div class="price-info">
+        <span class="final-price" id="mobileTotalAmount">₹0</span>
+        <!-- <span
+          class="view-details"
+          onclick="
+            window.scrollTo({
+              top: document.body.scrollHeight,
+              behavior: 'smooth',
+            })
+          "
+          >View Details</span
+        > -->
+        <span
+          class="view-details"
+          onclick="
+            document
+              .getElementById('summaryTarget')
+              .scrollIntoView({ behavior: 'smooth' })
+          ">
+          View Details
+        </span>
+      </div>
+      <button class="mobile-place-order" onclick="handleCheckout()">
+        CONTINUE
+      </button>
+    </div>
 
     <div id="orderOverlay" class="order-overlay" style="display: none">
       <div class="overlay-content">
