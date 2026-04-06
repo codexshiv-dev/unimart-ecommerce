@@ -1,221 +1,273 @@
-/* ==========================================================================
-   1. VARIABLES & THEME
-   ========================================================================== */
+/* ==============================
+   CSS VARIABLES (THEME)
+================================ */
 :root {
-    --primary: #f59e0b;
-    --primary-hover: #d97706;
-    --white: #ffffff;
-    --bg-main: #f1f3f6;
-    --bg-card: #ffffff;
-    --bg-light: #f9fafb;
-    --text-dark: #212121;
-    --text-muted: #878787;
-    --text-discount: #388e3c;
-    --radius-md: 12px;
-    --shadow-sm: 0 1px 3px rgba(0,0,0,0.1);
-    --transition: 0.3s ease;
+  --primary: #f59e0b;
+  --primary-hover: #d97706;
+  --bg-main: #f1f3f6;
+  --bg-card: #ffffff;
+  --bg-light: #f9fafb;
+  --text-dark: #212121;
+  --text-muted: #878787;
+  --text-light: #ffffff;
+  --accent: #f59e0b;
+  --price-color: #212121;
+  --discount-green: #1a7f37;
+  --error-red: #d93025;
+  --border-color: #dddddd;
+  --radius-sm: 8px;
+  --shadow-sm: 0 2px 8px rgba(0,0,0,0.1);
 }
 
-/* ==========================================================================
-   2. PRODUCT PAGE LAYOUT
-   ========================================================================== */
+/* ==============================
+   PRODUCT GRID
+================================ */
+.product-grid {
+  padding: 15px;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 14px;
+  width: 100%;
+  align-content: start;
+}
+
+/* ==============================
+   Pagination
+================================ */
+.pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  margin: 30px 0 10px;
+}
+
+.pagination button {
+  padding: 8px 14px;
+  border-radius: 6px;
+  border: 1px solid var(--border-color);
+  background: var(--white);
+  cursor: pointer;
+}
+
+.pagination button.active {
+  background: var(--primary);
+  border-color: var(--primary);
+  color: var(--text-light);
+}
+
+/* ==============================
+   PRODUCT CARD
+================================ */
+.product-card {
+  background: var(--bg-card);
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow-sm);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  transition: 0.2s ease;
+}
+
+.product-card:hover {
+  box-shadow: 0 6px 16px rgba(0,0,0,0.12);
+}
+
+.product-img {
+  position: relative;
+  background: var(--bg-light);
+  height: 180px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.product-card img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.wishlist {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 32px;
+  height: 32px;
+  background: var(--white);
+  border-radius: 50%;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+  color: #444;
+  font-size: 12px;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+/* ==============================
+   PRODUCT DETAIL (THE CORE LAYOUT)
+================================ */
 .product-page {
-    max-width: 1240px;
-    margin: 20px auto;
-    padding: 0 20px;
+  max-width: 1200px;
+  margin: auto;
+  padding: 20px;
 }
 
 .product-layout {
-    display: grid;
-    grid-template-columns: 1.2fr 1fr; /* Image side 60%, Info side 40% */
-    gap: 30px;
-    background: var(--white);
-    padding: 24px;
-    border-radius: var(--radius-md);
-    box-shadow: var(--shadow-sm);
-    align-items: start;
+  display: grid;
+  grid-template-columns: 1.2fr 1fr;
+  gap: 10px;
+  background: var(--white);
+  padding: 10px;
+  border-radius: 12px;
 }
 
-/* GALLERY GRID (The fix for your thumbnails) */
 .gallery-grid {
-    display: grid;
-    grid-template-columns: 80px 1fr; /* Forces thumbs to the left of main image */
-    gap: 15px;
+  display: grid;
+  grid-template-columns: 70px 1fr;
+  gap: 15px;
 }
 
-/* THUMBNAILS */
 .thumbs {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 }
 
 .thumbs img {
-    width: 70px;
-    height: 70px;
-    border: 1px solid #eee;
-    padding: 4px;
-    cursor: pointer;
-    border-radius: 6px;
-    object-fit: contain;
-    background: var(--white);
-    transition: var(--transition);
+  width: 60px;
+  height: 60px;
+  border: 1px solid var(--border-color);
+  cursor: pointer;
+  object-fit: contain;
 }
 
-.thumbs img.active {
-    border: 2px solid var(--primary);
+.thumbs img.active,
+.thumbs img:hover {
+  border: 2px solid var(--primary);
 }
 
-/* MAIN IMAGE BOX */
 .main-image {
-    position: relative;
-    background: var(--bg-light);
-    border-radius: var(--radius-md);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    overflow: hidden;
-    height: 480px; /* Large, professional height */
-    border: 1px solid #f0f0f0;
+  position: relative;
+  background: #f7f7f7;
+  border-radius: 12px;
+  padding: 15px;
+  overflow: hidden;
 }
 
 .main-image img {
-    max-width: 100%;
-    max-height: 100%;
-    object-fit: contain;
+  width: 100%;
+  max-height: 400px; /* Improved height slightly for desktop */
+  object-fit: contain;
 }
 
-/* ZOOM OVERLAY (Matches your JS ID) */
+/* ZOOM */
 .zoom-image {
-    position: absolute;
-    inset: 0;
-    background-repeat: no-repeat;
-    z-index: 5;
-    pointer-events: none; /* Let clicks pass through to the image */
+  position: absolute;
+  inset: 0;
+  background-repeat: no-repeat;
+  background-size: 130%;
+  display: none;
+  z-index: 5;
+  transition: background-position 0.1s ease;
 }
 
-/* ==========================================================================
-   3. PRODUCT INFO & CONTENT
-   ========================================================================== */
-.product-info {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-}
-
+/* INFO SECTION */
 .product-info h1 {
-    font-size: 24px;
-    font-weight: 700;
-    color: var(--text-dark);
+  font-size: 24px;
+  color: var(--text-dark);
 }
 
-.price-row {
-    display: flex;
-    align-items: baseline;
-    gap: 10px;
-    margin: 10px 0;
+.product-info .price {
+  font-size: 22px;
+  color: var(--accent);
+  font-weight: 600;
 }
 
-.price { font-size: 26px; font-weight: 700; color: #000; }
-.old-price { text-decoration: line-through; color: var(--text-muted); font-size: 16px; }
-.discount { color: var(--text-discount); font-weight: 700; font-size: 16px; }
-
-/* FEATURES */
-.features {
-    list-style: none;
-    padding: 0;
-    margin: 20px 0;
+.product-info .old-price {
+  text-decoration: line-through;
+  color: var(--text-muted);
 }
 
-.features li {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    background: var(--bg-light);
-    padding: 12px;
-    border-radius: 8px;
-    font-size: 14px;
-    margin-bottom: 8px;
+.product-info .discount {
+  color: var(--discount-green);
+  font-weight: bold;
 }
 
-/* ==========================================================================
-   4. STICKY ACTION BAR & TAGS
-   ========================================================================== */
+/* STOCK & META */
+#productStock.in-stock { color: var(--discount-green); }
+#productStock.out-stock { color: var(--error-red); }
+
+/* ==============================
+   ACTION BAR
+================================ */
 .product-action-bar {
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    display: flex;
-    gap: 12px;
-    padding: 12px 16px 25px; /* Added bottom padding for mobile gesture bar */
-    background: var(--white);
-    box-shadow: 0 -4px 15px rgba(0,0,0,0.1);
-    z-index: 1000;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  gap: 12px;
+  padding: 12px;
+  background: var(--white);
+  justify-content: center;
+  padding-bottom: 25px; /* Better for mobile home bars */
+  box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
+  z-index: 100;
 }
 
 .btn-cart, .btn-whatsapp {
-    flex: 1;
-    height: 48px;
-    border-radius: 8px;
-    font-weight: 700;
-    font-size: 14px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    text-decoration: none;
+  padding: 12px 20px;
+  border-radius: 12px;
+  text-decoration: none;
+  font-weight: bold;
+  cursor: pointer;
+  min-width: 180px;
+  text-align: center;
+  border: none;
 }
 
-.btn-cart { background: #212121; color: white; border: none; cursor: pointer;}
-.btn-whatsapp { background: var(--primary); color: white; }
-
-#productTags {
-    display: flex;
-    gap: 8px;
-    flex-wrap: wrap;
-    list-style: none;
-    padding: 0;
-    margin-top: 15px;
+.btn-cart {
+  background: linear-gradient(135deg,#444,#111);
+  color: var(--text-light);
 }
 
-#productTags li {
-    background: #eee;
-    padding: 4px 12px;
-    border-radius: 20px;
-    font-size: 12px;
-    color: #555;
+.btn-whatsapp {
+  background: var(--primary);
+  color: var(--text-light);
 }
 
-/* ==========================================================================
-   5. RESPONSIVE FIXES
-   ========================================================================== */
+/* ==============================
+   RESPONSIVE (STRICT FIX)
+================================ */
 @media (max-width: 768px) {
-    .product-layout {
-        grid-template-columns: 1fr;
-        padding: 15px;
-    }
+  .product-layout {
+    grid-template-columns: 1fr;
+  }
 
-    .gallery-grid {
-        grid-template-columns: 1fr; /* Stack on mobile */
-    }
+  .gallery-grid {
+    grid-template-columns: 60px 1fr; /* Keeps Thumbs on Left like you asked */
+  }
 
-    .main-image {
-        height: 320px;
-    }
+  .thumbs {
+    flex-direction: column; /* Ensures vertical thumbnails even on small screens */
+  }
 
-    .thumbs {
-        flex-direction: row; /* Horizontal thumbs for mobile */
-        overflow-x: auto;
-        padding: 10px 0;
-    }
+  .main-image {
+    height: auto;
+    min-height: 250px;
+  }
 
-    .thumbs img {
-        width: 60px;
-        height: 60px;
-    }
+  .product-action-bar {
+    justify-content: space-between;
+  }
 
-    .product-page {
-        padding-bottom: 100px; /* Space for sticky bar */
-    }
+  .btn-cart, .btn-whatsapp {
+    flex: 1;
+    min-width: unset;
+  }
 }
