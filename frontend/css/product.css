@@ -84,7 +84,7 @@
  .product-card .price {
    font-weight: 700;
    font-size: 19px;
-   color: var(--text-dark);
+   color: var(--primary);
 }
 
  .product-card .old-price {
@@ -150,30 +150,30 @@
 .product-layout {
     display: grid;
     grid-template-columns: 1.2fr 1fr;
-    gap: 20px;
+    gap: 10px;
     background: var(--white);
-    padding: 20px;
+    padding: 10px;
     border-radius: var(--radius-md);
 }
 
 /* Gallery Section (Thumbs + Main) */
 .gallery-grid {
     display: grid;
-    grid-template-columns: 70px 1fr;
-    gap: 15px;
+    grid-template-columns: 50px 1fr;
+    gap: 10px;
     position: sticky;
-    top: 20px;
+    top: 10px;
 }
 
 .thumbs {
     display: flex;
     flex-direction: column;
-    gap: 8px;
+    gap: 5px;
 }
 
 .thumbs img {
-    width: 60px;
-    height: 60px;
+    width: 50px;
+    height: 50px;
     border: 1px solid #ddd;
     cursor: pointer;
     object-fit: contain;
@@ -199,14 +199,14 @@
     justify-content: center;
     align-items: center;
     cursor: zoom-in;
-    height: 500px;
+    /* height: 500px; */
     border: 1px solid #f0f0f0;
 }
 
 .main-image img {
     width: 100%;
-    max-height: 100%;
-    /* max-height: 300px; */
+    /* max-height: 100%; */
+    max-height: 300px;
     object-fit: contain;
     display: block;
     transition: transform 0.2s ease;
