@@ -275,6 +275,22 @@
 #productStock.out-stock { color: #d93025; font-weight: 600; }
 #productSKU { color: #777; }
 
+/* TAGS */
+#productTags {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin-top: 8px;
+  list-style: none;
+  padding: 0;
+}
+#productTags li {
+  background: #f1f1f1;
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 12px;
+}
+
 /* Features List */
 .features {
     margin-top: 15px;
@@ -292,6 +308,33 @@
     font-size: 13px;
     margin-bottom: 6px;
 }
+
+
+/* LEFT SIDE layout */
+.product-gallery{
+  display: flex;
+  flex-direction: column;
+  /* gap: 10px; */
+}
+
+
+/* RATING */
+.rating-box {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.rating {
+  color: #f39c12;
+}
+
+.rating-count {
+  font-size: 13px;
+  color: #666;
+}
+
+
 
 /* ==========================================================================
    5. BUTTONS & SHARE
