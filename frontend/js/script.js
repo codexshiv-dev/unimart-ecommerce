@@ -52,16 +52,24 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
-  // =======================
-  // FILTER PRODUCTS
+ // =======================
+  // FILTER PRODUCTS (FIXED)
   // =======================
   function getFilteredProducts() {
-    const searchText = (searchDesktop?.value || searchMobile?.value || "").toLowerCase().trim();
+    // Get search text from either desktop or mobile input
+    const searchVal = searchDesktop?.value || searchMobile?.value || "";
+    const searchText = searchVal.toLowerCase().trim();
 
     return products.filter(p => {
-      const matchCategory = activeCategory === "all" || p.category === activeCategory;
+      // 1. Check Category Match
+      const matchCategory = activeCategory === "all" || 
+                            p.category?.toLowerCase() === activeCategory.toLowerCase();
+      
+      // 2. Check Search Match (Name, Category, or Description)
       const matchSearch = p.name.toLowerCase().includes(searchText) ||
-                          p.description.toLowerCase().includes(searchText);
+                          p.category?.toLowerCase().includes(searchText) ||
+                          p.description?.toLowerCase().includes(searchText);
+
       return matchCategory && matchSearch;
     });
   }
