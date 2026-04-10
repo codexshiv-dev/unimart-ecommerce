@@ -115,15 +115,21 @@ if (window.location.pathname.includes("product.html")) {
         `SKU: ${product.sku || "-"}`;
 
       
-      // TAGS
-      const tagsList = document.getElementById("productTags");
-      tagsList.innerHTML = "";
-
-      product.tags?.forEach(tag => {
-        const li = document.createElement("li");
-        li.textContent = tag;
-        tagsList.appendChild(li);
-      });
+        // TAGS container (only show if tags exist, else hide to prevent empty space)
+        const tagsList = document.getElementById("productTags");
+        if (tagsList) {
+            tagsList.innerHTML = "";
+            if (product.tags && product.tags.length > 0) {
+                product.tags.forEach(tag => {
+                    const li = document.createElement("li");
+                    li.textContent = tag;
+                    tagsList.appendChild(li);
+                });
+                tagsList.style.display = "flex"; // Show if tags exist
+            } else {
+                tagsList.style.display = "none"; // Hide container so margin doesn't create a gap
+            }
+        }
 
 
        // ==========================================
@@ -271,31 +277,45 @@ function updateCartCount() {
   if (el) el.textContent = total;
 }
 
- // for Zoom 
+// =====================
+// IMPROVED ZOOM LOGIC
+// =====================
 const zoomContainer = document.getElementById("zoomContainer");
 const zoomImage = document.getElementById("zoomImage");
 const mainImg = document.getElementById("productImg");
 
-if (zoomContainer && window.innerWidth > 768) {
+function initZoom() {
+  // Check width every time we interact to ensure mobile/desktop switching works
+  if (zoomContainer && window.innerWidth > 768) {
+    
+    zoomContainer.onmouseenter = () => {
+      zoomImage.style.display = "block";
+      zoomImage.style.backgroundSize = "200%"; // Increased for better zoom effect
+      // FORCE UPDATE: Ensure it always uses the current main image
+      zoomImage.style.backgroundImage = `url(${mainImg.src})`;
+    };
 
-  zoomContainer.addEventListener("mouseenter", () => {
-    zoomImage.style.backgroundSize = "140%";
-    zoomImage.style.display = "block";
-    zoomImage.style.backgroundImage = `url(${mainImg.src})`;
-  });
+    zoomContainer.onmousemove = (e) => {
+      const rect = zoomContainer.getBoundingClientRect();
+      const x = ((e.clientX - rect.left) / rect.width) * 100;
+      const y = ((e.clientY - rect.top) / rect.height) * 100;
+      zoomImage.style.backgroundPosition = `${x}% ${y}%`;
+    };
 
-  zoomContainer.addEventListener("mousemove", (e) => {
-    const rect = zoomContainer.getBoundingClientRect();
-    const x = ((e.clientX - rect.left) / rect.width) * 100;
-    const y = ((e.clientY - rect.top) / rect.height) * 100;
-
-    zoomImage.style.backgroundPosition = `${x}% ${y}%`;
-  });
-
-  zoomContainer.addEventListener("mouseleave", () => {
-    zoomImage.style.display = "none";
-  });
+    zoomContainer.onmouseleave = () => {
+      zoomImage.style.display = "none";
+    };
+  } else {
+    // Disable zoom on mobile to prevent "sticky" touch issues
+    if (zoomImage) zoomImage.style.display = "none";
+  }
 }
+
+// Initialize on load
+initZoom();
+
+// Re-check if user rotates phone or resizes window
+window.addEventListener('resize', initZoom);
 
 //toast message
 function showToast(msg) {
