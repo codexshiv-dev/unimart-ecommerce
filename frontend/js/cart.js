@@ -114,11 +114,11 @@ function loadCart() {
 
         <div class="price-row" >
           <span class="price">${formatINR(item.price)}</span>
-          ${item.oldPrice ? `<span class="old-price" >${formatINR(item.oldPrice)}</span>` : ''}
-          ${item.discount ? `<span class="discount" >${item.discount}% OFF</span>` : ''}
+          ${item.oldPrice ? `<span class="old-price" style="text-decoration: line-through; color: #878787; margin-left: 8px;">${formatINR(item.oldPrice)}</span>` : ''}
+          ${item.discount ? `<span class="discount" style="color: #388e3c; font-weight: 600; margin-left: 8px;">${item.discount}% OFF</span>` : ''}
         </div>
 
-        <button class="remove-btn" >
+        <button class="remove-btn" style="margin-top: 15px; text-transform: uppercase;">
            Remove
         </button>
       </div>
