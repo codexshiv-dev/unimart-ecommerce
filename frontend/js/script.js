@@ -72,23 +72,36 @@ document.addEventListener("DOMContentLoaded", () => {
   // FILTER PRODUCTS (FIXED)
   // =======================
   function getFilteredProducts() {
-    // Get search text from either desktop or mobile input
-    const searchVal = searchDesktop?.value || searchMobile?.value || "";
-    const searchText = searchVal.toLowerCase().trim();
+  const searchDesktop = document.getElementById("searchInputDesktop");
+  const searchMobile = document.getElementById("searchInputMobile");
+  
+  // 1. Standardize search input
+  const searchVal = searchDesktop?.value || searchMobile?.value || "";
+  const query = searchVal.toLowerCase().trim();
 
-    return products.filter(p => {
-      // 1. Check Category Match
-      const matchCategory = activeCategory === "all" || 
-                            p.category?.toLowerCase() === activeCategory.toLowerCase();
-      
-      // 2. Check Search Match (Name, Category, or Description)
-      const matchSearch = p.name.toLowerCase().includes(searchText) ||
-                          p.category?.toLowerCase().includes(searchText) ||
-                          p.description?.toLowerCase().includes(searchText);
+  return products.filter(p => {
+    // 2. Safe Data Handling (Backend names often vary)
+    const name = p.name?.toLowerCase() || "";
+    const category = p.category?.toLowerCase() || "";
+    const description = p.description?.toLowerCase() || "";
+    const selectedCat = activeCategory.toLowerCase();
 
-      return matchCategory && matchSearch;
-    });
-  }
+    // 3. Logic: If user is typing, search the whole store. 
+    // If not, filter by category.
+    const matchesQuery = name.includes(query) || 
+                         category.includes(query) || 
+                         description.includes(query);
+
+    const matchesCategory = selectedCat === "all" || category === selectedCat;
+
+    // Senior Approach: Search overrides category filter for better UX
+    if (query !== "") {
+      return matchesQuery; 
+    }
+    
+    return matchesCategory;
+  });
+}
 
   // =======================
   // RENDER PRODUCTS
