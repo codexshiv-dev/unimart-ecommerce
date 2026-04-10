@@ -77,7 +77,13 @@ function initHeaderEvents() {
 
   // FIX: Only close menu if a LINK (<a>) is clicked, not the whole container
   mobileMenu.onclick = (e) => {
-    if (e.target.tagName === 'A') {
+    const isLink = e.target.tagName === 'A';
+    const isCategoryBtn = e.target.classList.contains('mobile-category');
+    
+    // Don't close if they clicked the dropdown toggle button itself
+    if (e.target.classList.contains('dropdown-toggle')) return;
+
+    if (isLink || isCategoryBtn) {
       closeMenu();
     }
   };
