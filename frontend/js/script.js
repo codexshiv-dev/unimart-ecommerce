@@ -74,7 +74,14 @@ document.addEventListener("DOMContentLoaded", () => {
 
     if (!productsToRender.length) {
       noResult.style.display = "block";
-      noResult.innerHTML = "No products found matching your search.";
+      noResult.innerHTML = `
+        <div class="no-result-container">
+          <i class="fa-solid fa-magnifying-glass"></i>
+          <h2>No products found</h2>
+          <p>We couldn't find anything matching "${(searchDesktop?.value || searchMobile?.value || "")}". Try checking your spelling or using different keywords.</p>
+          <button class="btn-reset-search" onclick="location.reload()">Clear All Filters</button>
+        </div>
+      `;
       return;
     } else {
       noResult.style.display = "none";

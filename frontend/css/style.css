@@ -268,6 +268,58 @@ main.layout {
   height: 28px;
 }
 
+
+/* --- PROFESSIONAL NO-RESULT STATE --- */
+#noResult {
+    text-align: center;
+    padding: 60px 20px;
+    background: #fff;
+    border-radius: var(--radius-md);
+    margin: 20px 0;
+    width: 100%;
+}
+
+.no-result-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+}
+
+.no-result-container i {
+    font-size: 50px;
+    color: #ccc;
+    margin-bottom: 10px;
+}
+
+.no-result-container h2 {
+    font-size: 20px;
+    color: var(--text-dark);
+    margin: 0;
+}
+
+.no-result-container p {
+    color: var(--text-muted);
+    font-size: 14px;
+    max-width: 300px;
+}
+
+.btn-reset-search {
+    margin-top: 10px;
+    padding: 10px 20px;
+    background: var(--primary);
+    color: white;
+    border: none;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    font-weight: 600;
+    transition: var(--transition);
+}
+
+.btn-reset-search:hover {
+    background: var(--primary-hover);
+}
+
 /* =========================
    7. RESPONSIVE
 ========================= */
