@@ -200,6 +200,7 @@
     align-items: center;
     cursor: zoom-in;
     /* height: 500px; */
+    overflow: visible;
     border: 1px solid #f0f0f0;
 }
 
@@ -260,6 +261,20 @@
     color: #555;
     margin: 10px 0;
     line-height: 1.5;
+}
+/* Position this inside .main-image or .product-img */
+.new-badge {
+    position: absolute;
+    top: 15px;
+    left: 15px;
+    background: #388e3c; /* Matches your --text-discount */
+    color: white;
+    padding: 4px 10px;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: bold;
+    z-index: 100; /* Ensures it stays above the image during scroll */
+    text-transform: uppercase;
 }
 
 /* Meta Data (Stock/SKU) */
@@ -399,18 +414,10 @@
     align-items: center;
     justify-content: center;
     box-shadow: 0 2px 8px rgba(0,0,0,0.2);
-
-    /* border: none;
-  cursor: pointer;
-  font-size: 18px;
-  color: #222; */
   
 }
 
-/* .share-btn:hover {
-  transform: scale(1.1);
-  box-shadow: 0 5px 12px rgba(0,0,0,0.25);
-} */
+
 
 
 .close-btn {
@@ -422,16 +429,6 @@
     cursor: pointer;
     border: none;
 }
-/* .close-btn:hover {
-  background: var(--primary);
-  transform: scale(1.1);
-} */
-
-/* .main-image .close-btn,
-.main-image .share-btn {
-  opacity: 0;
-  transition: 0.3s;
-} */
 
 
 .main-image:hover .share-btn, 
