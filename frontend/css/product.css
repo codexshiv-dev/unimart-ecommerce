@@ -140,7 +140,26 @@
 /* ==========================================================================
    3. PRODUCT DETAIL PAGE (Layout)
    ========================================================================== */
-.product-page {
+/* Prevent layout collapse while JS is loading */
+.main-image {
+    min-height: 350px; /* Matches your image height in the screenshot */
+    background-color: #f9f9f9;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Ensure the image doesn't start with 0px width/height */
+#productImg:not([src]), #productImg[src=""] {
+    opacity: 0;
+}
+
+#productImg {
+    transition: opacity 0.3s ease;
+    opacity: 1;
+}
+
+   .product-page {
     max-width: 1200px;
     margin: auto;
     padding: 20px;

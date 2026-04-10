@@ -39,7 +39,7 @@ if (window.location.pathname.includes("product.html")) {
       const thumbs = document.getElementById("thumbs");
       const images = product.images?.length
         ? product.images
-        : ["./images/no-image.png"];
+        : ["../assets/images/no-image.png"];
 
       mainImg.src = images[0];
       thumbs.innerHTML = "";
@@ -53,6 +53,10 @@ if (window.location.pathname.includes("product.html")) {
 
         t.onclick = () => {
           mainImg.src = src;
+
+          if (zoomImage) {
+             zoomImage.style.backgroundImage = `url(${src})`;
+           }
 
           document.querySelectorAll(".thumb").forEach(img =>
             img.classList.remove("active")
