@@ -178,7 +178,7 @@ document.addEventListener("DOMContentLoaded", () => {
             ${product.oldPrice ? `<span class="old-price">₹${product.oldPrice}</span>` : ''}
             ${product.discount ? `<span class="discount">${product.discount}% OFF</span>` : ''}
           </div>
-          ${stars}
+          /* ${stars} */
         </div>
       `;
 
