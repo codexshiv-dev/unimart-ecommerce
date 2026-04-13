@@ -134,7 +134,7 @@ document.addEventListener("DOMContentLoaded", () => {
          const isOutOfStock = product.stockQuantity === 0 || product.stock === 0;
          
          if (isOutOfStock) {
-             card.classList.add("out-badge"); // Use a CSS class instead of inline styles
+             card.classList.add("out-of-stock"); // Use a CSS class instead of inline styles
              card.style.opacity = "0.5";
              card.style.pointerEvents = "none";
          }
@@ -178,7 +178,7 @@ document.addEventListener("DOMContentLoaded", () => {
             ${product.oldPrice ? `<span class="old-price">₹${product.oldPrice}</span>` : ''}
             ${product.discount ? `<span class="discount">${product.discount}% OFF</span>` : ''}
           </div>
-        
+          ${stars}
         </div>
       `;
 
