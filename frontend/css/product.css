@@ -332,8 +332,8 @@
     flex-wrap: wrap;
 }
 
-#productStock.in-stock { color: #1a7f37; font-weight: 600; }
-#productStock.out-stock { color: #d93025; font-weight: 600; }
+/* #productStock.in-stock { color: #1a7f37; font-weight: 600; }
+#productStock.out-stock { color: #d93025; font-weight: 600; } */
 #productSKU { color: #777; }
 
 /* TAGS */
@@ -353,6 +353,8 @@
   padding: 4px 12px;
   border-radius: 20px;
   font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
   color: var(--text-dark);
 }
 
