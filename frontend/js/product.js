@@ -214,9 +214,26 @@ if (window.location.pathname.includes("product.html")) {
       container.innerHTML = "";
     
       if (!products.length) {
-        container.innerHTML = "<p>No relatproducts found</p>";
-        return;
-      }
+    // If no related category items, fetch featured products instead
+    fetch("https://unimart-ecommerce.onrender.com/api/products")
+        .then(res => res.json())
+        .then(all => {
+            const featured = all.filter(p => p.isFeatured).slice(0, 4);
+            if (featured.length > 0) {
+                // Change the section title to "Featured for You"
+                const title = document.querySelector(".related-section h2");
+                if (title) title.textContent = "Featured for You";
+                renderRelatedProducts(featured);
+            } else {
+                container.innerHTML = `
+                    <div style="text-align:center; padding: 40px; color: #888; grid-column: 1/-1;">
+                        <i class="fa-solid fa-bag-shopping" style="font-size: 2rem; margin-bottom: 10px;"></i>
+                        <p>More products coming soon!</p>
+                    </div>`;
+            }
+        });
+    return;
+}
     
       products.forEach(product => {
         const card = document.createElement("article");
