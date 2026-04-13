@@ -158,12 +158,19 @@ if (window.location.pathname.includes("product.html")) {
           btnCart.textContent = "Go to Cart";
           btnCart.onclick = () => { window.location.href = "/pages/cart.html"; };
         } else {
-          btnCart.onclick = () => {
-            addToCart(product, quantity);
-            btnCart.textContent = "Go to Cart";
-            // After adding, change click behavior to go to cart
-            btnCart.onclick = () => { window.location.href = "/pages/cart.html"; };
-          };
+                btnCart.onclick = () => {
+                addToCart(product, quantity);
+                showToast("Added to cart! 🛍️"); // Use your existing toast function
+                
+                btnCart.innerHTML = `<i class="fa-solid fa-check"></i> Added`;
+                btnCart.style.background = "#16a34a"; // Change to green briefly
+                
+                setTimeout(() => {
+                    btnCart.textContent = "Go to Cart";
+                    btnCart.style.background = ""; // Revert to CSS default
+                    btnCart.onclick = () => { window.location.href = "/pages/cart.html"; };
+                }, 1000);
+            };
         }
 
       // =====================
