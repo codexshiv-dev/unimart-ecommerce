@@ -173,6 +173,7 @@
     background: var(--white);
     padding: 10px;
     border-radius: var(--radius-md);
+    box-shadow: var(--shadow-sm);
 }
 
 /* Gallery Section (Thumbs + Main) */
@@ -229,7 +230,7 @@
 .main-image img {
     width: 100%;
     /* max-height: 100%; */
-    max-height: 280px;
+    max-height: 380px;
     object-fit: contain;
     /* display: block; */
     /* transition: transform 0.2s ease; */
