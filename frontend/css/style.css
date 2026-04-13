@@ -132,14 +132,18 @@ main.layout {
 
 /* BADGE */
 .out-badge {
-  position: absolute;
-  top: 10px;
-  left: 10px;
-  background: red;
-  color: white;
-  padding: 5px 8px;
-  font-size: 12px;
-  border-radius: 4px;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: rgba(220, 38, 38, 0.9); /* Semi-transparent red */
+    color: white;
+    padding: 6px 12px;
+    font-size: 12px;
+    font-weight: bold;
+    border-radius: 4px;
+    z-index: 11;
+    white-space: nowrap;
 }
 
 /* RIBBON */
@@ -172,7 +176,6 @@ main.layout {
   display: flex;
   flex-direction: column;
   gap: 6px;
-
   z-index: 10;
 }
 
