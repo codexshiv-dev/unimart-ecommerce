@@ -566,7 +566,7 @@
 
     .product-layout {
         grid-template-columns: 1fr;
-        gap: 15px; /* Closer spacing between image and text */
+        gap: 10px; /* Closer spacing between image and text */
         padding: 10px;
     }
 
