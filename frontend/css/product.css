@@ -594,7 +594,7 @@
         line-height: 1.2;
     }
     .product-info .price-row {
-        margin-top: 5px;
+        margin: 2px 5px;
         padding: 5px 0;
         background: transparent; /* Makes it look more integrated on mobile */
     }
