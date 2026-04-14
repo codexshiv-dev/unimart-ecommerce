@@ -267,18 +267,18 @@ body.menu-open {
 }
 
 .dropdown-menu {
-  max-height: 0;
-  overflow: hidden;
-  opacity: 0;
-  display: flex; 
+  display: none; /* Hidden by default */
   flex-direction: column;
   background: #f7f7f7;
-  transition: max-height 0.4s ease-out, opacity 0.3s ease;
+  width: 100%;
+  padding: 0;
+  margin: 0;
+ 
 }
 .dropdown-menu.show {
-  max-height: 500px; /* Big enough to fit all categories */
-  opacity: 1;
-  padding: 10px 0;   /* Add some breathing room when open */
+  display: flex !important; 
+  visibility: visible !important;
+  height: auto !important;
 }
 
 .dropdown-menu button {
@@ -287,6 +287,7 @@ body.menu-open {
   padding: 12px 20px;
   text-align: left;
   font-size: 15px;
+  width: 100%;
 }
 
 /* Optional: Rotate the arrow when open */

@@ -88,6 +88,7 @@ function initHeaderEvents() {
     mobileMenu.classList.add("active");
     overlay.classList.add("active");
     document.body.classList.add("menu-open");
+    console.log("Dropdown is now:", isNowOpen);
   };
 
   const closeMenu = () => {
