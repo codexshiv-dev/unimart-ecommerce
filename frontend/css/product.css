@@ -71,7 +71,7 @@
 }
 
  .product-card .product-info h3 {
-    font-size: 16px;
+    font-size: 14px;
     line-height: 1.3;
     font-weight: 600;
     color: var(--text-dark);
@@ -93,7 +93,7 @@
 }
  .product-card .price {
    font-weight: 700;
-   font-size: 13px !important;
+   font-size: 15px !important;
    color: var(--primary);
 }
 
