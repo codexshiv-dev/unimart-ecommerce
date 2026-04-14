@@ -602,6 +602,7 @@
     }
     .product-info .price-row {
         margin-top: 2px;
+        margin-bottom: 0 !important;
         padding: 5px 0;
         background: transparent; /* Makes it look more integrated on mobile */
     }
