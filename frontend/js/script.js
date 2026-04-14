@@ -26,23 +26,30 @@ document.addEventListener("DOMContentLoaded", () => {
   // EXPOSE GLOBAL FUNCTION FOR LAYOUT.JS
   // =======================
   window.resetPageAndRender = () => { 
-    currentPage = 1; 
-    renderPage(1); 
+    const query = (searchDesktop?.value || searchMobile?.value || "").trim();
+    if (!query) {
+      const url = new URL(window.location);
+      url.searchParams.delete('search');
+      window.history.pushState({}, '', url);
+    }
+
+    currentPage = 1;
+    renderPage(1);
   };
 
   // =======================
   // HELPER: AUTO-CLOSE MOBILE MENU
   // =======================
-  const closeMobileMenuUI = () => {
-    const mobileMenu = document.getElementById("mobileMenu");
-    const overlay = document.getElementById("overlay");
-    if (mobileMenu && mobileMenu.classList.contains("active")) {
-      mobileMenu.classList.remove("active");
-      overlay.classList.remove("active");
-      document.body.classList.remove("menu-open");
-      document.body.style.top = "";
-    }
-  };
+  // const closeMobileMenuUI = () => {
+  //   const mobileMenu = document.getElementById("mobileMenu");
+  //   const overlay = document.getElementById("overlay");
+  //   if (mobileMenu && mobileMenu.classList.contains("active")) {
+  //     mobileMenu.classList.remove("active");
+  //     overlay.classList.remove("active");
+  //     document.body.classList.remove("menu-open");
+  //     document.body.style.top = "";
+  //   }
+  // };
 
   // =======================
   // FETCH PRODUCTS FROM BACKEND
@@ -57,7 +64,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
       const res = await fetch("https://unimart-ecommerce.onrender.com/api/products");
       products = await res.json();
-      filteredProducts = [...products];
+      // filteredProducts = [...products];
       
       
       if (loader) loader.style.display = "none";
@@ -101,6 +108,7 @@ document.addEventListener("DOMContentLoaded", () => {
       return query !== "" ? matchesQuery : matchesCategory;
     });
   }
+  
 
   // =======================
   // RENDER PRODUCTS Logic
