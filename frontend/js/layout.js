@@ -109,16 +109,21 @@ function initHeaderEvents() {
     e.preventDefault();
     e.stopPropagation(); // Prevents the click from reaching mobileMenu.onclick
     dropdownMenu?.classList.toggle("show");
+
+    dropdownToggle.classList.toggle("active");
   });
 
  // Close menu when a link is clicked
   mobileMenu.onclick = (e) => {
     // Check if the click was on a link or a specific category button
-    const isLink = e.target.tagName === 'A';
-    const isCategoryBtn = e.target.classList.contains('mobile-category');
-    if (isLink || isCategoryBtn) {
-      closeMenu();
-    }
+     const isLink = e.target.tagName === 'a';
+     const isDropdownToggle = e.target.closest('.dropdown-toggle');
+     const isCategoryBtn = e.target.classList.contains('mobile-category');
+   
+     // ONLY close if it's a link AND NOT the dropdown toggle
+     if ((isLink || isCategoryBtn) && !isDropdownToggle) {
+       closeMenu();
+     }
   };
 }
 // ===============================
