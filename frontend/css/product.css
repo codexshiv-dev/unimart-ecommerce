@@ -89,7 +89,7 @@
     align-items: center;
     gap: 4px;
     flex-wrap: wrap;
-    padding-top: 3px;
+    
 }
  .product-card .price {
    font-weight: 700;
