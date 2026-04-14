@@ -413,13 +413,13 @@
 /* --- FIXED RELATED SECTION --- */
 .related-section {
    padding: 0 15px;
-   margin: 40px 0;
+   margin: 40px 25px;
 }
 
 .related-grid {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 12px;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 14px;
 }
 .related-section h2{
   margin-bottom:12px;
@@ -595,9 +595,17 @@
     }
 
     .related-section {
-        border-top: 8px solid #f1f3f6; /* Thick "block" separator like modern apps */
+        border-top: 8px solid #f1f3f6;
         margin: 20px 0 !important; /* Reset side margins to 0 */
         padding: 0 15px;
+    }
+    .related-grid {
+        grid-template-columns: repeat(2, 1fr) !important; /* Force exactly two columns */
+        gap: 10px; /* Tighten the gap for mobile */
+    }
+    
+    .related-grid .product-card .product-img {
+        height: 140px; /* Shrink image height so cards don't look too long */
     }
 
     .product-action-bar {
@@ -611,6 +619,7 @@
     .btn-cart, .btn-whatsapp {
         flex: 1;
         min-width: unset;
+        font-size: 12px;
         padding: 12px 10px;
     }
 }
