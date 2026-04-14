@@ -410,13 +410,15 @@
 
 /* RELATED */
 .related-section {
-  margin-top: 30px;
+  margin-top: 40px;
+  padding: 0 10px;
+
 }
 
 .related-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-  gap: 14px;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 12px;
 }
 .related-section h2{
   margin-bottom:12px;
