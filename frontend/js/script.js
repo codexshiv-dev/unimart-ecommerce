@@ -23,6 +23,14 @@ document.addEventListener("DOMContentLoaded", () => {
   const mobileCategories = document.querySelectorAll(".mobile-category");
 
   // =======================
+  // EXPOSE GLOBAL FUNCTION FOR LAYOUT.JS
+  // =======================
+  window.resetPageAndRender = () => { 
+    currentPage = 1; 
+    renderPage(1); 
+  };
+
+  // =======================
   // HELPER: AUTO-CLOSE MOBILE MENU
   // =======================
   const closeMobileMenuUI = () => {
@@ -44,7 +52,6 @@ document.addEventListener("DOMContentLoaded", () => {
     const content = document.getElementById("indexContent");
 
     try {
-      // 1. Ensure loader is visible before starting fetch
       if (loader) loader.style.display = "flex";
       if (content) content.style.display = "none";
 
@@ -52,71 +59,64 @@ document.addEventListener("DOMContentLoaded", () => {
       products = await res.json();
       filteredProducts = [...products];
       
-      // 2. Hide loader and show content before rendering
+      
       if (loader) loader.style.display = "none";
       if (content) content.style.display = "block";
 
       renderPage(1);
     } catch (err) {
       console.error("Failed to load products:", err);
-      // Show error message inside the loader div if fetch fails
-      if (loader) {
-        loader.innerHTML = `<p style="color:red;">Error loading products. Please check your connection.</p>`;
-      }
+      if (loader) loader.innerHTML = `<p style="color:red;">Error loading products. Please check your connection.</p>`;
+      
     }
   }
 
-  
-
  // =======================
-  // FILTER PRODUCTS (FIXED)
+  // FILTER PRODUCTS Logic
   // =======================
-  function getFilteredProducts() {
-  const searchDesktop = document.getElementById("searchInputDesktop");
-  const searchMobile = document.getElementById("searchInputMobile");
+  function getFilteredProducts() { 
+    // 1. Check the inputs FIRST
+    let query = (searchDesktop?.value || searchMobile?.value || "").toLowerCase().trim();
   
-  // 1. Standardize search input
-  const searchVal = searchDesktop?.value || searchMobile?.value || "";
-  const query = searchVal.toLowerCase().trim();
-
-  return products.filter(p => {
-    // 2. Safe Data Handling (Backend names often vary)
-    const name = p.name?.toLowerCase() || "";
-    const category = p.category?.toLowerCase() || "";
-    const description = p.description?.toLowerCase() || "";
-    const selectedCat = activeCategory.toLowerCase();
-
-    // 3. Logic: If user is typing, search the whole store. 
-    // If not, filter by category.
-    const matchesQuery = name.includes(query) || 
-                         category.includes(query) || 
-                         description.includes(query);
-
-    const matchesCategory = selectedCat === "all" || category === selectedCat;
-
-    // Senior Approach: Search overrides category filter for better UX
-    if (query !== "") {
-      return matchesQuery; 
+    // 2. If inputs are empty, check the URL for ?search=...
+    if (!query) {
+      const params = new URLSearchParams(window.location.search);
+      query = (params.get("search") || "").toLowerCase().trim();
+      // SYNC: Put the URL text back into the boxes so the user sees it
+      if (query) {
+        if (searchDesktop) searchDesktop.value = query;
+        if (searchMobile) searchMobile.value = query;
+      }
     }
-    
-    return matchesCategory;
-  });
-}
+  
+    return products.filter(p => {
+      const name = (p.name || "").toLowerCase();
+      const cat = (p.category || "").toLowerCase();
+      const desc = (p.description || "").toLowerCase();
+      
+      const matchesQuery = name.includes(query) || cat.includes(query) || desc.includes(query);
+      const matchesCategory = activeCategory === "all" || cat === activeCategory.toLowerCase();
+  
+      // If typing, search whole store; otherwise use category
+      return query !== "" ? matchesQuery : matchesCategory;
+    });
+  }
 
   // =======================
-  // RENDER PRODUCTS
+  // RENDER PRODUCTS Logic
   // =======================
   function renderProducts(productsToRender) {
     productGrid.innerHTML = "";
 
     if (!productsToRender.length) {
       noResult.style.display = "block";
+      const currentQuery = (searchDesktop?.value || searchMobile?.value || "");
       noResult.innerHTML = `
         <div class="no-result-container">
           <i class="fa-solid fa-magnifying-glass"></i>
           <h2>No products found</h2>
-          <p>We couldn't find anything matching "${(searchDesktop?.value || searchMobile?.value || "")}". Try checking your spelling or using different keywords.</p>
-          <button class="btn-reset-search" onclick="location.reload()">Clear All Filters</button>
+          <p>We couldn't find anything matching "${currentQuery}". Try checking your spelling or using different keywords.</p>
+          <button class="btn-reset-search" onclick="window.location.href='/index.html'">Clear All Filters</button>
         </div>
       `;
       return;
@@ -131,13 +131,13 @@ document.addEventListener("DOMContentLoaded", () => {
       card.dataset.desc = product.description;
       
       // Inside productsToRender.forEach(product => { ...
-         const isOutOfStock = product.stockQuantity === 0 || product.stock === 0;
-         
+         const isOutOfStock = product.stockQuantity === 0 || product.stock === 0; 
          if (isOutOfStock) {
              card.classList.add("out-of-stock"); // Use a CSS class instead of inline styles
              card.style.opacity = "0.5";
              card.style.pointerEvents = "none";
          }
+
         let stockBadge = isOutOfStock ? `<span class="out-badge">OUT OF STOCK</span>` : "";
        
       // Ribbon badges
@@ -190,9 +190,19 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // =======================
+  
   // PAGINATION & NAVIGATION
-  // =======================
+
+   // RENDER PAGE
+   function renderPage(page) {
+    currentPage = page;
+    const filtered = getFilteredProducts();
+    const start = (currentPage - 1) * productsPerPage;
+    const end = start + productsPerPage;
+    renderProducts(filtered.slice(start, end));
+    renderPagination(filtered);
+  }
+
   function renderPagination(productsToRender) {
     paginationDiv.innerHTML = "";
     const totalPages = Math.ceil(productsToRender.length / productsPerPage);
@@ -216,42 +226,17 @@ document.addEventListener("DOMContentLoaded", () => {
     paginationDiv.appendChild(createBtn("Next", currentPage + 1, false, currentPage === totalPages));
   }
 
-  function renderPage(page) {
-    currentPage = page;
-    const filtered = getFilteredProducts();
-    const start = (currentPage - 1) * productsPerPage;
-    const end = start + productsPerPage;
-    renderProducts(filtered.slice(start, end));
-    renderPagination(filtered);
-  }
-
-  // Assign to global variable so Layout.js can call it
-  resetPageAndRender = () => { renderPage(1); };
-    
 
   // =======================
-  // RENDER PAGE
+  // CATEGORY & SEARCH EVENTS (EVENT LISTENERS)
   // =======================
-  function renderPage(page) {
-    currentPage = page;
-    const filtered = getFilteredProducts();
-    const start = (currentPage - 1) * productsPerPage;
-    const end = start + productsPerPage;
-    renderProducts(filtered.slice(start, end));
-    renderPagination(filtered);
-  }
-
-  // =======================
-  // CATEGORY & SEARCH EVENTS
-  // =======================
-  function resetPageAndRender() { renderPage(1); }
-
+ 
   categoryButtons.forEach(btn => btn.addEventListener("click", () => {
     activeCategory = btn.dataset.category;
     categoryButtons.forEach(b => b.classList.remove("active"));
     btn.classList.add("active");
     mobileCategories.forEach(b => b.classList.toggle("active", b.dataset.category === activeCategory));
-    resetPageAndRender();
+    window.resetPageAndRender();
   }));
 
   mobileCategories.forEach(btn => btn.addEventListener("click", () => {
@@ -262,8 +247,8 @@ document.addEventListener("DOMContentLoaded", () => {
     resetPageAndRender();
   }));
 
-  searchDesktop?.addEventListener("input", resetPageAndRender);
-  searchMobile?.addEventListener("input", resetPageAndRender);
+  searchDesktop?.addEventListener("input", window.resetPageAndRender);
+searchMobile?.addEventListener("input", window.resetPageAndRender);
 
   // =======================
   // DROPDOWN TOGGLE
@@ -271,17 +256,9 @@ document.addEventListener("DOMContentLoaded", () => {
   const dropdownToggle = document.querySelector(".dropdown-toggle");
   const dropdownMenu = document.querySelector(".dropdown-menu");
   dropdownToggle?.addEventListener("click", () => dropdownMenu.classList.toggle("show"));
-
-  // =======================
-  // INITIAL LOAD
-  // =======================
-  fetchProducts();
-
-  // load count on page load 
-  // updateCartCount();
-
  
-  dropdownToggle?.addEventListener("click", () => dropdownMenu.classList.toggle("show"));
-
+  // INITIAL LOAD
+  fetchProducts();
+ 
 });
 

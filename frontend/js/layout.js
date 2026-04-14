@@ -10,26 +10,51 @@ async function loadHeader() {
     // 1. Setup Hamburger/Menu
     initHeaderEvents();
 
-   // 2. Setup Search Logic
-    // We wrap it in a function check to ensure script.js is ready
+    // 2. Setup Global Search Logic
     const dInput = document.getElementById("searchInputDesktop");
     const mInput = document.getElementById("searchInputMobile");
 
-    const triggerSearch = () => {
-      if (typeof resetPageAndRender === "function") {
-        resetPageAndRender();
+    const handleGlobalSearch = (e) => {
+      const query = e.target.value.trim();
+      const isSearchInput = e.type === "input";
+      const isEnterKey = e.key === "Enter";
+
+      // A. If user presses Enter, REDIRECT to index if not already there
+      if (isEnterKey) {
+        e.preventDefault();
+        if (query) {
+          // Check if we are already on index/home
+          const isHome = window.location.pathname.includes("index.html") || window.location.pathname === "/";
+          
+          if (!isHome) {
+            window.location.href = `/index.html?search=${encodeURIComponent(query)}`;
+            return;
+          }
+        }
+      }
+
+      // B. If user is typing AND we are on the index page, trigger instant filter
+      if (isSearchInput && typeof window.resetPageAndRender === "function") {
+        window.resetPageAndRender();
       }
     };
 
-    dInput?.addEventListener("input", triggerSearch);
-    mInput?.addEventListener("input", triggerSearch);
+    // Attach listeners to both inputs (Desktop & Mobile)
+    [dInput, mInput].forEach(input => {
+      if (input) {
+        input.addEventListener("input", handleGlobalSearch);
+        input.addEventListener("keydown", handleGlobalSearch);
+      }
+    });
 
+    // 3. Update Cart UI if function exists
     if (typeof updateCartCount === "function") updateCartCount();
 
   } catch (err) {
     console.error("Header load failed:", err);
   }
 }
+
 
 // ===============================
 // LOAD FOOTER
@@ -75,8 +100,8 @@ function initHeaderEvents() {
   closeMenuBtn.onclick = closeMenu;
   overlay.onclick = closeMenu;
 
-  // FIX: Only close menu if a LINK (<a>) is clicked, not the whole container
- // 1. Handle the Dropdown Toggle separately with stopPropagation
+  
+ // Handle the Dropdown Toggle separately with stopPropagation
   const dropdownToggle = mobileMenu.querySelector(".dropdown-toggle");
   const dropdownMenu = mobileMenu.querySelector(".dropdown-menu");
 
@@ -86,13 +111,11 @@ function initHeaderEvents() {
     dropdownMenu?.classList.toggle("show");
   });
 
-  // 2. Updated mobileMenu.onclick logic
+ // Close menu when a link is clicked
   mobileMenu.onclick = (e) => {
     // Check if the click was on a link or a specific category button
     const isLink = e.target.tagName === 'A';
     const isCategoryBtn = e.target.classList.contains('mobile-category');
-    
-    // If it's a category or a link, close the sidebar
     if (isLink || isCategoryBtn) {
       closeMenu();
     }
