@@ -172,7 +172,7 @@
     max-width: 1100px;
     margin: 30px 45px;
     background: var(--white);
-    padding: 20px;
+    padding: 30px;
     border-radius: var(--radius-md);
     box-shadow: var(--shadow-sm);
     align-items: start;
@@ -181,9 +181,9 @@
 /* Gallery Section (Thumbs + Main) */
 .gallery-grid {
     display: grid;
-    grid-template-columns: 75px 1fr;
-    gap: 10px;
-    position: sticky;
+    grid-template-columns: 80px 400px;
+    gap: 15px;
+    /* position: sticky; */
     top: 10px;
     height: fit-content; 
     align-self: start;
@@ -193,7 +193,7 @@
 .thumbs {
     display: flex;
     flex-direction: column;
-    gap: 8px;
+    gap: 10px;
 }
 
 .thumbs img {
