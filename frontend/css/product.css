@@ -70,13 +70,12 @@
 }
 
  .product-card .product-card h3 {
-    font-size: 14px;
+    font-size: 12px;
     font-weight: 600;
     color: var(--text-dark);
-    font-size: 14px;
     font-weight: 600;
     color: var(--text-dark);
-    display: -webkit-box;
+     display: -webkit-box;
     -webkit-line-clamp: 1; 
     -webkit-box-orient: vertical;
     overflow: hidden;
@@ -87,25 +86,25 @@
     margin-top: auto;
     display: flex;
     align-items: center;
-    gap: 6px;
+    gap: 4px;
     flex-wrap: wrap;
-    padding-top: 4px;
+    padding-top: 3px;
 }
  .product-card .price {
    font-weight: 700;
-   font-size: 19px;
+   font-size: 10px;
    color: var(--primary);
 }
 
  .product-card .old-price {
   text-decoration: line-through;
   color: var(--text-muted);
-  font-size: 16px;
+  font-size: 9px;
 }
 
  .product-card .discount {
   color:var(--text-discount);
-  font-size: 14px;
+  font-size: 10px;
   font-weight: 600;
 }
 
