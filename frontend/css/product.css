@@ -564,24 +564,19 @@
     .gallery-grid {
         grid-template-columns: 1fr; /* Move thumbs below main image on mobile */
         display: flex;
-        flex-direction: column-reverse; /* Put thumbs under image */
+        flex-direction: column-reverse;
     }
 
     .main-image {
         min-height: 300px; /* Smaller for mobile screens */
         height: auto;
     }
-    /* .product-img {
+    .product-img {
     height: 160px;
-    } */
-   .thumbs{
-    flex-direction:row;
-    justify-content:center;
-    margin-top: 10px;
     }
-    .thumbs img {
-        width: 50px;
-        height: 50px;
+   .thumbs{
+    flex-direction:column;
+    justify-content:center;
     }
 
     .product-action-bar {
