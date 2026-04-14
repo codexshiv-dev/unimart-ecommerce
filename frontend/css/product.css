@@ -289,7 +289,10 @@
     margin-top: 5px;
     margin-bottom: 3px;
 }
-
+.product-info{
+        padding: 0 5px;
+        margin-top: 5px;
+    }
 .product-info .price-row {
     background: #fdfaf3; /* Subtle highlight for price section */
     border-radius: var(--radius-sm);
