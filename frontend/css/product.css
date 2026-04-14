@@ -572,11 +572,18 @@
     }
 
     .main-image {
-        min-height: 300px; /* Smaller for mobile screens */
+        min-height: unset; /* Smaller for mobile screens */
         height: auto;
     }
-    .product-img {
-    height: 160px;
+    
+    #productTags {
+        margin-top: 5px;     /* Pull tags up closer to the image */
+        margin-bottom: 5px;
+        padding-left: 5px;   /* Safety gap from screen edge */
+    }
+    .product-info h1 {
+        margin-top: 0;       /* Pull title up closer to tags */
+        padding: 0 5px;      /* Prevent text from touching screen edges */
     }
    .thumbs{
         flex-direction: row; /* Horizontal thumbs on mobile */
