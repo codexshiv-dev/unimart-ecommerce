@@ -84,7 +84,7 @@
 }
 
 .product-card .price-row {
-    margin-top: 3px;
+    margin-top: 5px;
     display: flex;
     align-items: center;
     gap: 4px;
