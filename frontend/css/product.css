@@ -579,6 +579,15 @@
         flex-direction: column-reverse;
     }
 
+    .gallery-grid, .product-gallery {
+        height: auto !important; /* Stop the container from being taller than the image */
+        min-height: 0 !important;
+    }
+    
+    .product-layout {
+        display: block; /* On mobile, block layout is safer than grid for preventing title shifts */
+    }
+
     .main-image {
         min-height: unset; /* Smaller for mobile screens */
         height: auto;
