@@ -33,6 +33,27 @@ if (window.location.pathname.includes("product.html")) {
         });
 
 
+         const stockEl = document.getElementById("productStock");
+      const skuEl = document.getElementById("productSKU");
+
+      // 1. Handle SKU (Always required for "real" feel)
+       if (skuEl) {
+           skuEl.textContent = `SKU: ${product.sku || 'N/A'}`;
+       }
+   
+       // 2. Handle Stock Text
+       if (stockEl) {
+           const isOutOfStock = product.stockQuantity <= 0|| !product.stock;
+           
+           if (isOutOfStock) {
+               stockEl.textContent = "Availability: Out of Stock";
+               stockEl.className = "out-stock"; // Applies your red CSS
+           } else {
+               stockEl.textContent = `Availability: In Stock (${product.stockQuantity} units)`;
+               stockEl.className = "in-stock"; // Applies your green CSS
+           }
+       }
+
  
      
       // IMAGE + THUMB
@@ -212,27 +233,6 @@ if (window.location.pathname.includes("product.html")) {
     // RELATED PRODUCTS (USE SAME CARD AS INDEX)
     function renderRelatedProducts(products) {
       const container = document.getElementById("relatedProducts");
-      const stockEl = document.getElementById("productStock");
-      const skuEl = document.getElementById("productSKU");
-
-      // 1. Handle SKU (Always required for "real" feel)
-       if (skuEl) {
-           skuEl.textContent = `SKU: ${product.sku || 'N/A'}`;
-       }
-   
-       // 2. Handle Stock Text
-       if (stockEl) {
-           const isOutOfStock = product.stockQuantity <= 0;
-           
-           if (isOutOfStock) {
-               stockEl.textContent = "Availability: Out of Stock";
-               stockEl.className = "out-stock"; // Applies your red CSS
-           } else {
-               stockEl.textContent = `Availability: In Stock (${product.stockQuantity} units)`;
-               stockEl.className = "in-stock"; // Applies your green CSS
-           }
-       }
-   
            
       if (!container) {
         console.error("❌ relatedProducts container NOT FOUND");
@@ -241,24 +241,16 @@ if (window.location.pathname.includes("product.html")) {
     
       container.innerHTML = "";
     
-      if (!products.length) {
+      if (products.length === 0) {
     // If no related category items, fetch featured products instead
     fetch("https://unimart-ecommerce.onrender.com/api/products")
         .then(res => res.json())
         .then(all => {
-            const featured = all.filter(p => p.isFeatured).slice(0, 4);
-            if (featured.length > 0) {
-                // Change the section title to "Featured for You"
+                const featured = all.filter(p => p.isFeatured).slice(0, 4);
                 const title = document.querySelector(".related-section h2");
                 if (title) title.textContent = "Featured for You";
-                renderRelatedProducts(featured);
-            } else {
-                container.innerHTML = `
-                    <div style="text-align:center; padding: 40px; color: #888; grid-column: 1/-1;">
-                        <i class="fa-solid fa-bag-shopping" style="font-size: 2rem; margin-bottom: 10px;"></i>
-                        <p>More products coming soon!</p>
-                    </div>`;
-            }
+                if(featured.length > 0) renderRelatedProducts(featured);
+            
         });
     return;
 }
