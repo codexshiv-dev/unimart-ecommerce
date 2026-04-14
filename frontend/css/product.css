@@ -578,7 +578,7 @@
         display: flex;
         flex-direction: column-reverse;
     }
-
+/* //optional css  */
     .gallery-grid, .product-gallery {
         height: auto !important; /* Stop the container from being taller than the image */
         min-height: 0 !important;
@@ -587,7 +587,7 @@
     .product-layout {
         display: block; /* On mobile, block layout is safer than grid for preventing title shifts */
     }
-
+/* end */
     .main-image {
         min-height: unset; /* Smaller for mobile screens */
         height: auto;
@@ -643,7 +643,10 @@
         gap: 8px;
         border-top: 1px solid #eee;
         padding-bottom: 15px;
-
+background: rgba(255, 255, 255, 0.85);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-top: 1px solid rgba(0,0,0,0.05);
     }
 
     .btn-cart, .btn-whatsapp {
