@@ -1,0 +1,664 @@
+/* ==========================================================================
+   1. RESET, LAYOUT VARIABLES & BASE FRAMEWORK
+   ========================================================================== */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family:
+    "Segoe UI",
+    system-ui,
+    -apple-system,
+    sans-serif;
+}
+
+:root {
+  --bg-primary: #f8fafc;
+  --sidebar-bg: #0f172a;
+  --sidebar-hover: #1e293b;
+  --text-main: #1e293b;
+  --text-muted: #64748b;
+  --accent: #2563eb;
+  --accent-hover: #1d4ed8;
+  --danger: #ef4444;
+  --success: #16a34a;
+  --card-bg: #ffffff;
+  --border-color: #e2e8f0;
+}
+
+body {
+  background: var(--bg-primary);
+  color: var(--text-main);
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+
+/* ==========================================================================
+   2. DESKTOP VIEWPORT LAYOUT ARCHITECTURE
+   ========================================================================== */
+.admin-container {
+  display: flex;
+  height: calc(100vh - 65px); /* Adjusted to match your desktop header height */
+  width: 100vw;
+  overflow: hidden;
+  position: relative;
+}
+
+/* Desktop Global Top Navbar */
+header.admin-top-navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: var(--sidebar-bg);
+  color: white;
+  padding: 14px 24px;
+  height: 65px;
+  width: 100%;
+}
+
+/* Mobile Top Navigation Navbar - Explicitly Hidden on Desktop */
+div.mobile-top-navbar {
+  display: none !important;
+}
+
+/* Mobile Bar structural typography alignment */
+div.mobile-top-navbar h2 {
+  font-size: 18px;
+  font-weight: 600;
+  flex: 1;
+  text-align: center;
+}
+.menu-toggle-btn {
+  background: none;
+  border: none;
+  color: white;
+  font-size: 26px;
+  cursor: pointer;
+}
+
+/* Sidebar Component Drawer styling */
+.sidebar {
+  width: 260px;
+  background: var(--sidebar-bg);
+  color: #fff;
+  padding: 24px;
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  flex-shrink: 0;
+}
+.sidebar h2 {
+  margin-bottom: 35px;
+  font-size: 22px;
+  font-weight: 700;
+  text-align: center;
+  color: #38bdf8;
+}
+.sidebar nav a {
+  display: block;
+  color: #94a3b8;
+  padding: 12px 16px;
+  text-decoration: none;
+  border-radius: 8px;
+  margin-bottom: 6px;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+.sidebar nav a:hover,
+.sidebar nav a.active {
+  background: var(--sidebar-hover);
+  color: #fff;
+}
+.sidebar nav a.active {
+  background: var(--accent);
+  color: #fff;
+}
+.sidebar .view-store {
+  margin-top: 40px;
+  border: 1px dashed #334155;
+  text-align: center;
+}
+
+/* Content Frame Spaces Container */
+.main-content {
+  flex: 1;
+  padding: 30px;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: hidden;
+}
+.content-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  flex-shrink: 0;
+  gap: 16px;
+}
+.content-header h1 {
+  font-size: 26px;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.btn-primary {
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+.btn-primary:hover {
+  background: var(--accent-hover);
+}
+
+/* Control Filters Toolbar Area */
+.controls-bar {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 20px;
+  flex-shrink: 0;
+}
+.search-wrapper {
+  position: relative;
+  flex: 1;
+}
+.search-wrapper .search-icon {
+  position: absolute;
+  left: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--text-muted);
+}
+.search-wrapper input {
+  width: 100%;
+  padding: 10px 10px 10px 40px;
+  border: 1px solid var(--border-color);
+  background-color: var(--card-bg);
+  border-radius: 8px;
+  font-size: 14px;
+  color: var(--text-main);
+  outline: none;
+}
+.search-wrapper input:focus {
+  border-color: var(--accent);
+}
+
+.filter-wrapper select {
+  padding: 10px 16px;
+  border: 1px solid var(--border-color);
+  background-color: var(--card-bg);
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-main);
+  cursor: pointer;
+  outline: none;
+}
+
+/* ==========================================================================
+   3. DESKTOP DATA TABLE STYLING
+   ========================================================================== */
+.table-container-scrollbox {
+  flex: 1;
+  background: var(--card-bg);
+  border-radius: 12px;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+  border: 1px solid var(--border-color);
+  overflow-y: auto;
+  position: relative;
+}
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+th {
+  background: #f8fafc;
+  font-weight: 600;
+  color: var(--text-muted);
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.75px;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  border-bottom: 1px solid var(--border-color);
+  padding: 14px 24px;
+  text-align: left;
+}
+td {
+  padding: 14px 24px;
+  text-align: left;
+  border-bottom: 1px solid var(--border-color);
+  vertical-align: middle;
+}
+td img {
+  width: 44px !important;
+  height: 44px !important;
+  object-fit: cover;
+  border-radius: 6px;
+  border: 1px solid var(--border-color);
+}
+.price-text {
+  font-weight: 600;
+  color: #0f172a;
+}
+.out-of-stock {
+  color: var(--danger);
+  font-weight: 600;
+  background: #fef2f2;
+  padding: 4px 8px;
+  border-radius: 6px;
+  font-size: 12px;
+}
+.in-stock {
+  color: var(--success);
+  font-weight: 600;
+  background: #f0fdf4;
+  padding: 4px 8px;
+  border-radius: 6px;
+  font-size: 12px;
+}
+.badge {
+  background: #f1f5f9;
+  color: #475569;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 4px 10px;
+  border-radius: 20px;
+  text-transform: capitalize;
+  border: 1px solid #e2e8f0;
+}
+.btn-edit {
+  color: var(--accent);
+  background: none;
+  border: none;
+  cursor: pointer;
+  margin-right: 15px;
+  font-weight: 600;
+}
+.btn-delete {
+  color: var(--danger);
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-weight: 600;
+}
+.sidebar-overlay {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(15, 23, 42, 0.4);
+  backdrop-filter: blur(4px);
+  z-index: 98;
+}
+
+.pricing-wrapper {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.old-price-text {
+  font-size: 11px;
+  color: #94a3b8;
+  text-decoration: line-through;
+  font-weight: 400;
+}
+
+.mobile-product-card-cell {
+  display: none;
+}
+.desktop-only-cell {
+  display: table-cell;
+}
+
+/* ==========================================================================
+   4. MODAL OVERLAY FORMS
+   ========================================================================== */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(15, 23, 42, 0.6);
+  backdrop-filter: blur(4px);
+  z-index: 200;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.25s ease;
+}
+.modal-overlay.active {
+  opacity: 1;
+  pointer-events: auto;
+}
+.modal-card {
+  background: var(--card-bg);
+  width: 100%;
+  max-width: 620px;
+  border-radius: 16px;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+}
+.modal-header {
+  padding: 20px 24px;
+  border-bottom: 1px solid var(--border-color);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.modal-header h2 {
+  font-size: 20px;
+  font-weight: 700;
+  color: #0f172a;
+}
+.modal-close-btn {
+  background: none;
+  border: none;
+  font-size: 28px;
+  color: var(--text-muted);
+  cursor: pointer;
+}
+.modal-form-grid {
+  padding: 24px;
+  overflow-y: auto;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.form-group.full-width {
+  grid-column: span 2;
+}
+.form-group label {
+  font-size: 13px;
+  font-weight: 600;
+  color: #475569;
+  text-align: left;
+}
+.form-group input,
+.form-group select,
+.form-group textarea {
+  padding: 10px 14px;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  font-size: 14px;
+  outline: none;
+  background: #f8fafc;
+  width: 100%;
+}
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+  border-color: var(--accent);
+  background: #fff;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+.checkbox-row {
+  flex-direction: row !important;
+  gap: 20px;
+  padding: 4px 0;
+}
+.checkbox-row label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 500;
+  cursor: pointer;
+}
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 12px;
+  border-top: 1px solid var(--border-color);
+  padding-top: 20px;
+}
+.btn-secondary {
+  background: #f1f5f9;
+  color: #475569;
+  border: none;
+  padding: 12px 20px;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+/* ==========================================================================
+   5. NATIVE MOBILE DEVICE BREAKPOINTS (768px)
+   ========================================================================== */
+@media (max-width: 768px) {
+  body {
+    overflow-y: auto;
+  }
+  .admin-container {
+    flex-direction: column;
+    height: auto;
+    max-height: none;
+    overflow: visible;
+  }
+  
+  div.mobile-top-navbar {
+    display: flex !important; 
+    background: var(--sidebar-bg);
+    color: white;
+    padding: 16px 20px;
+    align-items: center;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  }
+  header.admin-top-navbar {
+    display: none !important; 
+  }
+
+  .sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    z-index: 999;
+    transform: translateX(-100%);
+    box-shadow: 10px 0 30px rgba(0, 0, 0, 0.2);
+  }
+  .sidebar.open {
+    transform: translateX(0);
+  }
+  .sidebar-overlay.show {
+    display: block;
+  }
+
+  .main-content {
+    padding: 12px;
+    overflow: visible;
+    height: auto;
+  }
+  .content-header {
+    margin-bottom: 12px;
+    gap: 8px;
+  }
+  .content-header h1 {
+    font-size: 18px;
+    margin: 0;
+  }
+  .btn-primary {
+    padding: 8px 14px;
+    font-size: 13px;
+    border-radius: 6px;
+  }
+
+  .controls-bar {
+    display: grid;
+    grid-template-columns: 1.2fr 1fr;
+    gap: 8px;
+    margin-bottom: 12px;
+  }
+  .search-wrapper input {
+    padding: 8px 8px 8px 28px;
+    font-size: 13px;
+    border-radius: 6px;
+  }
+  .search-wrapper .search-icon {
+    left: 8px;
+    font-size: 11px;
+  }
+  .filter-wrapper select {
+    width: 100%;
+    padding: 8px 8px;
+    font-size: 13px;
+    border-radius: 6px;
+  }
+
+  table,
+  thead,
+  tbody,
+  th,
+  td,
+  tr {
+    display: block;
+  }
+  thead {
+    display: none;
+  }
+  .table-container-scrollbox {
+    background: transparent;
+    border: none;
+    box-shadow: none;
+    overflow-y: visible;
+  }
+
+  .desktop-only-cell,
+  td::before {
+    display: none !important;
+  }
+
+  tr.product-data-row {
+    background: var(--card-bg);
+    margin-bottom: 8px;
+    border-radius: 8px;
+    padding: 12px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    border: 1px solid var(--border-color);
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  td.mobile-product-card-cell {
+    display: flex !important;
+    padding: 0;
+    align-items: flex-start;
+    gap: 12px;
+    width: 100%;
+    border: none;
+  }
+  .product-thumb {
+    width: 48px !important;
+    height: 48px !important;
+    border-radius: 6px;
+    object-fit: cover;
+    flex-shrink: 0;
+  }
+  .text-info-block {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    flex: 1;
+    text-align: left;
+  }
+  .title-sku-line {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+  }
+  .text-info-block strong {
+    font-size: 14px;
+    color: var(--text-main);
+    line-height: 1.3;
+    word-break: break-word;
+  }
+  .sku-tag {
+    font-size: 11px;
+    color: var(--text-muted);
+  }
+
+  .mobile-meta-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+    margin-top: 4px;
+  }
+  .mobile-meta-row .badge {
+    padding: 2px 6px;
+    font-size: 10px;
+    border-radius: 4px;
+  }
+  .price-text {
+    font-size: 13px;
+    font-weight: 600;
+    color: #0f172a;
+  }
+  .in-stock,
+  .out-of-stock {
+    padding: 2px 6px;
+    font-size: 10px;
+    border-radius: 4px;
+  }
+
+  td.cell-actions {
+    width: 100%;
+    border-top: 1px dashed #e2e8f0;
+    padding: 8px 0 0 0 !important;
+    margin: 0;
+    display: flex;
+    justify-content: flex-end;
+    gap: 16px;
+  }
+  .btn-edit,
+  .btn-delete {
+    font-size: 13px;
+    margin: 0;
+    padding: 2px 0;
+  }
+
+  .modal-card {
+    max-height: 92vh;
+    border-radius: 12px;
+  }
+  .modal-header {
+    padding: 14px 16px;
+  }
+  .modal-form-grid {
+    grid-template-columns: 1fr;
+    padding: 16px;
+    gap: 14px;
+  }
+  .form-group.full-width {
+    grid-column: span 1;
+  }
+  .checkbox-row {
+    flex-direction: row !important;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 14px;
+    padding: 6px 0;
+  }
+}

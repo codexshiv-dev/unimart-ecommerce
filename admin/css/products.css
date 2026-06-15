@@ -1,0 +1,220 @@
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.page-header h1 {
+  font-size: 28px;
+  color: #0f172a;
+}
+
+.page-header p {
+  color: #64748b;
+  margin-top: 4px;
+}
+
+.btn-primary {
+  background: #2563eb;
+  color: white;
+  border: none;
+  padding: 12px 18px;
+  border-radius: 10px;
+  cursor: pointer;
+}
+
+.filters-bar {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+}
+
+.filters-bar input,
+.filters-bar select {
+  padding: 12px;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  background: white;
+}
+
+.filters-bar input {
+  flex: 1;
+  min-width: 250px;
+}
+
+.table-card {
+  background: white;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+  max-height: calc(100vh - 240px);
+  overflow-y: auto; /* Activates vertical table scroll within the card */
+  overflow-x: auto; /* Safety protection to preserve responsive table data structures */
+  border: 1px solid #e2e8f0;
+}
+
+.products-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.products-table th {
+  position: sticky;
+  top: 0;
+  z-index: 5;
+  background: #f8fafc;
+  text-align: left;
+  padding: 16px;
+  color: #64748b;
+  border-bottom: 2px solid #e2e8f0;
+}
+
+.products-table td {
+  padding: 16px;
+  border-top: 1px solid #e2e8f0;
+  vertical-align: middle;
+}
+
+.product-img {
+  width: 50px;
+  height: 50px;
+  border-radius: 8px;
+  object-fit: cover;
+}
+
+.stock-good {
+  color: #16a34a;
+  font-weight: 600;
+}
+
+.stock-bad {
+  color: #dc2626;
+  font-weight: 600;
+}
+
+/* ========================================================
+   MODERN HIGH-END TABLE ACTION BUTTON MATRIX
+   ======================================================== */
+.action-btn-container {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.action-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
+  background: #ffffff;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  font-size: 14px;
+}
+
+/* Edit Accent Highlights */
+.action-btn.edit-trigger {
+  color: #2563eb;
+}
+.action-btn.edit-trigger:hover {
+  background: #eff6ff;
+  border-color: #bfdbfe;
+  transform: translateY(-1px);
+}
+
+/* Delete Accent Highlights */
+.action-btn.delete-trigger {
+  color: #dc2626;
+}
+.action-btn.delete-trigger:hover {
+  background: #fef2f2;
+  border-color: #fca5a5;
+  transform: translateY(-1px);
+}
+/* ========================================================
+   MODERN MOBILE RESPONSIVE OPTIMIZATION MATRIX (<= 768px)
+   ======================================================== */
+@media (max-width: 768px) {
+  /* 1. Shrink header area and layout titles */
+  .page-header {
+    display: flex;
+    flex-direction: row; /* Force them to sit side-by-side instead of stacking */
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+  }
+
+  .page-header h1 {
+    font-size: 22px; /* Slightly more compact header */
+  }
+
+  .page-header p {
+    display: none; /* Hide the subtitle text on mobile to save screen vertical space */
+  }
+
+  /* 2. Compact, Sleek "+ Add Product" Button Alignment */
+  .btn-primary {
+    padding: 8px 14px; /* Tighter padding for mobile screens */
+    font-size: 13px;
+    border-radius: 8px;
+    width: auto; /* Prevent button from expanding across the full width */
+    font-weight: 600;
+  }
+
+  /* 3. Streamlined Responsive Filter Bar Row Control */
+  .filters-bar {
+    display: grid;
+    grid-template-columns: 1fr; /* Stack the search engine natively */
+    gap: 10px;
+    margin-bottom: 16px;
+  }
+  
+  /* Create a clean 2-column inline row for your dropdown options */
+  .filters-bar select {
+    display: inline-block;
+    width: 100%;
+  }
+  
+  /* Helper wrapper layout to make dropdown selectors sit cleanly side-by-side */
+  @supports (display: grid) {
+    .filters-bar {
+      display: flex;
+      flex-direction: column;
+    }
+    /* If you want dropdowns side-by-side, we can group them or let them flow natively */
+    .filters-bar input,
+    .filters-bar select {
+      padding: 10px; /* Reduce input height padding for better ergonomics */
+      font-size: 13px;
+      border-radius: 8px;
+    }
+  }
+
+  /* 4. Scrollable Data Table Boundary Safeguards */
+  .table-card {
+    border-radius: 12px; /* Smoother corner scaling for mobile cards */
+    max-height: calc(100vh - 280px); /* Adjust frame height constraint dynamically */
+    overflow-x: auto; /* Allow side scrolling for dense tables */
+    -webkit-overflow-scrolling: touch; /* Butter-smooth momentum touch scroll on iOS devices */
+  }
+
+  .products-table {
+    min-width: 800px; /* Protect data alignment from squishing columns together */
+  }
+
+  .products-table th,
+  .products-table td {
+    padding: 12px; /* Slightly tighter tables on smaller layouts */
+    font-size: 13px;
+  }
+  
+  .product-img {
+    width: 36px;
+    height: 36px; /* Scale previews down slightly on mobile views */
+  }
+}

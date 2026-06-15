@@ -1,0 +1,237 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: "Segoe UI", system-ui, sans-serif;
+  background: var(--bg-primary);
+  color: var(--text-dark);
+  /* 🔥 MODERN FIX: Lock the primary browser window from scrolling entirely */
+  height: 100vh;
+  overflow: hidden;
+}
+
+.admin-layout {
+  display: flex;
+  /* 🔥 FIXED: Force the system layout matrix to match the window exactly */
+  height: 100vh;
+  width: 100vw;
+  overflow: hidden;
+}
+
+.main-wrapper {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  /* 🔥 FIXED: Prevent the outer workspace container from expanding downward */
+  height: 100vh;
+  overflow: hidden;
+}
+
+.page-content {
+  flex: 1;
+  padding: 24px;
+  /* 🔥 FIXED: Allow the internal view page content to scroll cleanly while keeping the sidebar fixed */
+  overflow-y: auto;
+  background: var(--bg-primary);
+}
+
+#sidebarOverlay {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  #sidebarOverlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.4);
+    z-index: 999;
+  }
+
+  #sidebarOverlay.show {
+    display: block;
+  }
+}
+
+.no-scroll {
+  overflow: hidden;
+  height: 100vh;
+}
+/* ========================================================
+   💎 CORE UNIMART GLOBAL UTILITIES STYLESHEET MATRIX
+   ======================================================== */
+
+/* Toast Component Transitions */
+.toast-notification-container {
+  position: fixed;
+  top: 24px;
+  right: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  z-index: 9999999 !important;
+  pointer-events: none;
+}
+
+.toast-message-card {
+  pointer-events: auto;
+  background: #ffffff;
+  padding: 14px 20px;
+  border-radius: 12px;
+  box-shadow:
+    0 10px 25px rgba(15, 23, 42, 0.06),
+    0 4px 12px rgba(15, 23, 42, 0.04);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 320px;
+  max-width: 440px;
+  border-left: 4px solid #cbd5e1;
+  font-size: 14px;
+  font-weight: 600;
+  color: #0f172a;
+  transform: translateX(120%);
+  transition:
+    transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275),
+    opacity 0.3s ease;
+  opacity: 0;
+}
+
+.toast-message-card.reveal-toast {
+  transform: translateX(0);
+  opacity: 1;
+}
+
+.toast-message-card.toast-success {
+  border-left-color: #10b981;
+  background: #f0fdf4;
+  color: #065f46;
+}
+.toast-message-card.toast-error {
+  border-left-color: #ef4444;
+  background: #fef2f2;
+  color: #991b1b;
+}
+.toast-message-card.toast-warning {
+  border-left-color: #f59e0b;
+  background: #fffbeb;
+  color: #92400e;
+}
+
+.toast-icon-wrapper {
+  font-size: 18px;
+  display: flex;
+  align-items: center;
+}
+.toast-body-text {
+  flex: 1;
+  line-height: 1.4;
+}
+
+/* Accessible Confirmation Modal Base Layer Layouts */
+.confirm-backdrop-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(15, 23, 42, 0.35);
+  backdrop-filter: blur(5px);
+  z-index: 99999999 !important;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease-in-out;
+}
+
+.confirm-backdrop-overlay.show-confirm {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.confirm-dialog-card {
+  background: #ffffff;
+  padding: 26px;
+  border-radius: 16px;
+  width: calc(100% - 32px);
+  max-width: 400px;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.15);
+  border: 1px solid #e2e8f0;
+  text-align: center;
+  transform: scale(0.92);
+  transition: transform 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.25);
+}
+
+.confirm-backdrop-overlay.show-confirm .confirm-dialog-card {
+  transform: scale(1);
+}
+
+.confirm-graphic-icon {
+  width: 54px;
+  height: 54px;
+  font-size: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  margin: 0 auto 16px auto;
+}
+
+/* Dynamic Contextual Color Coding Modifications for Confirm Graphic Icon */
+.confirm-graphic-icon.type-danger {
+  background: #fef2f2;
+  color: #ef4444;
+}
+.confirm-graphic-icon.type-warning {
+  background: #fffbeb;
+  color: #f59e0b;
+}
+
+.confirm-content-block h3 {
+  font-size: 18px;
+  font-weight: 700;
+  color: #0f172a;
+  margin-bottom: 8px;
+}
+.confirm-content-block p {
+  font-size: 14px;
+  color: #64748b;
+  line-height: 1.5;
+  margin-bottom: 24px;
+}
+.confirm-actions-row {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+}
+
+.confirm-btn {
+  padding: 11px 22px;
+  font-size: 14px;
+  font-weight: 600;
+  border-radius: 10px;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  flex: 1;
+}
+.btn-secondary-dim {
+  background: #f1f5f9;
+  color: #475569;
+}
+.btn-secondary-dim:hover {
+  background: #e2e8f0;
+  color: #0f172a;
+}
+.btn-danger-action {
+  background: #ef4444;
+  color: #ffffff;
+}
+.btn-danger-action:hover {
+  background: #dc2626;
+  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.2);
+}

@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UniMart Admin Login</title>
+    <style>
+        :root {
+            --bg-main: #f8fafc;
+            --card-bg: #ffffff;
+            --primary: #2563eb;
+            --text-main: #0f172a;
+            --border: #cbd5e1;
+        }
+        body {
+            margin: 0; padding: 0; min-height: 100vh; font-family: system-ui, -apple-system, sans-serif;
+            background: var(--bg-main); display: flex; align-items: center; justify-content: center;
+        }
+        .login-card {
+            background: var(--card-bg); border: 1px solid var(--border); border-radius: 12px;
+            padding: 32px; width: 100%; max-width: 380px; box-shadow: 0 4px 12px rgba(15, 23, 42, 0.05);
+        }
+        h2 { margin: 0 0 8px 0; color: var(--text-main); font-size: 24px; text-align: center; }
+        p { margin: 0 0 24px 0; color: #64748b; font-size: 14px; text-align: center; }
+        .form-group { margin-bottom: 16px; display: flex; flex-direction: column; gap: 6px; }
+        label { font-size: 13px; font-weight: 600; color: #475569; }
+        input {
+            padding: 10px 12px; border-radius: 6px; border: 1px solid var(--border);
+            font-size: 14px; outline: none; transition: border-color 0.2s;
+        }
+        input:focus { border-color: var(--primary); }
+        .btn-login {
+            width: 100%; background: var(--primary); color: white; border: none; padding: 10px;
+            border-radius: 6px; font-size: 14px; font-weight: 600; cursor: pointer; margin-top: 8px;
+        }
+        .btn-login:hover { background: #1d4ed8; }
+        .error-msg { color: #dc2626; font-size: 13px; margin-top: 8px; display: none; text-align: center; }
+    </style>
+</head>
+<body>
+
+<div class="login-card">
+    <h2>Welcome Back</h2>
+    <p>Sign in to manage UniMart Dashboard</p>
+    
+    <form id="loginForm">
+        <div class="form-group">
+            <label for="email">Admin Email</label>
+            <input type="email" id="email" required placeholder="admin@unimart.com">
+        </div>
+        <div class="form-group">
+            <label for="password">Password</label>
+            <input type="password" id="password" required placeholder="••••••••">
+        </div>
+        <button type="submit" class="btn-login">Sign In</button>
+        <div class="error-msg" id="errorMsg">Invalid credentials. Access Denied!</div>
+    </form>
+</div>
+
+<script>
+document.getElementById('loginForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    const email = document.getElementById('email').value.trim();
+    const password = document.getElementById('password').value;
+    const errorMsg = document.getElementById('errorMsg');
+
+    // Static Demo credentials matching system models
+    if (email === 'admin@unimart.com' && password === 'admin123') {
+        // Save auth state object
+        const adminProfile = {
+            name: "Shiv Gupta",
+            email: "admin@unimart.com",
+            avatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&auto=format&fit=crop&q=80",
+            role: "Super Admin"
+        };
+        localStorage.setItem('admin_token', 'secure_session_active');
+        localStorage.setItem('admin_profile', JSON.stringify(adminProfile));
+        
+        window.location.href = './admin.html';
+    } else {
+        errorMsg.style.display = 'block';
+    }
+});
+</script>
+</body>
+</html>

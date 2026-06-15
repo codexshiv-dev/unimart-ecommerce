@@ -1,0 +1,479 @@
+/* ==========================================================================
+   PRODUCT MODAL CORE OVERLAY
+   ========================================================================== */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(15, 23, 42, 0.3);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  z-index: 2000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.modal-overlay.active {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* ==========================================================================
+   MODAL CARD CONTAINER
+   ========================================================================== */
+.modal-card {
+  background: var(--card-bg, #ffffff);
+  width: 100%;
+  max-width: 580px; /* Compact, desktop-friendly size */
+  border-radius: 12px;
+  box-shadow:
+    0 10px 25px -5px rgba(15, 23, 42, 0.1),
+    0 8px 10px -6px rgba(15, 23, 42, 0.05),
+    0 0 0 1px rgba(15, 23, 42, 0.05);
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  animation: modalSlideUp 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes modalSlideUp {
+  from {
+    transform: translateY(12px) scale(0.98);
+  }
+  to {
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* Header Component */
+.modal-header {
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--border-color, #e2e8f0);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #ffffff;
+}
+
+.modal-header h2 {
+  font-size: 16px;
+  font-weight: 600;
+  color: #0f172a;
+  letter-spacing: -0.2px;
+}
+
+.modal-close-btn {
+  background: none;
+  border: none;
+  font-size: 22px;
+  color: var(--text-muted, #64748b);
+  cursor: pointer;
+  line-height: 1;
+  padding: 4px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.15s ease;
+}
+
+.modal-close-btn:hover {
+  background: #f1f5f9;
+  color: #0f172a;
+}
+
+/* ==========================================================================
+   FORM RESPONSIVE GRID & ENGINE
+   ========================================================================== */
+.modal-form-grid {
+  padding: 20px;
+  overflow-y: auto;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 14px 16px;
+  background: #fafafa; /* Subtle background contrast for inputs */
+}
+
+/* Form Group Utilities */
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.form-group.full-width {
+  grid-column: span 2;
+}
+
+.form-group label {
+  font-size: 12px;
+  font-weight: 500;
+  color: #475569;
+}
+
+/* Inputs, Dropdowns, and Textareas styling */
+.form-group input[type="text"],
+.form-group input[type="number"],
+.form-group input[type="url"],
+.form-group select,
+.form-group textarea {
+  padding: 8px 12px;
+  border: 1px solid var(--border-color, #e2e8f0);
+  border-radius: 6px;
+  font-size: 13px;
+  color: #0f172a;
+  outline: none;
+  background: #ffffff;
+  width: 100%;
+  transition: all 0.15s ease;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.02);
+}
+
+/* Stacked Multi-image inputs */
+.form-group input[type="url"] + input[type="url"] {
+  margin-top: 6px;
+}
+
+/* Input Focus Ring Animations */
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+  border-color: var(--accent, #2563eb);
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+}
+
+.form-group textarea {
+  resize: vertical;
+  min-height: 68px;
+  max-height: 140px;
+}
+
+/* Placeholder Polishing */
+::placeholder {
+  color: #94a3b8;
+  font-size: 13px;
+}
+
+/* Inline Checkbox Ribbon Layout */
+.checkbox-row {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 20px;
+  padding: 4px 0;
+  user-select: none;
+}
+
+.checkbox-row label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  font-weight: 500;
+  color: #334155;
+  cursor: pointer;
+}
+
+.checkbox-row input[type="checkbox"] {
+  width: 15px;
+  height: 15px;
+  accent-color: var(--accent, #2563eb);
+  cursor: pointer;
+}
+
+/* ==========================================================================
+   FOOTER ACTIONS
+   ========================================================================== */
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 6px;
+  border-top: 1px solid var(--border-color, #e2e8f0);
+  padding-top: 16px;
+  background: transparent;
+}
+
+.btn-primary,
+.btn-secondary {
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  border: none;
+}
+
+.btn-primary {
+  background: var(--accent, #2563eb);
+  color: #ffffff;
+  box-shadow: 0 1px 2px rgba(37, 99, 235, 0.2);
+}
+
+.btn-primary:hover {
+  background: var(--accent-hover, #1d4ed8);
+}
+
+.btn-secondary {
+  background: #ffffff;
+  color: #475569;
+  border: 1px solid var(--border-color, #e2e8f0);
+}
+
+.btn-secondary:hover {
+  background: #f8fafc;
+  color: #0f172a;
+}
+
+
+/* //add gallery adjustments  */
+/* ==========================================================================
+   PREMIUM DROPZONE & PREVIEW GALLERY STYLING
+   ========================================================================== */
+.gallery-label {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.max-note {
+  font-size: 11px;
+  color: var(--text-muted, #64748b);
+  font-weight: 400;
+}
+.premium-gallery-container {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 100%;
+}
+.gallery-dropzone {
+  border: 2px dashed #cbd5e1;
+  background: #ffffff;
+  border-radius: 8px;
+  padding: 24px 16px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+  user-select: none;
+}
+.gallery-dropzone:hover, 
+.gallery-dropzone.drag-over {
+  border-color: var(--accent, #2563eb);
+  background: #f0f5ff;
+}
+.upload-icon {
+  font-size: 28px;
+  display: inline-block;
+  margin-bottom: 6px;
+}
+.dropzone-prompt p {
+  font-size: 13px;
+  color: #334155;
+  font-weight: 500;
+}
+.browse-link {
+  color: var(--accent, #2563eb);
+  text-decoration: underline;
+}
+.file-spec-info {
+  display: block;
+  font-size: 11px;
+  color: #94a3b8;
+  margin-top: 4px;
+}
+
+/* URL Input Strip Bar */
+.url-input-bar {
+  display: flex;
+  gap: 8px;
+}
+.url-input-bar input {
+  flex: 1;
+}
+.btn-secondary-sm {
+  padding: 6px 12px;
+  font-size: 12px;
+  background: #f1f5f9;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 500;
+  color: #475569;
+}
+.btn-secondary-sm:hover {
+  background: #e2e8f0;
+  color: #0f172a;
+}
+
+/* Dynamic Live Gallery Display Layout Grid */
+.gallery-preview-wrapper {
+  display: grid;
+  grid-template-columns: 160px 1fr;
+  gap: 12px;
+  background: #ffffff;
+  padding: 12px;
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
+  margin-top: 4px;
+}
+.main-preview-hero {
+  position: relative;
+  width: 100%;
+  height: 110px;
+  background: #f8fafc;
+  border-radius: 6px;
+  border: 1px solid #cbd5e1;
+  overflow: hidden;
+}
+.main-preview-hero img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.hero-badge {
+  position: absolute;
+  bottom: 4px;
+  left: 4px;
+  background: rgba(15, 23, 42, 0.75);
+  backdrop-filter: blur(2px);
+  color: #ffffff;
+  font-size: 9px;
+  font-weight: 600;
+  padding: 2px 6px;
+  border-radius: 4px;
+  text-transform: uppercase;
+}
+.thumbnail-strip-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  align-content: start;
+}
+.preview-thumb-box {
+  position: relative;
+  height: 52px;
+  border-radius: 6px;
+  border: 1px solid #e2e8f0;
+  background: #f8fafc;
+  overflow: hidden;
+  cursor: pointer;
+  transition: border-color 0.15s ease;
+}
+.preview-thumb-box:hover {
+  border-color: var(--accent, #2563eb);
+}
+.preview-thumb-box.active-hero {
+  border-color: var(--accent, #2563eb);
+  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.15);
+}
+.preview-thumb-box img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.remove-media-btn {
+  position: absolute;
+  top: 2px;
+  right: 2px;
+  width: 16px;
+  height: 16px;
+  background: rgba(239, 68, 68, 0.9);
+  color: #ffffff;
+  border: none;
+  border-radius: 50%;
+  font-size: 11px;
+  font-weight: bold;
+  line-height: 1;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: scale 0.1s ease;
+}
+.remove-media-btn:hover {
+  transform: scale(1.1);
+  background: #ef4444;
+}
+
+@media (max-width: 640px) {
+  .gallery-preview-wrapper {
+    grid-template-columns: 1fr;
+  }
+  .main-preview-hero {
+    height: 140px;
+  }
+  .thumbnail-strip-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+
+/* ==========================================================================
+   NATIVE RESPONSIVE BREAKPOINTS (Mobile Framework)
+   ========================================================================== */
+@media (max-width: 640px) {
+  .modal-overlay {
+    padding: 0; /* Flush to edge alignment on mobile */
+    align-items: flex-end; /* Slides up smoothly from screen bottom */
+  }
+
+  .modal-card {
+    max-width: 100vw;
+    max-height: 85vh;
+    border-radius: 16px 16px 0 0; /* Bottom sheet styling */
+    animation: modalSlideBottom 0.25s cubic-bezier(0.25, 1, 0.5, 1);
+  }
+
+  @keyframes modalSlideBottom {
+    from {
+      transform: translateY(100%);
+    }
+    to {
+      transform: translateY(0);
+    }
+  }
+
+  .modal-form-grid {
+    grid-template-columns: 1fr; /* Single column flow stacking */
+    gap: 12px;
+    padding: 16px;
+  }
+
+  .form-group.full-width {
+    grid-column: span 1;
+  }
+
+  .checkbox-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+    background: #ffffff;
+    padding: 12px;
+    border-radius: 6px;
+    border: 1px solid var(--border-color, #e2e8f0);
+  }
+
+  .modal-actions {
+    flex-direction: column-reverse; /* Put primary button safely under thumb tap bounds */
+    gap: 8px;
+    width: 100%;
+  }
+
+  .btn-primary,
+  .btn-secondary {
+    width: 100%;
+    padding: 10px;
+    text-align: center;
+  }
+}
+
+/* ///heeoore */

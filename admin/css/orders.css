@@ -1,0 +1,356 @@
+/* ========================================================
+   📦 UNIMART SYSTEM ORDERS WORKSPACE STYLES
+   ======================================================== */
+
+.workspace-viewport {
+  padding: 32px;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+/* --- 1. MODULE HEADER CONTROLS --- */
+.module-header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 28px;
+  gap: 20px;
+}
+
+.page-title {
+  font-size: 28px;
+  font-weight: 700;
+  color: #0f172a;
+  margin: 0 0 6px 0;
+}
+
+.page-subtitle {
+  font-size: 14px;
+  color: #64748b;
+  margin: 0;
+}
+
+.export-data-btn {
+  background-color: #ffffff;
+  border: 1px solid #cbd5e1;
+  color: #334155;
+  padding: 10px 18px;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 13px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.2s ease;
+}
+
+.export-data-btn:hover {
+  background-color: #f8fafc;
+  border-color: #94a3b8;
+}
+
+/* --- 2. ANALYTICS METRICS STRIP --- */
+.orders-metrics-strip {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 20px;
+  margin-bottom: 32px;
+}
+
+.metric-card {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.01);
+}
+
+.metric-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.metric-value {
+  font-size: 26px;
+  font-weight: 700;
+  color: #1e293b;
+  margin: 8px 0 0 0;
+}
+
+.metric-icon {
+  font-size: 24px;
+  background-color: #f1f5f9;
+  width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 10px;
+}
+
+/* --- 3. DATA CARD & UTILITY TOOLBAR --- */
+.data-table-card {
+  background-color: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.01);
+  overflow: hidden;
+}
+
+.table-utility-toolbar {
+  padding: 20px 24px;
+  border-bottom: 1px solid #e2e8f0;
+  background-color: #ffffff;
+}
+
+.search-box-wrapper {
+  position: relative;
+  max-width: 360px;
+}
+
+.search-icon {
+  position: absolute;
+  left: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 14px;
+  color: #94a3b8;
+}
+
+.search-box-wrapper input {
+  width: 100%;
+  padding: 10px 14px 10px 40px;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  font-size: 14px;
+  color: #1e293b;
+  outline: none;
+  transition: all 0.15s ease;
+}
+
+.search-box-wrapper input:focus {
+  border-color: #38bdf8;
+  box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.15);
+}
+
+/* --- 4. CORE DESKTOP TABLE INTERFACE --- */
+.responsive-table-scroll-container {
+  width: 100%;
+}
+
+.orders-data-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+  font-size: 14px;
+}
+
+.orders-data-table th {
+  background-color: #f8fafc;
+  color: #475569;
+  font-weight: 600;
+  padding: 14px 24px;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.orders-data-table td {
+  padding: 16px 24px;
+  border-bottom: 1px solid #f1f5f9;
+  color: #334155;
+  vertical-align: middle;
+}
+
+.orders-data-table tbody tr:hover {
+  background-color: #f8fafc;
+}
+
+.order-id-tag {
+  color: #0284c7;
+  font-weight: 600;
+}
+
+.customer-profile-cell {
+  display: flex;
+  flex-direction: column;
+}
+
+.cust-name {
+  font-weight: 600;
+  color: #1e293b;
+}
+
+.cust-email {
+  font-size: 12px;
+  color: #64748b;
+  margin-top: 1px;
+}
+
+/* --- 5. VISUAL BADGE LOGS --- */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: 50px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.payment-paid {
+  background-color: #f0fdf4;
+  color: #16a34a;
+}
+...payment-failed {
+  background-color: #fef2f2;
+  color: #dc2626;
+}
+.fulfillment-pending {
+  background-color: #fef9c3;
+  color: #ca8a04;
+}
+.fulfillment-transit {
+  background-color: #f0f9ff;
+  color: #0284c7;
+}
+.fulfillment-cancelled {
+  background-color: #f1f5f9;
+  color: #475569;
+}
+
+.actions-th-header {
+  text-align: right !important;
+}
+.row-action-triggers {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+}
+
+.row-btn {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+.row-btn.view-details:hover {
+  background-color: #f1f5f9;
+  border-color: #cbd5e1;
+}
+.row-btn.update-status {
+  color: #0284c7;
+}
+.row-btn.update-status:hover {
+  background-color: #f0f9ff;
+  border-color: #bae6fd;
+}
+
+/* ========================================================
+   📱 HIGH-FIDELITY MOBILE MOBILE RESPONSIVE ENGINE (Breakpoint)
+   ======================================================== */
+@media (max-width: 992px) {
+  .workspace-viewport {
+    padding: 20px;
+  }
+
+  .module-header-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+  }
+
+  .action-btn-group,
+  .export-data-btn {
+    width: 100%;
+  }
+
+  .export-data-btn {
+    display: flex;
+    justify-content: center;
+    padding: 12px;
+  }
+
+  .search-box-wrapper {
+    max-width: 100%;
+  }
+
+  /* ⚡ TRANSFORM TABLE INTO CARD BLOCKS */
+  .orders-data-table,
+  .orders-data-table thead,
+  .orders-data-table tbody,
+  .orders-data-table th,
+  .orders-data-table tr,
+  .orders-data-table td {
+    display: block;
+  }
+
+  /* Hide raw horizontal table header labels */
+  .orders-data-table thead {
+    display: none;
+  }
+
+  /* Add distinct separation to row blocks */
+  .orders-data-table tbody tr {
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    margin-bottom: 16px;
+    padding: 8px 0;
+    background-color: #ffffff;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.01);
+  }
+
+  .orders-data-table tbody tr:hover {
+    background-color: #ffffff;
+  }
+
+  /* Layout cells into a balanced left-to-right alignment map */
+  .orders-data-table td {
+    border: none;
+    border-bottom: 1px dashed #f1f5f9;
+    padding: 12px 16px;
+    position: relative;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    text-align: right;
+  }
+
+  /* Remove border line from the last item in the stacked block list */
+  .orders-data-table td:last-child {
+    border-bottom: none;
+  }
+
+  /* Dynamic label insertion via content data pulling attributes */
+  .orders-data-table td::before {
+    content: attr(data-label);
+    font-weight: 600;
+    color: #475569;
+    text-align: left;
+    font-size: 13px;
+    padding-right: 12px;
+  }
+
+  .customer-profile-cell {
+    align-items: flex-end;
+  }
+
+  .row-action-triggers {
+    width: 100%;
+    gap: 10px;
+  }
+
+  .row-btn {
+    flex: 1;
+    padding: 10px;
+    display: flex;
+    justify-content: center;
+  }
+}

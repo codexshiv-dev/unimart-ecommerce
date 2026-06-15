@@ -1,0 +1,39 @@
+<div class="header-wrapper">
+  <header class="admin-navbar">
+    <div class="nav-left">
+      <button class="menu-btn" id="toggleSidebar" aria-label="Toggle Navigation Sidebar">☰</button>
+      <h2 class="nav-title" id="dynamicNavPageTitle">Admin Panel</h2>
+    </div>
+
+    <div class="nav-right">
+      <button class="icon-btn" title="Toggle Theme" aria-label="Toggle Theme Mode">🌓</button>
+      <button class="icon-btn" title="Notifications" aria-label="View Notifications">🔔</button>
+
+      <div class="profile-container" id="profileDropdownHub">
+        <div class="profile-box" role="button" aria-haspopup="true" aria-expanded="false" tabindex="0">
+          <div class="profile-info">
+            <strong>Shiv Gupta</strong>
+            <small>Administrator</small>
+          </div>
+          <img src="https://i.pravatar.cc/100" alt="Shiv Gupta Profile" />
+        </div>
+
+        <div class="profile-dropdown-menu" id="profileDropdownMenu">
+          <div class="dropdown-header">
+            <strong>Shiv Gupta</strong>
+            <span>shiv.gupta@unimart.com</span>
+          </div>
+          <hr class="dropdown-divider" />
+          <ul class="dropdown-links-list">
+            <li><a href="#profile" class="dropdown-item">👤 My Profile</a></li>
+            <li><a href="#settings" class="dropdown-item">⚙️ Settings</a></li>
+          </ul>
+          <hr class="dropdown-divider" />
+          <div class="dropdown-footer">
+            <button type="button" class="dropdown-item logout-trigger" id="navbarLogoutBtn">🚪 Log Out</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+</div>

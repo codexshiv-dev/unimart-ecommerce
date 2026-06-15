@@ -1,0 +1,267 @@
+/* ========================================================
+   🛡️ LIVE SERVER INJECTION VAPORIZER SHIELD
+   ======================================================== */
+.header-wrapper > script,
+.header-wrapper > svg,
+.header-wrapper {
+  font-size: 0;
+  color: transparent;
+}
+
+/* ========================================================
+   💎 NAVBAR CORE WRAPPER LAYOUT
+   ======================================================== */
+.admin-navbar {
+  height: 72px;
+  background: #ffffff;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 24px;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  font-size: initial; /* Resets structural font metrics from the wrapper */
+  color: initial; /* Resets structural color metrics from the wrapper */
+}
+
+/* ========================================================
+   ⬅️ LEFT SECTION (CONTROLS & TITLES)
+   ======================================================== */
+.nav-left {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.menu-btn {
+  background: none;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+  color: var(--text-dark);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px;
+}
+
+.nav-title {
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--text-dark, #1e293b);
+  margin: 0;
+}
+
+/* ========================================================
+   ➡️ RIGHT SECTION (UTILITIES & PROFILE HUB)
+   ======================================================== */
+.nav-right {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.icon-btn {
+  width: 40px;
+  height: 40px;
+  border: none;
+  border-radius: 50%;
+  background: #f1f5f9;
+  cursor: pointer;
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.25s ease;
+}
+
+.icon-btn:hover {
+  background: #e2e8f0;
+  transform: translateY(-1px);
+}
+
+/* ========================================================
+   👤 INTERACTIVE PROFILE ANCHOR HOOKS
+   ======================================================== */
+.profile-container {
+  position: relative; /* Crucial anchor point so the dropdown menu positions underneath */
+  display: inline-block;
+}
+
+.profile-box {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 6px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  user-select: none;
+  transition: background-color 0.2s ease;
+}
+
+.profile-box:hover {
+  background-color: #f8fafc;
+}
+
+.profile-info {
+  display: flex;
+  flex-direction: column;
+  text-align: right;
+}
+
+.profile-info strong {
+  font-size: 15px;
+  color: var(--text-dark, #1e293b);
+  line-height: 1.2;
+}
+
+.profile-info small {
+  color: var(--text-light, #64748b);
+  font-size: 12px;
+}
+
+.profile-box img {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #e2e8f0;
+  transition: border-color 0.2s ease;
+}
+
+.profile-box:hover img {
+  border-color: #cbd5e1;
+}
+
+/* ========================================================
+   🎁 REAL-WORLD ADMINISTRATOR DROPDOWN MENU PANEL
+   ======================================================== */
+.profile-dropdown-menu {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  width: 240px;
+  background-color: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  box-shadow:
+    0 10px 25px -5px rgba(0, 0, 0, 0.08),
+    0 8px 10px -6px rgba(0, 0, 0, 0.08);
+  display: none; /* Controlled dynamically by adding '.dropdown-active' class via JS */
+  flex-direction: column;
+  z-index: 1000;
+  overflow: hidden;
+  animation: dropdownFadeSlideIn 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Presentational display toggle link */
+.profile-container.dropdown-active .profile-dropdown-menu {
+  display: flex;
+}
+
+.dropdown-header {
+  padding: 14px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  background-color: #f8fafc;
+}
+
+.dropdown-header strong {
+  font-size: 14px;
+  color: #1e293b;
+  font-weight: 600;
+}
+
+.dropdown-header span {
+  font-size: 12px;
+  color: #64748b;
+}
+
+.dropdown-divider {
+  border: 0;
+  border-top: 1px solid #f1f5f9;
+  margin: 0;
+}
+
+.dropdown-links-list {
+  list-style: none;
+  padding: 6px;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.dropdown-item {
+  width: 100%;
+  text-align: left;
+  background: none;
+  border: none;
+  padding: 10px 12px;
+  font-size: 13px;
+  font-weight: 500;
+  color: #475569;
+  text-decoration: none;
+  border-radius: 6px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  transition: all 0.15s ease;
+}
+
+.dropdown-item:hover {
+  background-color: #f1f5f9;
+  color: #0f172a;
+}
+
+.dropdown-footer {
+  padding: 6px;
+}
+
+.dropdown-item.logout-trigger {
+  color: #ef4444;
+}
+
+.dropdown-item.logout-trigger:hover {
+  background-color: #fef2f2;
+  color: #dc2626;
+}
+
+/* ========================================================
+   🎬 ANIMATION ENGINE KEYFRAMES
+   ======================================================== */
+@keyframes dropdownFadeSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-8px) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* ========================================================
+   📱 RESPONSIVE MOBILE ADAPTABILITY BREAKPOINTS
+   ======================================================== */
+@media (max-width: 768px) {
+  .admin-navbar {
+    padding: 0 16px;
+  }
+
+  .nav-title {
+    font-size: 20px;
+  }
+
+  .profile-info {
+    display: none; /* Hide typography metadata cleanly on small viewports */
+  }
+
+  .icon-btn {
+    display: none; /* Closes out structural ambient layout buttons to save bar space */
+  }
+}

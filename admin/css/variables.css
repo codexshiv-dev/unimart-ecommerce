@@ -1,0 +1,31 @@
+:root {
+  --bg-primary: #f8fafc;
+  --bg-secondary: #ffffff;
+
+  --sidebar-bg: #0f172a;
+  --sidebar-hover: #1e293b;
+
+  --primary: #2563eb;
+  --primary-hover: #1d4ed8;
+
+  --success: #16a34a;
+  --danger: #ef4444;
+  --warning: #f59e0b;
+
+  --text-dark: #0f172a;
+  --text-light: #64748b;
+
+  --border: #e2e8f0;
+
+  --shadow:
+    0 4px 6px -1px rgb(0 0 0 / 0.1),
+    0 2px 4px -2px rgb(0 0 0 / 0.1);
+
+  --radius: 12px;
+
+  --sidebar-width: 260px;
+  --sidebar-collapsed: 80px;
+
+  --transition: 0.3s ease;
+}
+

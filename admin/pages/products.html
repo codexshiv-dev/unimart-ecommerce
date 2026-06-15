@@ -1,0 +1,441 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Products - UniMart Admin</title>
+
+    <link rel="stylesheet" href="../css/variables.css" />
+    <link rel="stylesheet" href="../css/layout.css" />
+    <link rel="stylesheet" href="../css/sidebar.css" />
+    <link rel="stylesheet" href="../css/navbar.css" />
+    <link rel="stylesheet" href="../css/products.css" />
+    <link rel="stylesheet" href="../css/product-modal.css" />
+  </head>
+
+  <body>
+    <div class="admin-layout">
+      <div id="sidebar-container"></div>
+      <div id="sidebarOverlay"></div>
+
+      <div class="main-wrapper">
+        <div id="header-container"></div>
+
+        <main class="page-content">
+          <section class="page-header">
+            <div class="header-title-block">
+              <h1>Products</h1>
+              <p>Manage all store products safely</p>
+            </div>
+
+            <div class="header-action-block">
+              <button class="btn-primary" id="addProductBtn">
+                + Add Product
+              </button>
+            </div>
+          </section>
+
+          <section class="filters-bar">
+            <input
+              type="text"
+              placeholder="Search products..."
+              id="searchProduct"
+              autocomplete="off" />
+
+            <select id="categoryFilter">
+              <option value="">All Categories</option>
+            </select>
+
+            <select id="statusFilter">
+              <option value="">All Status</option>
+              <option value="In Stock">In Stock</option>
+              <option value="Out Of Stock">Out Of Stock</option>
+            </select>
+          </section>
+
+          <section class="table-card">
+            <table class="products-table">
+              <thead>
+                <tr>
+                  <th style="width: 60px">#</th>
+                  <th>Image</th>
+                  <th>Product</th>
+                  <th>SKU</th>
+                  <th>Category</th>
+                  <th>Price</th>
+                  <th>Stock</th>
+                  <th>Status</th>
+                  <th>Featured</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="productsTableBody"></tbody>
+            </table>
+          </section>
+        </main>
+      </div>
+    </div>
+
+    <div id="product-modal-container"></div>
+    <div id="shared-ui-layer-container"></div>
+
+    <script>
+      // Global isolated reference arrays
+      let uploadedImagesBase64 = [];
+      let runningProductTags = [];
+
+      // 🛡️ SECURITY LAYER: Character Sanitizer Script (Prevents XSS exploits inside text strings)
+      function sanitizeHTML(str) {
+        if (!str) return "";
+        return String(str)
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;")
+          .replace(/"/g, "&quot;")
+          .replace(/'/g, "&#039;");
+      }
+
+      // ========================================================
+      // ⚡ DYNAMIC CATEGORY DROPDOWN SYNCHRONIZER ENGINE
+      // ========================================================
+      window.syncCategoriesToDropdowns = function () {
+        const activeCategories =
+          JSON.parse(localStorage.getItem("categories")) || [];
+        const filterDropdown = document.getElementById("categoryFilter");
+        const modalDropdown = document.getElementById("pCategory");
+
+        const generateOptionsMarkup = (defaultText) => {
+          let html = `<option value="">${defaultText}</option>`;
+          activeCategories.forEach((cat) => {
+            const val = sanitizeHTML(cat.slug || cat.name.toLowerCase());
+            const text = sanitizeHTML(`${cat.icon || "📦"} ${cat.name}`);
+            html += `<option value="${val}">${text}</option>`;
+          });
+          return html;
+        };
+
+        if (filterDropdown) {
+          filterDropdown.innerHTML = generateOptionsMarkup("All Categories");
+        }
+
+        if (modalDropdown) {
+          modalDropdown.innerHTML = generateOptionsMarkup("Select Category");
+
+          // ✨ THE LIVE UPDATE FIX: Force the modal select tag to recalculate the SKU on change
+          modalDropdown.onchange = function () {
+            if (typeof window.autoGenerateSKU === "function") {
+              window.autoGenerateSKU();
+            }
+          };
+        }
+      };
+
+      window.triggerModalToast = function (message, type = "success") {
+        if (typeof window.showToast === "function") {
+          window.showToast(message, type);
+        } else {
+          console.log(`[Toast Fallback - ${type}]: ${message}`);
+        }
+      };
+
+      window.renderEmptyProductsState = function () {
+        const tableBody = document.getElementById("productsTableBody");
+        if (!tableBody) return;
+
+        tableBody.innerHTML = `
+          <tr>
+            <td colspan="10" style="text-align: center; padding: 48px 16px; color: #64748b;">
+              <div style="font-size: 40px; margin-bottom: 12px;">🔍</div>
+              <h3 style="font-size: 16px; font-weight: 600; color: #334155; margin: 0 0 4px 0;">No Products Found</h3>
+              <p style="font-size: 14px; color: #94a3b8; margin: 0;">Your catalog store is currently empty or matches no active search criteria.</p>
+            </td>
+          </tr>`;
+      };
+
+      // ========================================================
+      // 📦 EXPOSED ENGINE RE-INITIALIZATION METHOD
+      // ========================================================
+      window.initializePremiumGalleryEngine = function () {
+        const dropzone = document.getElementById("galleryDropzone");
+        const hiddenInput = document.getElementById("hiddenGalleryInput");
+        const urlInput = document.getElementById("pMediaUrlInput");
+        const addUrlBtn = document.getElementById("addUrlMediaBtn");
+        const previewWrapper = document.getElementById("galleryPreviewWrapper");
+        const heroDisplay = document.getElementById("galleryHeroDisplay");
+        const thumbGrid = document.getElementById("thumbnailStripGrid");
+
+        if (!dropzone || !hiddenInput) return;
+
+        // Clean slate element assignments to stop cumulative event piling memory leaks
+        dropzone.onclick = (e) => {
+          if (e.target !== hiddenInput) hiddenInput.click();
+        };
+
+        dropzone.ondragenter = dropzone.ondragover = (e) => {
+          e.preventDefault();
+          dropzone.classList.add("drag-over");
+        };
+
+        dropzone.ondragleave = dropzone.ondragend = (e) => {
+          e.preventDefault();
+          dropzone.classList.remove("drag-over");
+        };
+
+        dropzone.ondrop = (e) => {
+          e.preventDefault();
+          dropzone.classList.remove("drag-over");
+          processIncomingFiles(e.dataTransfer.files);
+        };
+
+        hiddenInput.onchange = (e) => {
+          processIncomingFiles(e.target.files);
+        };
+
+        if (addUrlBtn && urlInput) {
+          addUrlBtn.onclick = null; // Purge old hooks cleanly
+          addUrlBtn.onclick = () => {
+            const urlValue = urlInput.value.trim();
+            if (urlValue) {
+              if (uploadedImagesBase64.length >= 4) {
+                window.triggerModalToast(
+                  "Maximum limit of 4 product images reached.",
+                  "warning",
+                );
+                return;
+              }
+              uploadedImagesBase64.push(urlValue);
+              urlInput.value = "";
+              refreshGalleryPreviews();
+            }
+          };
+        }
+
+        function refreshGalleryPreviews() {
+          if (!previewWrapper || !heroDisplay || !thumbGrid) return;
+
+          if (uploadedImagesBase64.length === 0) {
+            previewWrapper.style.display = "none";
+            heroDisplay.src = "";
+            thumbGrid.innerHTML = "";
+            return;
+          }
+
+          previewWrapper.style.display = "grid";
+          thumbGrid.innerHTML = "";
+
+          // ✨ WORKFLOW ARRAY REFERENCE FIX: Point directly to index position 0 instead of the entire collection sequence
+          heroDisplay.src = uploadedImagesBase64 || "";
+
+          const fragment = document.createDocumentFragment();
+
+          uploadedImagesBase64.forEach((imageSrc, index) => {
+            const thumbBox = document.createElement("div");
+            thumbBox.className = `preview-thumb-box ${index === 0 ? "active-hero" : ""}`;
+
+            thumbBox.innerHTML = `
+              <img src="${sanitizeHTML(imageSrc)}" alt="Thumbnail preview ${index + 1}">
+              <button type="button" class="remove-media-btn" data-index="${index}">&times;</button>
+            `;
+
+            thumbBox.onclick = (e) => {
+              if (e.target.classList.contains("remove-media-btn")) return;
+              document
+                .querySelectorAll(".preview-thumb-box")
+                .forEach((b) => b.classList.remove("active-hero"));
+              thumbBox.classList.add("active-hero");
+              heroDisplay.src = imageSrc;
+            };
+
+            thumbBox.querySelector(".remove-media-btn").onclick = (e) => {
+              e.stopPropagation();
+              uploadedImagesBase64.splice(index, 1);
+              refreshGalleryPreviews();
+            };
+
+            fragment.appendChild(thumbBox);
+          });
+
+          thumbGrid.appendChild(fragment);
+        }
+
+        function processIncomingFiles(files) {
+          if (!files) return;
+
+          const remainingSlots = 4 - uploadedImagesBase64.length;
+          if (remainingSlots <= 0) {
+            window.triggerModalToast(
+              "Maximum limit of 4 product images reached.",
+              "warning",
+            );
+            return;
+          }
+
+          const filesToProcess = Array.from(files).slice(0, remainingSlots);
+
+          filesToProcess.forEach((file) => {
+            if (!file.type.startsWith("image/")) {
+              window.triggerModalToast(
+                `"${file.name}" is not a valid image. Please use PNG, JPG, or WEBP.`,
+                "danger",
+              );
+              return;
+            }
+
+            const MAX_SIZE_BYTES = 2 * 1024 * 1024; // 2MB Limit
+            if (file.size > MAX_SIZE_BYTES) {
+              const fileSizeInMB = (file.size / (1024 * 1024)).toFixed(2);
+              window.triggerModalToast(
+                `"${file.name}" is too heavy (${fileSizeInMB} MB). Limit is 2.00 MB.`,
+                "danger",
+              );
+              return;
+            }
+
+            const reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onload = () => {
+              uploadedImagesBase64.push(reader.result);
+              refreshGalleryPreviews();
+            };
+          });
+        }
+        refreshGalleryPreviews();
+      };
+
+      // ========================================================
+      // 🏷️ EXPOSED TAG PILLS LIFECYCLE MANAGEMENT ENGINE
+      // ========================================================
+      window.initializePremiumTagsEngine = function () {
+        const tagsInput = document.getElementById("pTags");
+        const pillsContainer = document.getElementById("tagsPillsContainer");
+        const wrapperCard = document.getElementById("tagsWrapperCard");
+
+        if (!tagsInput || !pillsContainer) return;
+
+        if (wrapperCard) {
+          wrapperCard.onclick = () => tagsInput.focus();
+        }
+
+        tagsInput.onkeydown = function (e) {
+          if (e.key === "Enter" || e.key === ",") {
+            e.preventDefault();
+
+            const tagValue = tagsInput.value
+              .replace(/[^a-zA-Z0-9\s-]/g, "")
+              .trim();
+
+            if (tagValue && !runningProductTags.includes(tagValue)) {
+              runningProductTags.push(tagValue);
+              renderVisualTagPills();
+            }
+            tagsInput.value = "";
+          }
+
+          if (
+            e.key === "Backspace" &&
+            tagsInput.value === "" &&
+            runningProductTags.length > 0
+          ) {
+            runningProductTags.pop();
+            renderVisualTagPills();
+          }
+        };
+
+        function renderVisualTagPills() {
+          pillsContainer.innerHTML = "";
+          const fragment = document.createDocumentFragment();
+
+          runningProductTags.forEach((tag, idx) => {
+            const pill = document.createElement("span");
+            pill.style.cssText =
+              "display: inline-flex; align-items: center; background: #e2e8f0; color: #334155; font-size: 12px; font-weight: 500; padding: 2px 8px; border-radius: 4px; gap: 4px; border: 1px solid #cbd5e1;";
+
+            // 🛡️ SECURITY FIX: Explicitly sanitize values using innerHTML text content frameworks safely
+            pill.innerHTML = `
+              <span>${sanitizeHTML(tag)}</span>
+              <span class="remove-tag-cross" style="cursor: pointer; font-weight: bold; color: #64748b; font-size: 14px; line-height: 1;">&times;</span>
+            `;
+
+            pill.querySelector(".remove-tag-cross").onclick = (event) => {
+              event.stopPropagation();
+              runningProductTags.splice(idx, 1);
+              renderVisualTagPills();
+            };
+
+            fragment.appendChild(pill);
+          });
+
+          pillsContainer.appendChild(fragment);
+        }
+        renderVisualTagPills();
+      };
+
+      // ========================================================
+      // 🛠️ EXPOSED UTILITIES FOR INTERACTIVE FORM STATES
+      // ========================================================
+      window.resetImageGallery = function () {
+        uploadedImagesBase64 = [];
+        const previewWrapper = document.getElementById("galleryPreviewWrapper");
+        if (previewWrapper) previewWrapper.style.display = "none";
+      };
+
+      window.loadImagesToGallery = function (imagesArray) {
+        uploadedImagesBase64 = Array.isArray(imagesArray)
+          ? [...imagesArray]
+          : imagesArray
+            ? [imagesArray]
+            : [];
+        if (document.getElementById("galleryDropzone")) {
+          window.initializePremiumGalleryEngine();
+        }
+      };
+
+      window.resetRunningTags = function () {
+        runningProductTags = [];
+        const container = document.getElementById("tagsPillsContainer");
+        if (container) container.innerHTML = "";
+      };
+
+      window.loadTagsToEngine = function (tagsArr) {
+        runningProductTags = Array.isArray(tagsArr) ? [...tagsArr] : [];
+        if (document.getElementById("pTags")) {
+          window.initializePremiumTagsEngine();
+        }
+      };
+
+      window.getCurrentProductTags = function () {
+        return runningProductTags;
+      };
+
+      // Initial structural framework setup bootstrapping triggers
+      document.addEventListener("DOMContentLoaded", () => {
+        window.syncCategoriesToDropdowns();
+
+        const modalContainer = document.getElementById(
+          "product-modal-container",
+        );
+        if (modalContainer) {
+          const asyncObserver = new MutationObserver((mutations, obs) => {
+            if (document.getElementById("pCategory")) {
+              window.syncCategoriesToDropdowns();
+              obs.disconnect(); // Save memory overhead allocations instantly
+            }
+          });
+          asyncObserver.observe(modalContainer, {
+            childList: true,
+            subtree: true,
+          });
+        }
+      });
+    </script>
+
+    <script src="../../frontend/js/config.js"></script>
+
+    <script src="../js/ui.js"></script>
+    <script src="../js/layout.js"></script>
+    <script src="../js/product-modal.js"></script>
+    <script src="../js/categories.js"></script>
+
+    <script src="../js/products.js"></script>
+  </body>
+</html>
