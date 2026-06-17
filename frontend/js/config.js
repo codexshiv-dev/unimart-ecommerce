@@ -24,14 +24,31 @@ const UniMartConfig = {
      * @param {string} name - Registered endpoint pointer
      * @returns {string} Fully qualified URI string
      */
-    getEndpoint(name) {
-        const base = this.IS_LOCAL_DEVELOPMENT ? this.LOCAL_BACKEND_URL : this.PRODUCTION_BACKEND_URL;
-        if (!this.endpoints[name]) {
-            console.error(`[Config Error] Endpoint target "${name}" does not exist.`);
-            return "";
-        }
-        return `${base}${this.endpoints[name]}`;
-    }
+
+    // getEndpoint(name) {
+    //     const base = this.IS_LOCAL_DEVELOPMENT ? this.LOCAL_BACKEND_URL : this.PRODUCTION_BACKEND_URL;
+    //     if (!this.endpoints[name]) {
+    //         console.error(`[Config Error] Endpoint target "${name}" does not exist.`);
+    //         return "";
+    //     }
+    //     return `${base}${this.endpoints[name]}`;
+    // }
+         getEndpoint(name) {
+         const endpoint = this.endpoints[name];
+     
+         if (!endpoint) {
+             throw new Error(`[Config Error] Unknown endpoint: ${name}`);
+         }
+     
+         const base = this.IS_LOCAL_DEVELOPMENT 
+             ? this.LOCAL_BACKEND_URL 
+             : this.PRODUCTION_BACKEND_URL;
+     
+         return `${base}${endpoint}`;
+     }
+
+
+
 };
 
 // Freeze object state context to lock resource manipulation vectors at runtime
