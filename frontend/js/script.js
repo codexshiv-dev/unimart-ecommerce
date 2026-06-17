@@ -28,9 +28,8 @@ document.addEventListener("DOMContentLoaded", () => {
     // ⚙️ INJECT DECOUPLED HOOK ROUTER GATEWAYS
     // ==========================================
     window.resetPageAndRender = () => { 
-        const d = document.getElementById("searchInputDesktop");
-        const m = document.getElementById("searchInputMobile");
-        const query = (d?.value || m?.value || "").trim();
+
+        const query = (searchDesktop?.value || searchMobile?.value || "").trim();
 
         if (!query) {
             const url = new URL(window.location);
@@ -98,9 +97,8 @@ document.addEventListener("DOMContentLoaded", () => {
     // 🔍 ENGINE MEMORY SEARCH & FILTER FILTERS
     // ==========================================
     function getFilteredProducts() { 
-        const d = document.getElementById("searchInputDesktop");
-        const m = document.getElementById("searchInputMobile");
-        let query = (d?.value || m?.value || "").toLowerCase().trim();  
+       
+        const query = (searchDesktop?.value || searchMobile?.value || "").trim();
 
         if (!query) {
             const params = new URLSearchParams(window.location.search);
@@ -241,8 +239,8 @@ document.addEventListener("DOMContentLoaded", () => {
             const isOutOfStock = stock <= 0;
             if (isOutOfStock) {
                 card.classList.add("out-of-stock");
-                card.style.opacity = "0.6";
-                card.style.pointerEvents = "none";
+                // card.style.opacity = "0.6";
+                // card.style.pointerEvents = "none";
             }
 
             const stockBadge = isOutOfStock ? `<span class="out-badge">OUT OF STOCK</span>` : "";
@@ -354,16 +352,19 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     });
 
+   
     function syncSearchFromURL() {
-        const params = new URLSearchParams(window.location.search);
-        const query = params.get("search");
-        if (query) {
-            const d = document.getElementById("searchInputDesktop");
-            const m = document.getElementById("searchInputMobile");
-            if (d) d.value = query;
-            if (m) m.value = query;
-        }
-    }
+
+    const query =
+        new URLSearchParams(window.location.search)
+            .get("search") || "";
+
+    searchDesktop?.setAttribute("value", query);
+    searchMobile?.setAttribute("value", query);
+
+    if (searchDesktop) searchDesktop.value = query;
+    if (searchMobile) searchMobile.value = query;
+   }
 
     // ==========================================
     // 👤 NAVIGATION INTERACTIVE HANDLERS
