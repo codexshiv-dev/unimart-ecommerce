@@ -104,8 +104,8 @@ document.addEventListener("DOMContentLoaded", () => {
             const params = new URLSearchParams(window.location.search);
             query = (params.get("search") || "").toLowerCase().trim();
             if (query) {
-                if (d) d.value = query;
-                if (m) m.value = query;
+                if (searchDesktop) searchDesktop.value = query;
+                if (searchMobile) searchMobile.value = query;
             }
         }
       
