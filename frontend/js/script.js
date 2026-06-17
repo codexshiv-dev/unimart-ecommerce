@@ -49,6 +49,9 @@ document.addEventListener("DOMContentLoaded", () => {
         const loader = document.getElementById("indexLoader");
         const content = document.getElementById("indexContent");
 
+        // 1. SHOW SKELETON IMMEDIATELY
+        renderSkeletonCards();
+
         try {
             if (loader) loader.style.display = "flex";
             if (content) content.style.display = "none";
@@ -58,21 +61,35 @@ document.addEventListener("DOMContentLoaded", () => {
             const res = await fetch(productGateway);
             
             if (!res.ok) throw new Error("Could not pipe live stock from network databases.");
-            products = await res.json();
+           const envelope = await res.json();
+
+           products = Array.isArray(envelope.data)
+               ? envelope.data
+               : Array.isArray(envelope)
+               ? envelope
+               : [];
             
             if (loader) loader.style.display = "none";
             if (content) content.style.display = "block";
 
             syncSearchFromURL();
             renderPage(1);
-        } catch (err) {
+       } catch (err) {
             console.error("[Network Fatal Error] Storefront runtime connection drop:", err);
-            if (loader) {
-                loader.innerHTML = `
-                    <div style="text-align:center; padding:40px; color:#ef4444; font-weight:600;">
-                        ⚠️ Network Outage. Failed to fetch catalog items.<br>
-                        <small style="color:#64748b; font-weight:400;">Verify backend server deployment connectivity.</small>
-                    </div>`;
+            
+            // This is the correct place for the error state
+            if (productGrid) {
+                productGrid.innerHTML = `
+                <div class="error-state" style="grid-column: 1/-1; text-align:center; padding: 60px;">
+                    <svg width="100" height="100" viewBox="0 0 24 24" fill="none" stroke="#cbd5e1" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-bottom: 20px;">
+                      <path d="M1 1l22 22M16.72 11.08A6 6 0 0 0 7.28 11.08M21.1 6.7a10 10 0 0 0-14.14 0M12 20h.01"></path>
+                    </svg>
+                    <h3 style="color:#1e293b;">Oops! Catalog unavailable</h3>
+                    <p style="color:#64748b; margin-bottom:20px;">Please check your connection and try again.</p>
+                    <button onclick="window.location.reload()" style="padding:10px 25px; background:#ff9f00; color:#fff; border:none; border-radius:5px; cursor:pointer;">
+                        Retry Connection
+                    </button>
+                </div>`;
             }
         }
     }
@@ -95,6 +112,9 @@ document.addEventListener("DOMContentLoaded", () => {
         }
       
         return products.filter(p => {
+             if (p.status === "inactive")
+             return false;
+
             const name = (p.name || "").toLowerCase();
             const cat = (p.category || "").toLowerCase();
             const desc = (p.description || "").toLowerCase();
@@ -102,8 +122,88 @@ document.addEventListener("DOMContentLoaded", () => {
             const matchesQuery = name.includes(query) || cat.includes(query) || desc.includes(query);
             const matchesCategory = activeCategory === "all" || cat === activeCategory.toLowerCase();
       
-            return query !== "" ? matchesQuery : matchesCategory;
+            return matchesCategory && (query === "" || matchesQuery);
         });
+    }
+    // ==========================================
+    // 🎨Dynamic Discount
+    // ==========================================
+    function getDiscountPercentage(product) {
+
+    if (
+        !product.oldPrice ||
+        product.oldPrice <= product.price
+    ) {
+        return 0;
+    }
+
+    return Math.round(
+        (
+            (product.oldPrice - product.price)
+            /
+            product.oldPrice
+        ) * 100
+    );
+    }
+
+  //Extract Ribbon Helper function
+  function getRibbonHTML(product) {
+
+    let ribbon = "";
+
+    if (product.isNew)
+        ribbon +=
+        `<span class="ribbon new">NEW</span>`;
+
+    if (product.isFeatured)
+        ribbon +=
+        `<span class="ribbon featured">FEATURED</span>`;
+
+    if (product.isBestSeller)
+        ribbon +=
+        `<span class="ribbon best-seller">BESTSELLER</span>`;
+
+    return ribbon;
+  }
+
+    //Extract Ratting Helper function
+    function getRatingHTML(product) {
+
+    if (!product.ratings)
+        return "";
+
+    const fullStars =
+        Math.floor(product.ratings);
+
+    const halfStar =
+        product.ratings % 1 >= 0.5
+            ? 1
+            : 0;
+
+    const emptyStars =
+        5 - fullStars - halfStar;
+
+    return `
+    <div class="rating">
+        ${'★'.repeat(fullStars)}
+        ${halfStar ? '½' : ''}
+        ${'☆'.repeat(emptyStars)}
+    </div>
+    `;
+    }
+    function renderSkeletonCards() {
+    const productGrid = document.getElementById("productGrid");
+    if (!productGrid) return;
+    
+    // Create 8 skeleton cards (adjust as needed for your row size)
+    productGrid.innerHTML = Array(8).fill(0).map(() => `
+        <div class="skeleton-card">
+            <div class="skeleton-img"></div>
+            <div class="skeleton-text" style="width: 80%;"></div>
+            <div class="skeleton-text" style="width: 60%;"></div>
+            <div class="skeleton-text" style="width: 40%;"></div>
+        </div>
+    `).join("");
     }
 
     // ==========================================
@@ -137,7 +237,8 @@ document.addEventListener("DOMContentLoaded", () => {
             card.dataset.desc = product.description;
             
             // Core Stock Inventory Logic Parsing
-            const isOutOfStock = product.stockQuantity === 0 || product.stock === 0; 
+            const stock = product.stockQuantity ?? product.stock ?? 0;
+            const isOutOfStock = stock <= 0;
             if (isOutOfStock) {
                 card.classList.add("out-of-stock");
                 card.style.opacity = "0.6";
@@ -146,30 +247,22 @@ document.addEventListener("DOMContentLoaded", () => {
 
             const stockBadge = isOutOfStock ? `<span class="out-badge">OUT OF STOCK</span>` : "";
            
-            // Ribbon System Badges
-            let ribbon = "";
-            if (product.isNew) ribbon += `<span class="ribbon new">NEW</span>`;
-            if (product.isFeatured) ribbon += `<span class="ribbon featured">FEATURED</span>`;
-            if (product.isBestSeller) ribbon += `<span class="ribbon best-seller">BESTSELLER</span>`;
+            // Ribbon System Badges function call
+            const ribbon = getRibbonHTML(product);
+    
 
-            // Star Ratings Engine Injection
-            let stars = "";
-            if (product.ratings) {
-                const fullStars = Math.floor(product.ratings);
-                const halfStar = product.ratings % 1 >= 0.5 ? 1 : 0;
-                const emptyStars = 5 - fullStars - halfStar;
-                stars += '<div class="rating" style="color:#fbbf24; margin-bottom:6px;">';
-                stars += '★'.repeat(fullStars);
-                stars += '½'.repeat(halfStar);
-                stars += '☆'.repeat(emptyStars);
-                stars += '</div>';
-            }
+            // Star Ratings Engine function call
+            const stars = getRatingHTML(product);
+            
+
+            const productImage = product.images?.[0] || "../assets/images/no-image.png";
 
             card.innerHTML = `
                 <div class="product-img" style="position:relative; overflow:hidden;">
                      ${ribbon}
                      ${stockBadge}
-                     <img src="${product.images?. || '../assets/images/no-image.png'}" alt="${sanitizeHTML(product.name)}" loading="lazy">
+
+                     <img src="${productImage}" alt="${sanitizeHTML(product.name)}" loading="lazy">
                      <span class="wishlist" aria-label="Add to wishlist"><i class="fa fa-heart"></i></span>
                 </div>
                 <div class="product-info">
@@ -178,8 +271,14 @@ document.addEventListener("DOMContentLoaded", () => {
                      <p class="short-desc">${sanitizeHTML(truncateString(product.description, 70))}</p>
                      <div class="price-row">
                          <span class="price">₹${product.price.toLocaleString('en-IN')}</span>
-                         ${product.oldPrice ? `<span class="old-price" style="text-decoration: line-through; color:#94a3b8; font-size:13px; margin-left:6px;">₹${product.oldPrice.toLocaleString('en-IN')}</span>` : ''}
-                         ${product.discount ? `<span class="discount" style="color:#22c55e; font-size:12px; font-weight:600; margin-left:auto;">${product.discount}% OFF</span>` : ''}
+                         ${product.oldPrice ? `<span class="old-price">₹${product.oldPrice.toLocaleString('en-IN')}</span>` : ''}
+                         ${getDiscountPercentage(product) > 0
+                           ? `
+                           <span class="discount">
+                              ${getDiscountPercentage(product)}% OFF
+                           </span>
+                           `
+                           : ''}
                      </div>
                 </div>
             `;

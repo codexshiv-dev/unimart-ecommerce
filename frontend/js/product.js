@@ -603,7 +603,9 @@ async function processProduct(product) {
       function renderProductInfo(product){
              // PRODUCT INFO & NATIVE NEPALESE LOCALIZATION TEXT FIXES
       document.getElementById("productName")?.textContent = product.name || "Unnamed Product";
-      document.getElementById("productPrice")?.textContent = `Rs. ${(product.price ?? 0).toLocaleString('en-NP')}`;
+      // Suggested (More robust):
+      const price = product.price || 0;
+      document.getElementById("productPrice")?.textContent = `Rs. ${price.toLocaleString('en-NP')}`;
       document.getElementById("oldPrice")?.textContent = product.oldPrice ? `Rs. ${product.oldPrice.toLocaleString('en-NP')}` : "";
       document.getElementById("discount")?.textContent = product.discount ? `${product.discount}% OFF` : "";
       document.getElementById("productDesc")?.textContent = product.description || "No description available.";
