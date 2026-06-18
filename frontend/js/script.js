@@ -98,7 +98,7 @@ document.addEventListener("DOMContentLoaded", () => {
     // ==========================================
     function getFilteredProducts() { 
        
-        const query = (searchDesktop?.value || searchMobile?.value || "").trim();
+        let query = (searchDesktop?.value || searchMobile?.value || "").trim();
 
         if (!query) {
             const params = new URLSearchParams(window.location.search);
@@ -110,8 +110,10 @@ document.addEventListener("DOMContentLoaded", () => {
         }
       
         return products.filter(p => {
-             if (p.status === "inactive")
-             return false;
+            
+             if (product.status !== "active")
+            return false;
+
 
             const name = (p.name || "").toLowerCase();
             const cat = (p.category || "").toLowerCase();
