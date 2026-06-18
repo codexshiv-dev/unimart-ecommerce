@@ -111,8 +111,7 @@ document.addEventListener("DOMContentLoaded", () => {
       
         return products.filter(p => {
             
-             if (product.status !== "active")
-            return false;
+           if (p.status !== "active") return false; // Use 'p' to match the parameter
 
 
             const name = (p.name || "").toLowerCase();
