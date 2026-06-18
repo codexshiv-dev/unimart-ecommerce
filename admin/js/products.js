@@ -532,4 +532,4 @@ document.addEventListener("DOMContentLoaded", () => {
       if (modalTitle) modalTitle.textContent = "Add New Product";
     });
   }
-});
+}); 

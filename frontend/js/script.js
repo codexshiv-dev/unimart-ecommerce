@@ -56,17 +56,8 @@ document.addEventListener("DOMContentLoaded", () => {
             if (content) content.style.display = "none";
 
             // ✅ REAL-WORLD FUTURE PROOFING: Automatically uses UniMartConfig registry maps!
-            const productGateway = UniMartConfig.getEndpoint('products');
-            const res = await fetch(productGateway);
+            products = await ProductService.getProducts();
             
-            if (!res.ok) throw new Error("Could not pipe live stock from network databases.");
-           const envelope = await res.json();
-
-           products = Array.isArray(envelope.data)
-               ? envelope.data
-               : Array.isArray(envelope)
-               ? envelope
-               : [];
             
             if (loader) loader.style.display = "none";
             if (content) content.style.display = "block";
@@ -360,12 +351,12 @@ document.addEventListener("DOMContentLoaded", () => {
         new URLSearchParams(window.location.search)
             .get("search") || "";
 
-    searchDesktop?.setAttribute("value", query);
-    searchMobile?.setAttribute("value", query);
+    if (searchDesktop)
+        searchDesktop.value = query;
 
-    if (searchDesktop) searchDesktop.value = query;
-    if (searchMobile) searchMobile.value = query;
-   }
+    if (searchMobile)
+        searchMobile.value = query;
+    }
 
     // ==========================================
     // 👤 NAVIGATION INTERACTIVE HANDLERS

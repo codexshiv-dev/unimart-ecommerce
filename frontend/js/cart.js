@@ -244,3 +244,6 @@ document.addEventListener("DOMContentLoaded", () => {
   updateCartCount();
   loadCart();
 });
+
+
+window.updateCartCount = updateCartCount;
