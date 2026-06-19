@@ -23,4 +23,4 @@
       
       }
      
-  
+  window.setupBackButton = setupBackButton;

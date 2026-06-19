@@ -10,3 +10,4 @@
           toast.classList.remove("show");
         }, 2000);
       }
+      window.showToast = showToast;
