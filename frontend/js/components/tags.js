@@ -16,3 +16,4 @@
         }
 
       }
+      window.renderTags = renderTags;

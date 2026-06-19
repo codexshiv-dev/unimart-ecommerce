@@ -23,3 +23,4 @@
 
 
       }
+      window.renderRating = renderRating;

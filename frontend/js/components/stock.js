@@ -13,3 +13,5 @@
     
           return isOutOfStock;
        }
+
+       window.renderStockInfo = renderStockInfo;

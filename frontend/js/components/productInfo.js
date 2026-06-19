@@ -47,3 +47,4 @@
             "No description available.";
     }
 }
+window.renderProductInfo = renderProductInfo;

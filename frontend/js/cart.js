@@ -34,12 +34,15 @@ function addToCart(product, qty = 1) {
   if (typeof showToast === "function") showToast("Added to cart ✅");
 }
 
+window.addToCart = addToCart;
+
 function updateCartCount() {
   const cart = getCart();
   const total = cart.reduce((sum, item) => sum + item.qty, 0);
   const el = document.getElementById("cartCount");
   if (el) el.textContent = total;
 }
+window.updateCartCount = updateCartCount;
 
 // =====================
 // RENDER CART PAGE
@@ -246,4 +249,3 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 
-window.updateCartCount = updateCartCount;

@@ -94,4 +94,4 @@
         
 
       }
-    
+    window.renderRelatedProducts = renderRelatedProducts;
