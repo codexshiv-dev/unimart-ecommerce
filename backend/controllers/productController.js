@@ -67,6 +67,8 @@ exports.getProductById = async (req, res, next) => {
 
 // @desc   Create highly structured new inventory item
 exports.createProduct = async (req, res, next) => {
+  console.log("🔥 CREATE PRODUCT HIT");
+  console.log("BODY SIZE:", JSON.stringify(req.body).length);
   try {
     const { name, price, oldPrice, category, stockQuantity, description, images, tags, sku } = req.body;
 

@@ -112,9 +112,10 @@ function renderProducts(productList = products) {
   const fragment = document.createDocumentFragment();
 
   productList.forEach((product, index) => {
-    const coverImage = (product.images && product.images.length > 0) 
-      ? product.images 
-      : "https://images.unsplash.com/photo-1531403009284-440f080d1e12?q=80&w=150&auto=format&fit=crop"; 
+   
+    // PRODUCTION READY: Use your local assets, not random Unsplash URLs
+    const coverImage =(product.images && product.images.length > 0) ? product.images[0]
+     : "../assets/images/no-image.png";
 
     let badgeHTML = "";
     if (product.isFeatured) badgeHTML += `<span style="background: #fef3c7; color: #d97706; padding: 2px 6px; border-radius: 4px; font-size: 10px; font-weight: 600; margin-right:2px; white-space:nowrap;">⭐ Featured</span>`;
@@ -338,11 +339,13 @@ function bindProductFormSubmit() {
       return;
     }
 
+    // Capture gallery images
     let galleryImages = [];
     if (window.uploadedImagesBase64 && window.uploadedImagesBase64.length > 0) {
       galleryImages = window.uploadedImagesBase64;
     }
 
+    // Capture Tags
     let collectedTags = [];
     if (typeof window.getCurrentProductTags === "function") {
       collectedTags = window.getCurrentProductTags();
@@ -355,10 +358,11 @@ function bindProductFormSubmit() {
     }
 
     const oldPriceVal = document.getElementById("pOldPrice").value;
+    const statusVal = document.getElementById("pStatus")?.value || "active";
 
-    const statusElement = document.getElementById("pStatus");
-console.log("Status Element Found:", statusElement);
-console.log("Status Value being sent:", statusElement ? statusElement.value : "NOT FOUND");
+    console.log("Saving images:", window.uploadedImagesBase64);
+
+    // SINGLE DEFINITION OF PAYLOAD
     const productPayload = {
       name: nameVal,
       sku: document.getElementById("pSku").value.trim() || `GEN-${Math.floor(100000 + Math.random() * 900000)}`,
@@ -366,14 +370,14 @@ console.log("Status Value being sent:", statusElement ? statusElement.value : "N
       price: Number(document.getElementById("pPrice").value) || 0,
       oldPrice: oldPriceVal ? Number(oldPriceVal) : null,
       stockQuantity: Number(document.getElementById("pStock").value) || 0,
-      status: document.getElementById("pStatus").value || "active",
+      status: statusVal,
       ratings: document.getElementById("pRating").value ? Number(document.getElementById("pRating").value) : 5.0,
       description: document.getElementById("pDescription").value.trim(),
       images: galleryImages,
       tags: collectedTags,
       isFeatured: document.getElementById("pIsFeatured").checked,
-      isNew: document.getElementById("pIsNew").checked,          
-      isBestSeller: document.getElementById("pIsBestSeller").checked 
+      isNew: document.getElementById("pIsNew").checked,
+      isBestSeller: document.getElementById("pIsBestSeller").checked
     };
 
     try {
@@ -384,7 +388,8 @@ console.log("Status Value being sent:", statusElement ? statusElement.value : "N
         url = `${url}/${id}`;
         method = 'PATCH';
       }
-
+      console.log("Images Before Save:", window.uploadedImagesBase64);
+      console.log("Final Payload:", productPayload);
       const response = await fetch(url, {
         method: method,
         headers: { 'Content-Type': 'application/json' },
@@ -394,7 +399,7 @@ console.log("Status Value being sent:", statusElement ? statusElement.value : "N
       if (!response.ok) throw new Error("Failed to write product data payload.");
 
       window.showToast(`Product processed successfully!`, "success");
-      fetchProductsFromBackend(); 
+      fetchProductsFromBackend();
 
       if (typeof window.closeModal === "function") {
         window.closeModal();

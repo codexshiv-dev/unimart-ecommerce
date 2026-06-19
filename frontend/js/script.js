@@ -220,14 +220,14 @@ document.addEventListener("DOMContentLoaded", () => {
         
         if (noResult) noResult.style.display = "none";
 
-        productsToRender.forEach(product => {
+        productsToRender.forEach(item => {
             const card = document.createElement("article");
             card.className = "product-card";
-            card.dataset.category = product.category;
-            card.dataset.desc = product.description;
+            card.dataset.category = item.category;
+            card.dataset.desc = item.description;
             
             // Core Stock Inventory Logic Parsing
-            const stock = product.stockQuantity ?? product.stock ?? 0;
+            const stock = item.stockQuantity ?? item.stock ?? 0;
             const isOutOfStock = stock <= 0;
             if (isOutOfStock) {
                 card.classList.add("out-of-stock");
@@ -238,34 +238,34 @@ document.addEventListener("DOMContentLoaded", () => {
             const stockBadge = isOutOfStock ? `<span class="out-badge">OUT OF STOCK</span>` : "";
            
             // Ribbon System Badges function call
-            const ribbon = getRibbonHTML(product);
+            const ribbon = getRibbonHTML(item);
     
 
             // Star Ratings Engine function call
-            const stars = getRatingHTML(product);
+            const stars = getRatingHTML(item);
             
 
-            const productImage = product.images?.[0] || "../assets/images/no-image.png";
+            const productImage = item.images?.[0] || "../assets/images/no-image.png";
 
             card.innerHTML = `
                 <div class="product-img" style="position:relative; overflow:hidden;">
                      ${ribbon}
                      ${stockBadge}
 
-                     <img src="${productImage}" alt="${sanitizeHTML(product.name)}" loading="lazy">
+                     <img src="${productImage}" alt="${sanitizeHTML(item.name)}" loading="lazy">
                      <span class="wishlist" aria-label="Add to wishlist"><i class="fa fa-heart"></i></span>
                 </div>
                 <div class="product-info">
                      ${stars}
-                     <h3 class="product-title">${sanitizeHTML(product.name)}</h3>
-                     <p class="short-desc">${sanitizeHTML(truncateString(product.description, 70))}</p>
+                     <h3 class="product-title">${sanitizeHTML(item.name)}</h3>
+                     <p class="short-desc">${sanitizeHTML(truncateString(item.description, 70))}</p>
                      <div class="price-row">
-                         <span class="price">₹${product.price.toLocaleString('en-IN')}</span>
-                         ${product.oldPrice ? `<span class="old-price">₹${product.oldPrice.toLocaleString('en-IN')}</span>` : ''}
-                         ${getDiscountPercentage(product) > 0
+                         <span class="price">₹${item.price.toLocaleString('en-IN')}</span>
+                         ${item.oldPrice ? `<span class="old-price">₹${item.oldPrice.toLocaleString('en-IN')}</span>` : ''}
+                         ${getDiscountPercentage(item) > 0
                            ? `
                            <span class="discount">
-                              ${getDiscountPercentage(product)}% OFF
+                              ${getDiscountPercentage(item)}% OFF
                            </span>
                            `
                            : ''}
@@ -274,7 +274,7 @@ document.addEventListener("DOMContentLoaded", () => {
             `;
 
             card.onclick = () => {
-                window.location.href = `product.html?id=${product._id}`;
+                window.location.href = `product.html?id=${item._id}`;
             };
 
             productGrid.appendChild(card);

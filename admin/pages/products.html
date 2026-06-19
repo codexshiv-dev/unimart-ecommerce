@@ -81,7 +81,8 @@
 
     <script>
       // Global isolated reference arrays
-      let uploadedImagesBase64 = [];
+     window.uploadedImagesBase64 = [];
+    
       let runningProductTags = [];
 
       // 🛡️ SECURITY LAYER: Character Sanitizer Script (Prevents XSS exploits inside text strings)
@@ -196,14 +197,14 @@
           addUrlBtn.onclick = () => {
             const urlValue = urlInput.value.trim();
             if (urlValue) {
-              if (uploadedImagesBase64.length >= 4) {
+              if (window.uploadedImagesBase64.length >= 4) {
                 window.triggerModalToast(
                   "Maximum limit of 4 product images reached.",
                   "warning",
                 );
                 return;
               }
-              uploadedImagesBase64.push(urlValue);
+              window.uploadedImagesBase64.push(urlValue);
               urlInput.value = "";
               refreshGalleryPreviews();
             }
@@ -213,7 +214,7 @@
         function refreshGalleryPreviews() {
           if (!previewWrapper || !heroDisplay || !thumbGrid) return;
 
-          if (uploadedImagesBase64.length === 0) {
+          if (window.uploadedImagesBase64.length === 0) {
             previewWrapper.style.display = "none";
             heroDisplay.src = "";
             thumbGrid.innerHTML = "";
@@ -224,11 +225,11 @@
           thumbGrid.innerHTML = "";
 
           // ✨ WORKFLOW ARRAY REFERENCE FIX: Point directly to index position 0 instead of the entire collection sequence
-          heroDisplay.src = uploadedImagesBase64 || "";
+         heroDisplay.src = (window.uploadedImagesBase64.length > 0)  ? window.uploadedImagesBase64[0] : "";
 
           const fragment = document.createDocumentFragment();
 
-          uploadedImagesBase64.forEach((imageSrc, index) => {
+          window.uploadedImagesBase64.forEach((imageSrc, index) => {
             const thumbBox = document.createElement("div");
             thumbBox.className = `preview-thumb-box ${index === 0 ? "active-hero" : ""}`;
 
@@ -248,7 +249,7 @@
 
             thumbBox.querySelector(".remove-media-btn").onclick = (e) => {
               e.stopPropagation();
-              uploadedImagesBase64.splice(index, 1);
+              window.uploadedImagesBase64.splice(index, 1);
               refreshGalleryPreviews();
             };
 
@@ -261,7 +262,7 @@
         function processIncomingFiles(files) {
           if (!files) return;
 
-          const remainingSlots = 4 - uploadedImagesBase64.length;
+          const remainingSlots = 4 - window.uploadedImagesBase64.length;
           if (remainingSlots <= 0) {
             window.triggerModalToast(
               "Maximum limit of 4 product images reached.",
@@ -292,11 +293,16 @@
             }
 
             const reader = new FileReader();
-            reader.readAsDataURL(file);
+
             reader.onload = () => {
-              uploadedImagesBase64.push(reader.result);
+            window.uploadedImagesBase64.push(reader.result);
+
+              console.log("IMAGE ADDED");
+              console.log(window.uploadedImagesBase64);
+
               refreshGalleryPreviews();
             };
+            reader.readAsDataURL(file);
           });
         }
         refreshGalleryPreviews();
@@ -374,13 +380,13 @@
       // 🛠️ EXPOSED UTILITIES FOR INTERACTIVE FORM STATES
       // ========================================================
       window.resetImageGallery = function () {
-        uploadedImagesBase64 = [];
+       window.uploadedImagesBase64 = [];
         const previewWrapper = document.getElementById("galleryPreviewWrapper");
         if (previewWrapper) previewWrapper.style.display = "none";
       };
 
       window.loadImagesToGallery = function (imagesArray) {
-        uploadedImagesBase64 = Array.isArray(imagesArray)
+        window.uploadedImagesBase64 = Array.isArray(imagesArray)
           ? [...imagesArray]
           : imagesArray
             ? [imagesArray]

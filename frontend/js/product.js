@@ -4,6 +4,14 @@
 if (window.location.pathname.includes("product.html")) {
     initializeProductPage();
 }
+function setupBackButton() {
+    const backBtn = document.getElementById("backBtn");
+    if (backBtn) {
+        backBtn.onclick = () => window.history.back();
+    }
+}
+window.setupBackButton = setupBackButton; // Ensure it's available globally
+     
 async function initializeProductPage() {
 
     setupBackButton();
@@ -230,7 +238,6 @@ async function processProduct(product) {
      
 
 
-     
       
      
 
