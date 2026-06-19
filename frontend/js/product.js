@@ -53,7 +53,7 @@ async function loadProduct(productId) {
 
         alert("Error loading product");
 
-        // window.location.href = "index.html";
+        window.location.href = "index.html";
     }
 }
 
