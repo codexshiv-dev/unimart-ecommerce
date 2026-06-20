@@ -5,6 +5,7 @@
 async function handleCheckout() {
     console.log("Continue button clicked!");
     const nameInput = document.getElementById("userName");
+    const showToast = window.showToast || ((msg) => console.log("Toast fallback:", msg));
     const addressInput = document.getElementById("userAddress");
     const phoneInput = document.getElementById("userPhone");
     const overlay = document.getElementById("orderOverlay");
