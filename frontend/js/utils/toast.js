@@ -10,7 +10,8 @@ function showToast(msg) {
     setTimeout(() => {
         toast.style.display = "none";
     }, 2000);
-}
+};
 
 // Ensure this line is present
+console.log("✅ Toast utility loaded successfully");
 window.showToast = showToast;

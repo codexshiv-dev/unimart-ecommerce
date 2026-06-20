@@ -9,25 +9,24 @@
 }
 
 :root {
-
   /* Brand */
-  --primary: #F59E0B;
-  --primary-hover: #D97706;
-  --accent: #D97706;
+  --primary: #f59e0b;
+  --primary-hover: #d97706;
+  --accent: #d97706;
 
   /* Backgrounds */
-  --bg-main: #F9FAFB;
-  --bg-card: #FFFFFF;
-  --bg-soft: #F3F4F6;
+  --bg-main: #f9fafb;
+  --bg-card: #ffffff;
+  --bg-soft: #f3f4f6;
 
   /* Text */
   --text-dark: #111827;
-  --text-muted: #6B7280;
-  --text-light: #FFFFFF; /* ✅ FIXED */
-  --white: #FFFFFF;
+  --text-muted: #6b7280;
+  --text-light: #ffffff; /* ✅ FIXED */
+  --white: #ffffff;
 
   /* Borders */
-  --border-light: #E5E7EB;
+  --border-light: #e5e7eb;
 
   /* Radius */
   --radius-sm: 10px;
@@ -35,16 +34,16 @@
   --radius-lg: 20px;
 
   /* Shadow */
-  --shadow-sm: 0 2px 10px rgba(0,0,0,0.08);
-  --shadow-md: 0 10px 25px rgba(0,0,0,0.15);
+  --shadow-sm: 0 2px 10px rgba(0, 0, 0, 0.08);
+  --shadow-md: 0 10px 25px rgba(0, 0, 0, 0.15);
 }
 
 /* =========================
    2. BASE
 ========================= */
 html {
-   scroll-behavior: smooth;
-   overflow-y: scroll; 
+  scroll-behavior: smooth;
+  overflow-y: scroll;
 }
 
 body {
@@ -104,7 +103,7 @@ main.layout {
 .filters h3 {
   font-size: 14px;
   margin-bottom: 6px;
-   color: #333;
+  color: #333;
 }
 
 .category-card {
@@ -116,7 +115,7 @@ main.layout {
   margin-bottom: 6px;
   cursor: pointer;
 
-   /* display: block;
+  /* display: block;
   text-align: left; */
 }
 
@@ -132,28 +131,28 @@ main.layout {
 
 /* BADGE */
 .out-badge {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    background: rgba(220, 38, 38, 0.9); /* Semi-transparent red */
-    color: white;
-    padding: 6px 12px;
-    font-size: 12px;
-    font-weight: bold;
-    border-radius: 4px;
-    z-index: 11;
-    white-space: nowrap;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: rgba(220, 38, 38, 0.9); /* Semi-transparent red */
+  color: white;
+  padding: 6px 12px;
+  font-size: 12px;
+  font-weight: bold;
+  border-radius: 4px;
+  z-index: 11;
+  white-space: nowrap;
 }
 /* THE STATE: What happens to the card when out of stock */
 .product-card.out-of-stock {
-    opacity: 0.6; /* Fades the whole card */
-    pointer-events: none; /* Stops all clicks */
+  opacity: 0.6; /* Fades the whole card */
+  pointer-events: none; /* Stops all clicks */
 }
 
 /* Senior Touch: Turn the image gray only when card is out-of-stock */
 .product-card.out-of-stock .product-img img {
-    filter: grayscale(1);
+  filter: grayscale(1);
 }
 /* RIBBON */
 .ribbon {
@@ -169,13 +168,16 @@ main.layout {
   z-index: 10;
 }
 
-.ribbon.new { background: #16a34a; }
-.ribbon.featured { background: #2563eb; }
+.ribbon.new {
+  background: #16a34a;
+}
+.ribbon.featured {
+  background: #2563eb;
+}
 .ribbon.best-seller {
   background: #f59e0b;
   color: #000;
 }
-
 
 .ribbon-group {
   position: absolute;
@@ -195,15 +197,21 @@ main.layout {
   transform: translateX(-50%);
   background: #222;
   color: #fff;
-  padding: 10px 18px;
+  padding: 12px 24px;
   border-radius: 8px;
   opacity: 0;
-  transition: 0.3s;
-  z-index: 999;
+  transition: opacity 0.3s;
+  pointer-events: none; /* Ignore clicks */
+  z-index: 9999;
 }
-
 .toast.show {
   opacity: 1;
+}
+.toast.error {
+  background: #ef4444;
+}
+.toast.success {
+  background: #22c55e;
 }
 
 /* =========================
@@ -223,14 +231,12 @@ main.layout {
   color: white;
   border: none;
   font-size: 16px;
-  
 }
 
 .btn-outline {
   background: transparent;
   border: 2px solid var(--primary);
   color: var(--primary);
-  
 }
 
 .btn-small {
@@ -275,89 +281,90 @@ main.layout {
   height: 28px;
 }
 
-
 /* --- PROFESSIONAL NO-RESULT STATE --- */
 #noResult {
-    text-align: center;
-    padding: 60px 20px;
-    background: #fff;
-    border-radius: var(--radius-md);
-    margin: 20px 0;
-    width: 100%;
+  text-align: center;
+  padding: 60px 20px;
+  background: #fff;
+  border-radius: var(--radius-md);
+  margin: 20px 0;
+  width: 100%;
 }
 
 .no-result-container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 15px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 15px;
 }
 
 .no-result-container i {
-    font-size: 50px;
-    color: #ccc;
-    margin-bottom: 10px;
+  font-size: 50px;
+  color: #ccc;
+  margin-bottom: 10px;
 }
 
 .no-result-container h2 {
-    font-size: 20px;
-    color: var(--text-dark);
-    margin: 0;
+  font-size: 20px;
+  color: var(--text-dark);
+  margin: 0;
 }
 
 .no-result-container p {
-    color: var(--text-muted);
-    font-size: 14px;
-    max-width: 300px;
+  color: var(--text-muted);
+  font-size: 14px;
+  max-width: 300px;
 }
 
 .btn-reset-search {
-    margin-top: 10px;
-    padding: 10px 20px;
-    background: var(--primary);
-    color: white;
-    border: none;
-    border-radius: var(--radius-sm);
-    cursor: pointer;
-    font-weight: 600;
-    transition: var(--transition);
+  margin-top: 10px;
+  padding: 10px 20px;
+  background: var(--primary);
+  color: white;
+  border: none;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  font-weight: 600;
+  transition: var(--transition);
 }
 
 .btn-reset-search:hover {
-    background: var(--primary-hover);
+  background: var(--primary-hover);
 }
-
-
 
 /* Professional Shimmer Skeleton */
 @keyframes shimmer {
-    0% { background-position: -200% 0; }
-    100% { background-position: 200% 0; }
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
 }
 
 .skeleton-card {
-    background: #fff;
-    border-radius: 12px;
-    padding: 15px;
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    border: 1px solid #f0f0f0;
+  background: #fff;
+  border-radius: 12px;
+  padding: 15px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  border: 1px solid #f0f0f0;
 }
 
 .skeleton-img {
-    height: 180px;
-    background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
-    background-size: 200% 100%;
-    animation: shimmer 1.5s infinite linear;
-    border-radius: 8px;
+  height: 180px;
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite linear;
+  border-radius: 8px;
 }
 
 .skeleton-text {
-    height: 14px;
-    background: #f0f0f0;
-    border-radius: 4px;
-    animation: shimmer 1.5s infinite linear;
+  height: 14px;
+  background: #f0f0f0;
+  border-radius: 4px;
+  animation: shimmer 1.5s infinite linear;
 }
 
 /* =========================
@@ -369,7 +376,7 @@ main.layout {
     grid-template-columns: 1fr;
   }
 
-   .filters {
+  .filters {
     position: fixed;
     top: 0;
     left: 0;
@@ -382,9 +389,7 @@ main.layout {
     transition: transform 0.3s ease;
   }
 
-
   .filters.active {
-   
     transform: translateX(0);
   }
 }

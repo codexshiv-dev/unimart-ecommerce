@@ -3,6 +3,7 @@
 // ==========================================================================
 
 async function handleCheckout() {
+    console.log("Continue button clicked!");
     const nameInput = document.getElementById("userName");
     const addressInput = document.getElementById("userAddress");
     const phoneInput = document.getElementById("userPhone");
