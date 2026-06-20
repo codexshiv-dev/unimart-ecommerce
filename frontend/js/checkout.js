@@ -98,34 +98,26 @@ function loadCheckoutCart() {
     const container = document.getElementById("priceSummary");
     const mobileTotal = document.getElementById("mobileTotalAmount");
 
-    if (!cartData || cartData === "[]") {
-        if (container) container.innerHTML = "<p>Your cart is empty.</p>";
-        return;
-    }
+    if (!cartData) return;
 
     const cart = JSON.parse(cartData);
-    let subtotal = 0;
+    let subtotal = cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
+    
+    // Define the delivery variable here!
+    let delivery = subtotal > 500 ? 0 : 40; 
+    let total = subtotal + delivery;
 
     if (container) {
-        container.innerHTML = ""; // Clear existing
+        container.innerHTML = ""; 
         cart.forEach(item => {
-            const itemTotal = item.price * item.qty;
-            subtotal += itemTotal;
             container.innerHTML += `
-                <div class="price-row">
+                <div style="display:flex; justify-content:space-between; margin-bottom:8px;">
                     <span>${item.name} (x${item.qty})</span>
-                    <span>Rs. ${itemTotal}</span>
+                    <span>Rs. ${item.price * item.qty}</span>
                 </div>`;
         });
-        
-        // Add Delivery Fee
-        const delivery = subtotal > 500 ? 0 : 40;
-        container.innerHTML += `
-            <hr>
-            <div class="price-row"><strong>Total</strong><strong>Rs. ${subtotal + delivery}</strong></div>
-        `;
+        container.innerHTML += `<hr><div><strong>Total: Rs. ${total}</strong></div>`;
     }
     
-    // Update mobile total
-    if (mobileTotal) mobileTotal.textContent = `Rs. ${subtotal + delivery}`;
+    if (mobileTotal) mobileTotal.textContent = `Rs. ${total}`;
 }
