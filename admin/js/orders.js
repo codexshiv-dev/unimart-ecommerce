@@ -68,13 +68,20 @@ function renderOrderRows(ordersList) {
     const fragment = document.createDocumentFragment();
     tbody.innerHTML = "";
 
+    
+
     ordersList.forEach(order => {
         const tr = document.createElement("tr");
         
         // Hardened MongoDB safe property defaults
         const orderId = order.orderId || (order._id ? order._id.slice(-8).toUpperCase() : 'N/A');
         const name = order.customerName || "Walk-in Buyer";
+        const phone = order.customerPhone || "No Phone";
         const locationAddress = order.customerAddress || order.shippingAddress || "No Address Provided";
+
+        // WhatsApp Helper: Clean phone, remove leading 0, prepend 977
+        const cleanPhone = (order.customerPhone || "").replace(/\D/g, '').replace(/^0+/, '');
+        const whatsappLink = `https://wa.me/977${cleanPhone}`;
         
         // Natively tuned Nepalese locale parsing fixes formatting edge cases cleanly
         const dateStamp = order.createdAt 
@@ -104,10 +111,12 @@ function renderOrderRows(ordersList) {
             <td data-label="Total"><span class="price-val-tag">${formatCurrency(totalCost)}</span></td>
             <td data-label="Payment"><span class="badge payment-${rawPaymentStatus.toLowerCase()}">● ${sanitizeHTML(rawPaymentStatus)}</span></td>
             <td data-label="Fulfillment"><span class="badge ${statusBadgeClass}">${sanitizeHTML(currentStatus)}</span></td>
-            <td data-label="Actions">
+           <td data-label="Actions">
                 <div class="row-action-triggers">
-                    <button class="row-btn view-details" data-id="${order._id}" title="Review Details">👁️ View</button>
-                    <button class="row-btn update-status" data-id="${order._id}" data-status="${currentStatus}" title="Modify Logistics">⚙️ Status</button>
+                    <button class="row-btn view-details">👁️ View</button>
+                    <!-- Add this new button -->
+                    <a href="${whatsappLink}" target="_blank" class="row-btn" style="background:#25d366; color:white; padding:4px 8px; border-radius:4px; text-decoration:none;">💬 Chat</a>
+                    <button class="row-btn update-status">⚙️ Status</button>
                 </div>
             </td>
         `;
@@ -206,10 +215,11 @@ function exportOrdersToCSV() {
     GLOBAL_ORDERS_CACHE.forEach(o => {
         const rowId = o.orderId || (o._id ? o._id.slice(-8).toUpperCase() : 'N/A');
         const escapeName = `"${(o.customerName || '').replace(/"/g, '""')}"`;
+        const phone = o.customerPhone || "N/A"; // ADDED THIS
         const addressText = o.customerAddress || o.shippingAddress || '';
         const escapeAddress = `"${addressText.replace(/"/g, '""')}"`;
         const total = o.grandTotal || o.totalAmount || 0;
-        csvContent += `${rowId},${escapeName},${escapeAddress},${total},${o.status || 'Pending'}\n`;
+        csvContent += `${rowId},${escapeName},${phone},${escapeAddress},${total},${o.status || 'Pending'}\n`;
     });
 
     const uri = encodeURI(csvContent);
@@ -244,9 +254,10 @@ window.openOrderModal = function(orderId) {
         const finalAddress = order.customerAddress || order.shippingAddress || "No Address Provided";
         let itemsHtml = `
             <div style="font-size:13px; color:#475569; border-bottom:1px solid #f1f5f9; padding-bottom:8px; margin-bottom:8px;">
-                <strong>📍 Full Address:</strong> ${sanitizeHTML(finalAddress)}
+                <strong>📞 Phone:</strong> ${sanitizeHTML(order.customerPhone || 'N/A')}<br>
+                <strong>📍 Address:</strong> ${sanitizeHTML(finalAddress)}
             </div>
-            <strong style="font-size:14px; color:#0f172a; margin-top:4px; display:block; margin-bottom:8px;">Items List:</strong>
+            
         `;
 
         const targetItemsArray = order.cartItems || order.items || [];

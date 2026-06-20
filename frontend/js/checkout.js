@@ -1,99 +1,90 @@
 // ==========================================================================
-// 🔗 CLOUD API ROUTE ROUTING REGISTRY
+// 🚀 PRODUCTION CHECKOUT ENGINE
 // ==========================================================================
-const RENDER_BACKEND_URL = "https://unimart-ecommerce.onrender.com"; // ⚠️ Replace with your actual Render URL
 
-function handleCheckout() {
+async function handleCheckout() {
     const nameInput = document.getElementById("userName");
     const addressInput = document.getElementById("userAddress");
-    const shippingForm = document.getElementById("shippingForm");
+    const phoneInput = document.getElementById("userPhone");
     const overlay = document.getElementById("orderOverlay");
-  
-    const name = nameInput ? nameInput.value.trim() : "";
-    const address = addressInput ? addressInput.value.trim() : "";
+    
+    const name = nameInput?.value.trim();
+    const address = addressInput?.value.trim();
+    const phone = phoneInput?.value.trim();
 
-    if (!name || !address) {
-        alert("Please enter your name and address for delivery! 🚚");
-        if (shippingForm) {
-            shippingForm.scrollIntoView({ behavior: 'smooth', block: 'center' });
-            if (!name) nameInput.focus();
-            else addressInput.focus();
-        }
+    // 1. Validation using your new Toast System
+    if (!name || !phone || !address) {
+        window.showToast("Please fill in all details! 🚚");
+        return;
+    }
+
+    const cleanPhone = phone.replace(/\D/g, '');
+    if (!/^(98|97)\d{8}$/.test(cleanPhone)) {
+        window.showToast("Enter a valid 10-digit Nepali number.");
         return;
     }
 
     const cart = getCart();
     if (cart.length === 0) {
-        alert("Your cart is empty!");
+        window.showToast("Your cart is empty!");
         return;
     }
-    // Show processing screen overlay loader
-    if (overlay) overlay.style.display = "flex";
 
+    // 2. Calculations
     let subtotal = cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
     let delivery = subtotal > 500 ? 0 : 40;
     let total = subtotal + delivery;
 
-    // 📦 COMPILING DATABASE INVOICE DATA OBJECT
     const orderPayload = {
+        orderId: "ORD-" + Date.now(),
         customerName: name,
         customerAddress: address,
+        customerPhone: cleanPhone,
         paymentMethod: "WhatsApp (Manual)",
-        itemsSubtotal: subtotal,
-        deliveryFee: delivery,
-        grandTotal: total,
-        cartItems: cart.map(item => ({
-            productId: item._id || 'N/A',
+        totalAmount: total,
+        items: cart.map(item => ({
+            productId: item._id || null,
             name: item.name,
             quantity: item.qty,
-            unitPrice: item.price
+            price: item.price
         }))
     };
 
-    // 🚀 TRANSMIT LIVE DATA STREAM TO RENDER BACKEND
-    fetch(`${RENDER_BACKEND_URL}/api/orders`, {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json"
-        },
-        body: JSON.stringify(orderPayload)
-    })
-    .then(response => {
-        if (!response.ok) {
-            throw new Error("Cloud operational synchronization failed");
-        }
-        return response.json();
-    })
-    .then(savedOrder => {
-        // Build your existing WhatsApp text message using the dynamic ID returned from your server
-        let message = `*✨ NEW ORDER RECEIVED ✨*\n`;
-        message += `📋 *Order ID:* #${savedOrder._id || 'Pending'}\n`;
-        message += `--------------------------\n`;
-        message += `👤 *Customer:* ${name}\n`;
-        message += `📍 *Address:* ${address}\n`;
-        message += `--------------------------\n\n`;
-        message += `*📦 ITEMS ORDERED:* \n\n`;
+    // 3. Transmit to Backend
+    if (overlay) overlay.style.display = "flex";
 
-        cart.forEach((item, index) => {
-            message += `*${index + 1}. ${item.name}* (Qty: ${item.qty})\n`;
+    try {
+        const response = await fetch(`${window.UniMartConfig.BASE_URL}/api/orders`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(orderPayload)
         });
 
-        message += `\n*TOTAL AMOUNT: ${formatINR(total)}*\n`;
-        message += `_Please confirm my order structure!_`;
+        if (!response.ok) throw new Error("Synchronization failed");
 
-        const phone = "919170570583"; 
-        const url = `https://wa.me/${phone}?text=${encodeURIComponent(message)}`;
+        const savedOrder = await response.json();
 
-        // Clear storefront state and redirect
-        localStorage.removeItem("cart");
-        if (window.updateCartCount) window.updateCartCount();
+        // 4. Success Flow: WhatsApp Redirect
+        window.showToast("Order placed successfully! Redirecting...");
         
+        let message = `*✨ NEW ORDER RECEIVED ✨*\n`;
+        message += `📋 *ID:* #${savedOrder.orderId || 'Pending'}\n\n`;
+        message += `👤 *Customer:* ${name}\n📞 *Phone:* 977${cleanPhone}\n📍 *Address:* ${address}\n\n`;
+        message += `*📦 ITEMS:*\n`;
+        cart.forEach(item => message += `- ${item.name} (x${item.qty})\n`);
+        message += `\n*TOTAL: Rs. ${total}*`;
+
+        localStorage.removeItem("cart"); // Clear cart after success
+        if (window.updateCartCount) window.updateCartCount();
+
+        setTimeout(() => {
+            window.location.href = `https://wa.me/97798XXXXXXXX?text=${encodeURIComponent(message)}`;
+        }, 1500);
+
+    } catch (err) {
+        console.error("Order Error:", err);
+        window.showToast("System busy. Please try again!");
+    } finally {
         if (overlay) overlay.style.display = "none";
-        window.location.href = url;
-    })
-    .catch(error => {
-        console.error("Backend transmission issue:", error);
-        if (overlay) overlay.style.display = "none";
-        alert("System connection timeout. Your order could not be saved to the panel, but you can still complete it over WhatsApp directly!");
-    });
+    }
 }

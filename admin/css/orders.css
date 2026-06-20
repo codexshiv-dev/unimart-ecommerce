@@ -205,7 +205,7 @@
   background-color: #f0fdf4;
   color: #16a34a;
 }
-...payment-failed {
+.payment-failed {
   background-color: #fef2f2;
   color: #dc2626;
 }
@@ -251,6 +251,44 @@
 .row-btn.update-status:hover {
   background-color: #f0f9ff;
   border-color: #bae6fd;
+}
+
+/* //////////////////////// */
+.customer-profile-cell {
+  display: flex;
+  flex-direction: column;
+}
+.cust-name {
+  font-weight: 600;
+  color: #1e293b;
+}
+.cust-phone {
+  font-size: 0.85rem;
+  color: #64748b;
+}
+
+.row-action-triggers {
+  display: flex;
+  gap: 8px;
+}
+
+.whatsapp-btn {
+  background-color: #25d366;
+  color: white;
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 0.8rem;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.status-btn {
+  background-color: #3b82f6;
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 6px;
+  cursor: pointer;
 }
 
 /* ========================================================
@@ -343,9 +381,11 @@
   }
 
   .row-action-triggers {
-    width: 100%;
-    gap: 10px;
+    flex-wrap: wrap;
   }
+  .whatsapp-btn, .row-btn {
+        flex: 1 1 45%; /* Buttons will take up roughly half the row each */
+    }
 
   .row-btn {
     flex: 1;
