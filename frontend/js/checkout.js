@@ -88,3 +88,44 @@ async function handleCheckout() {
         if (overlay) overlay.style.display = "none";
     }
 }
+// Add this to your checkout.js
+document.addEventListener("DOMContentLoaded", () => {
+    loadCheckoutCart();
+});
+
+function loadCheckoutCart() {
+    const cartData = localStorage.getItem("cart");
+    const container = document.getElementById("priceSummary");
+    const mobileTotal = document.getElementById("mobileTotalAmount");
+
+    if (!cartData || cartData === "[]") {
+        if (container) container.innerHTML = "<p>Your cart is empty.</p>";
+        return;
+    }
+
+    const cart = JSON.parse(cartData);
+    let subtotal = 0;
+
+    if (container) {
+        container.innerHTML = ""; // Clear existing
+        cart.forEach(item => {
+            const itemTotal = item.price * item.qty;
+            subtotal += itemTotal;
+            container.innerHTML += `
+                <div class="price-row">
+                    <span>${item.name} (x${item.qty})</span>
+                    <span>Rs. ${itemTotal}</span>
+                </div>`;
+        });
+        
+        // Add Delivery Fee
+        const delivery = subtotal > 500 ? 0 : 40;
+        container.innerHTML += `
+            <hr>
+            <div class="price-row"><strong>Total</strong><strong>Rs. ${subtotal + delivery}</strong></div>
+        `;
+    }
+    
+    // Update mobile total
+    if (mobileTotal) mobileTotal.textContent = `Rs. ${subtotal + delivery}`;
+}
