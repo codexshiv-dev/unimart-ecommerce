@@ -1,7 +1,7 @@
 // ==========================================================================
 // 🔗 CLOUD API ROUTE ROUTING REGISTRY
 // ==========================================================================
-const RENDER_BACKEND_URL = "https://your-backend-name.onrender.com"; // ⚠️ Replace with your actual Render URL
+const RENDER_BACKEND_URL = "https://unimart-ecommerce.onrender.com"; // ⚠️ Replace with your actual Render URL
 
 function handleCheckout() {
     const nameInput = document.getElementById("userName");
@@ -22,12 +22,11 @@ function handleCheckout() {
         return;
     }
 
-    const cart = getCartData(); 
+    const cart = getCart();
     if (cart.length === 0) {
         alert("Your cart is empty!");
         return;
     }
-
     // Show processing screen overlay loader
     if (overlay) overlay.style.display = "flex";
 

@@ -43,6 +43,7 @@ function updateCartCount() {
   if (el) el.textContent = total;
 }
 window.updateCartCount = updateCartCount;
+window.getCartData = getCart;
 
 // =====================
 // RENDER CART PAGE
@@ -75,6 +76,7 @@ function loadCart() {
     if (actionBar) actionBar.style.display = "none";
     return;
   }
+  window.getCartData = getCart;
 
   //Show the Sticky Bar if items exist
   if (actionBar) actionBar.style.display = "flex";
