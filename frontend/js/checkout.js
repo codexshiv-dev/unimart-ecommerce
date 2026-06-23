@@ -1,36 +1,43 @@
 // ==========================================================================
 // 🚀 PRODUCTION CHECKOUT ENGINE
 // ==========================================================================
+document.addEventListener("DOMContentLoaded", () => {
+    const btn = document.getElementById("checkoutBtn");
+    if (btn) btn.addEventListener("click", handleCheckout);
+});
 
 async function handleCheckout() {
-    console.log("Continue button clicked!");
+    console.log("🚀 Checkout process initiated...");
+    
+    
+   // UI Elements
     const nameInput = document.getElementById("userName");
-    const showToast = window.showToast || ((msg) => console.log("Toast fallback:", msg));
     const addressInput = document.getElementById("userAddress");
     const phoneInput = document.getElementById("userPhone");
     const overlay = document.getElementById("orderOverlay");
-    
+    // 1. Basic Data Retrieval
     const name = nameInput?.value.trim();
     const address = addressInput?.value.trim();
     const phone = phoneInput?.value.trim();
+    const cart = (typeof getCart === "function") ? getCart() : [];
+
 
     // 1. Validation using your new Toast System
     if (!name || !phone || !address) {
-        window.showToast("Please fill in all details! 🚚");
-        return;
+        return window.showToast("Please fill in all details! 🚚");
+        
     }
 
     const cleanPhone = phone.replace(/\D/g, '');
     if (!/^(98|97)\d{8}$/.test(cleanPhone)) {
-        window.showToast("Enter a valid 10-digit Nepali number.");
-        return;
+       return  window.showToast("Enter a valid 10-digit Nepali number.");
+        
     }
 
-    const cart = getCart();
-    if (cart.length === 0) {
-        window.showToast("Your cart is empty!");
-        return;
+   if (cart.length === 0) {
+        return window.showToast("Your cart is empty!", "warning");
     }
+    console.log("Validation OK");
 
     // 2. Calculations
     let subtotal = cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
@@ -66,7 +73,7 @@ async function handleCheckout() {
         const savedOrder = await response.json();
 
         // 4. Success Flow: WhatsApp Redirect
-        window.showToast("Order placed successfully! Redirecting...");
+        window.showToast("Order placed successfully!", "success");
         
         let message = `*✨ NEW ORDER RECEIVED ✨*\n`;
         message += `📋 *ID:* #${savedOrder.orderId || 'Pending'}\n\n`;
@@ -84,15 +91,12 @@ async function handleCheckout() {
 
     } catch (err) {
         console.error("Order Error:", err);
-        window.showToast("System busy. Please try again!");
+       window.showToast("System busy. Please try again later.", "error");
     } finally {
         if (overlay) overlay.style.display = "none";
     }
 }
-// Add this to your checkout.js
-document.addEventListener("DOMContentLoaded", () => {
-    loadCheckoutCart();
-});
+
 
 function loadCheckoutCart() {
     const cartData = localStorage.getItem("cart");

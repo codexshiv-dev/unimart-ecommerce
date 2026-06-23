@@ -89,13 +89,13 @@
           View Details
         </span>
       </div>
-      <button class="mobile-place-order" onclick="handleCheckout()">
+      <button class="mobile-place-order" id="checkoutBtn">
         CONTINUE
       </button>
     </div>
     <div class="checkout-card sticky-summary" id="summaryTarget">
       <h3>Price Details</h3>
-      <div id="priceSummary" class="price-details-box"></div>
+      <!-- <div id="priceSummary" class="price-details-box"></div> -->
       ...
     </div>
 
@@ -106,7 +106,9 @@
       </div>
     </div>
     <div id="toast" class="toast"></div>
+
     <script src="../js/utils/toast.js"></script>
+    <script src="../js/config.js"></script> <!-- IMPORTANT -->
     <script src="../js/cart.js"></script>
     <script src="../js/checkout.js"></script>
   </body>
