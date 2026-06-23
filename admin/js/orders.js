@@ -88,7 +88,7 @@ function renderOrderRows(ordersList) {
             ? new Date(order.createdAt).toLocaleString('en-NP', { dateStyle: 'medium', timeStyle: 'short' }) 
             : 'N/A';
             
-        const totalCost = Number(order.grandTotal || order.totalAmount || 0);
+        const totalCost = Number(order.totalAmount || 0);
         const currentStatus = order.status || "⏳ Pending";
 
         let statusBadgeClass = "fulfillment-pending";
@@ -135,10 +135,14 @@ function renderOrderRows(ordersList) {
  * Cycle Logistics Actions via REST API PATCH operations
  */
 async function cycleOrderStatusStep(orderId, statusValue) {
-    let targetNextStatus = "🚚 In Transit";
-    if (statusValue.includes("Transit") || statusValue.includes("Processing")) targetNextStatus = "✅ Completed";
-    else if (statusValue.includes("Complete") || statusValue.includes("Delivered")) targetNextStatus = "🛑 Cancelled";
-    else if (statusValue.includes("Cancelled")) targetNextStatus = "⏳ Pending";
+    
+    let targetNextStatus = "Processing";
+    
+    if (statusValue === "Pending") targetNextStatus = "Processing";
+    else if (statusValue === "Processing") targetNextStatus = "Shipped";
+    else if (statusValue === "Shipped") targetNextStatus = "Delivered";
+    else if (statusValue === "Delivered") targetNextStatus = "Cancelled";
+    else targetNextStatus = "⏳ Pending";
 
     try {
         const url = `${window.UniMartConfig.getEndpoint('orders')}/${orderId}`;

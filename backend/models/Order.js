@@ -1,37 +1,100 @@
 const mongoose = require("mongoose");
 
 const orderSchema = new mongoose.Schema({
-    orderId: { 
-        type: String, 
-        required: true, 
-        unique: true, 
-        index: true // Fast lookup for Admin search
+
+    orderId:{
+        type:String,
+        required:true,
+        unique:true,
+        index:true
     },
-    customerName: { type: String, required: true, trim: true },
-    customerPhone: { type: String, required: true, trim: true },
-    items: [
+
+    customerName:{
+        type:String,
+        required:true,
+        trim:true
+    },
+
+    customerPhone:{
+        type:String,
+        required:true,
+        trim:true
+    },
+
+    customerAddress:{
+        type:String,
+        required:true,
+        trim:true
+    },
+
+    items:[
         {
-            productId: { type: mongoose.Schema.Types.ObjectId, ref: 'Product', required: true },
-            name: { type: String, required: true },
-            quantity: { type: Number, required: true, min: 1 },
-            price: { type: Number, required: true }
+            productId:{
+                type:mongoose.Schema.Types.ObjectId,
+                ref:"Product"
+            },
+
+            name:{
+                type:String,
+                required:true
+            },
+
+            quantity:{
+                type:Number,
+                required:true,
+                min:1
+            },
+
+            price:{
+                type:Number,
+                required:true
+            }
         }
     ],
-    totalAmount: { type: Number, required: true, min: 0 },
-    status: { 
-        type: String, 
-        default: "Pending", 
-        enum: ["Pending", "Processing", "Shipped", "Delivered", "Cancelled"],
-        index: true // Fast filtering for Admin Dashboard
+
+    totalAmount:{
+        type:Number,
+        required:true
     },
-    paymentStatus: { 
-        type: String, 
-        default: "Unpaid", 
-        enum: ["Unpaid", "Paid", "Failed"] 
+
+    paymentMethod:{
+        type:String,
+        default:"WhatsApp"
+    },
+
+    status:{
+        type:String,
+        default:"Pending",
+        enum:[
+            "Pending",
+            "Processing",
+            "Shipped",
+            "Delivered",
+            "Cancelled"
+        ],
+        index:true
+    },
+
+    paymentStatus:{
+        type:String,
+        default:"Unpaid",
+        enum:[
+            "Unpaid",
+            "Paid",
+            "Failed"
+        ]
     }
-}, { 
-    timestamps: true 
+
+},{
+    timestamps:true
 });
 
+// AUTO orderId generator (PRODUCTION SAFE)
+orderSchema.pre("save", function (next) {
+    if (!this.orderId) {
+        this.orderId = "ORD-" + Date.now() + "-" + Math.floor(Math.random() * 1000);
+    }
+    next();
+});
 
 module.exports = mongoose.model("Order", orderSchema);

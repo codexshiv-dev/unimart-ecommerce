@@ -38,11 +38,10 @@ async function handleCheckout() {
     let total = subtotal + delivery;
 
     const orderPayload = {
-        orderId: "ORD-" + Date.now(),
         customerName: name,
         customerAddress: address,
         customerPhone: cleanPhone,
-        paymentMethod: "WhatsApp (Manual)",
+        paymentMethod: "WhatsApp",
         totalAmount: total,
         items: cart.map(item => ({
             productId: item._id || null,

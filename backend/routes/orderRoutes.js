@@ -2,103 +2,83 @@ const express = require("express");
 const router = express.Router();
 const Order = require("../models/Order");
 
-
 // CREATE ORDER
 router.post("/", async (req, res) => {
     try {
-
         const {
             customerName,
+            customerPhone,
             customerAddress,
-            paymentMethod,
-            itemsSubtotal,
-            deliveryFee,
-            grandTotal,
-            cartItems
+            items,
+            totalAmount,
+            paymentMethod
         } = req.body;
 
-        // Basic validation: ensure critical data exists
-        if (!customerName || !cartItems || cartItems.length === 0) {
-            return res.status(400).json({ message: "Missing required order information" });
+        if (!customerName || !customerPhone || !customerAddress) {
+            return res.status(400).json({ message: "Missing customer details" });
+        }
+
+        if (!items || items.length === 0) {
+            return res.status(400).json({ message: "Cart is empty" });
         }
 
         const order = new Order({
             customerName,
+            customerPhone,
             customerAddress,
-            paymentMethod,
-            itemsSubtotal,
-            deliveryFee,
-            grandTotal,
-            cartItems
+            items,
+            totalAmount,
+            paymentMethod
         });
 
-        const savedOrder = await order.save();
+        const saved = await order.save();
 
-        res.status(201).json(savedOrder);
+        res.status(201).json(saved);
 
     } catch (err) {
-
         console.error(err);
-
-        res.status(500).json({
-            message: err.message
-        });
+        res.status(500).json({ message: err.message });
     }
 });
 
-
-// GET ALL ORDERS
+// GET ALL
 router.get("/", async (req, res) => {
     try {
-
-        const orders =
-            await Order.find()
-            .sort({ createdAt: -1 });
-
+        const orders = await Order.find().sort({ createdAt: -1 });
         res.json(orders);
-
     } catch (err) {
-
-        res.status(500).json({
-            message: err.message
-        });
+        res.status(500).json({ message: err.message });
     }
 });
 
-
-// UPDATE STATUS
+// UPDATE STATUS (FIXED)
 router.patch("/:id", async (req, res) => {
-
     try {
+        const { status } = req.body;
 
-        // Validate that status is provided
-        if (!req.body.status) {
-            return res.status(400).json({ message: "Status is required" });
+        if (!status) {
+            return res.status(400).json({ message: "Status required" });
         }
 
-        const updatedOrder =
-            await Order.findByIdAndUpdate(
-                req.params.id,
-                {
-                    status: req.body.status
-                },
-                {
-                    new: true, runValidators: true
-                }
-            );
+        const allowed = ["Pending", "Processing", "Shipped", "Delivered", "Cancelled"];
+        if (!allowed.includes(status)) {
+            return res.status(400).json({ message: "Invalid status" });
+        }
 
-        if (!updatedOrder) {
+        const updated = await Order.findByIdAndUpdate(
+            req.params.id,
+            { status },
+            { new: true, runValidators: true }
+        );
+
+        if (!updated) {
             return res.status(404).json({ message: "Order not found" });
         }
 
-        res.json(updatedOrder);
+        res.json(updated);
 
     } catch (err) {
-
-        res.status(400).json({
-            message:
-                "Failed to update status"
-        });
+        res.status(500).json({ message: err.message });
     }
 });
 
