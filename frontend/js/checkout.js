@@ -82,16 +82,18 @@ async function handleCheckout() {
         // 3. Transmit to Backend
          if (overlay) overlay.style.display = "flex";
 
+          console.log(
+    "Order URL:",
+    window.UniMartConfig.getEndpoint("orders")
+     );
+
        const response = await fetch(
        window.UniMartConfig.getEndpoint("orders"), {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(orderPayload)
         });
-        console.log(
-    "Order URL:",
-    window.UniMartConfig.getEndpoint("orders")
-);
+       
 
         if (!response.ok) throw new Error("Synchronization failed");
 
@@ -110,9 +112,12 @@ async function handleCheckout() {
         localStorage.removeItem("cart"); // Clear cart after success
         if (window.updateCartCount) window.updateCartCount();
 
-        setTimeout(() => {
-            window.location.href = `https://wa.me/97798XXXXXXXX?text=${encodeURIComponent(message)}`;
-        }, 1500);
+       const BUSINESS_WHATSAPP = "97798044069";
+
+       setTimeout(() => {
+           window.location.href =
+               `https://wa.me/${BUSINESS_WHATSAPP}?text=${encodeURIComponent(message)}`;
+       }, 1500);
 
     } catch (err) {
         console.error("Order Error:", err);
