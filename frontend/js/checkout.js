@@ -82,11 +82,16 @@ async function handleCheckout() {
         // 3. Transmit to Backend
          if (overlay) overlay.style.display = "flex";
 
-        const response = await fetch(`${window.UniMartConfig.BASE_URL}/api/orders`, {
+       const response = await fetch(
+       window.UniMartConfig.getEndpoint("orders"), {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(orderPayload)
         });
+        console.log(
+    "Order URL:",
+    window.UniMartConfig.getEndpoint("orders")
+);
 
         if (!response.ok) throw new Error("Synchronization failed");
 
