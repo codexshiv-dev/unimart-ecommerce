@@ -1,12 +1,26 @@
 // ==========================================================================
 // 🚀 PRODUCTION CHECKOUT ENGINE
 // ==========================================================================
+
 document.addEventListener("DOMContentLoaded", () => {
-    const btn = document.getElementById("checkoutBtn");
-    if (btn) btn.addEventListener("click", handleCheckout);
+    loadCheckoutCart();
+
+    const checkoutBtn = document.getElementById("checkoutBtn");
+    const mobileCheckoutBtn = document.getElementById("mobileCheckoutBtn");
+
+    if (checkoutBtn) {
+        checkoutBtn.addEventListener("click", handleCheckout);
+    }
+
+    if(mobileCheckoutBtn){
+       mobileCheckoutBtn.addEventListener("click", handleCheckout);
+    }
+   
 });
 
 async function handleCheckout() {
+
+ try {
     console.log("🚀 Checkout process initiated...");
     
     
@@ -34,9 +48,14 @@ async function handleCheckout() {
         
     }
 
-   if (cart.length === 0) {
+       if (!cart || cart.length === 0) {
         return window.showToast("Your cart is empty!", "warning");
-    }
+        }
+
+        if (!window.UniMartConfig) {
+            throw new Error("UniMartConfig missing");
+        }
+
     console.log("Validation OK");
 
     // 2. Calculations
@@ -58,10 +77,9 @@ async function handleCheckout() {
         }))
     };
 
-    // 3. Transmit to Backend
-    if (overlay) overlay.style.display = "flex";
+        // 3. Transmit to Backend
+         if (overlay) overlay.style.display = "flex";
 
-    try {
         const response = await fetch(`${window.UniMartConfig.BASE_URL}/api/orders`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
