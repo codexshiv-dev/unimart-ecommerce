@@ -32,12 +32,21 @@ async function handleCheckout() {
     
    
     // 1. Basic Data Retrieval
+    console.log("STEP 1");
     const name = nameInput?.value.trim();
     const address = addressInput?.value.trim();
     const phone = phoneInput?.value.trim();
+
+    console.log("NAME:", name);
+console.log("PHONE:", phone);
+console.log("ADDRESS:", address);
+
+console.log("STEP 2");
     const cart = (typeof getCart === "function") ? getCart() : [];
 
+console.log("CART:", cart);
 
+console.log("STEP 3");
     // 1. Validation using your new Toast System
     if (!name || !phone || !address) {
         return window.showToast("Please fill in all details! 🚚");
