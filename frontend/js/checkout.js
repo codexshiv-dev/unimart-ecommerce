@@ -20,14 +20,17 @@ document.addEventListener("DOMContentLoaded", () => {
 
 async function handleCheckout() {
 
+    // UI Elements
+    const nameInput = document.getElementById("userName");
+    const addressInput = document.getElementById("userAddress");
+    const phoneInput = document.getElementById("userPhone");
+    const overlay = document.getElementById("orderOverlay");
+
  try {
     console.log("🚀 Checkout process initiated...");
     
     
-   // UI Elements
-    const nameInput = document.getElementById("userName");
-    const addressInput = document.getElementById("userAddress");
-    const phoneInput = document.getElementById("userPhone");
+   
     // 1. Basic Data Retrieval
     const name = nameInput?.value.trim();
     const address = addressInput?.value.trim();
@@ -77,8 +80,6 @@ async function handleCheckout() {
     };
 
         // 3. Transmit to Backend
-       const overlay = document.getElementById("orderOverlay");
-
          if (overlay) overlay.style.display = "flex";
 
         const response = await fetch(`${window.UniMartConfig.BASE_URL}/api/orders`, {
