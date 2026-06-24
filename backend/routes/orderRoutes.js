@@ -6,6 +6,7 @@ const Order = require("../models/Order");
 router.post("/", async (req, res) => {
     try {
         const {
+            orderId,
             customerName,
             customerPhone,
             customerAddress,
@@ -23,12 +24,14 @@ router.post("/", async (req, res) => {
         }
 
         const order = new Order({
+            orderId,
             customerName,
             customerPhone,
             customerAddress,
             items,
             totalAmount,
-            paymentMethod
+            paymentMethod,
+            status: "Pending"
         });
 
         const saved = await order.save();
@@ -36,7 +39,7 @@ router.post("/", async (req, res) => {
         res.status(201).json(saved);
 
     } catch (err) {
-        console.error(err);
+        console.error("Backend Error:", err);
         res.status(500).json({ message: err.message });
     }
 });
