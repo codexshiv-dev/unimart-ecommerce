@@ -8,6 +8,8 @@ const rateLimit = require("express-rate-limit");
 
 const app = express();
 
+app.set('trust proxy', 1);
+
 // 1. SETUP FIRST
 app.use(helmet()); 
 

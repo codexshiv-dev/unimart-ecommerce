@@ -5,19 +5,13 @@
 document.addEventListener("DOMContentLoaded", () => {
     loadCheckoutCart();
 
-    const checkoutBtn = document.getElementById("checkoutBtn");
-    const mobileCheckoutBtn = document.getElementById("mobileCheckoutBtn");
+    // Bind both buttons to the SAME function
+    const desktopBtn = document.getElementById("checkoutBtn");
+    const mobileBtn = document.getElementById("mobileCheckoutBtn");
 
-    if (checkoutBtn) {
-        checkoutBtn.addEventListener("click", handleCheckout);
-    }
-
-    if(mobileCheckoutBtn){
-       mobileCheckoutBtn.addEventListener("click", handleCheckout);
-    }
-   
+    if (desktopBtn) desktopBtn.addEventListener("click", handleCheckout);
+    if (mobileBtn) mobileBtn.addEventListener("click", handleCheckout);
 });
-
 async function handleCheckout() {
 
     // UI Elements
@@ -32,21 +26,12 @@ async function handleCheckout() {
     
    
     // 1. Basic Data Retrieval
-    console.log("STEP 1");
     const name = nameInput?.value.trim();
     const address = addressInput?.value.trim();
     const phone = phoneInput?.value.trim();
-
-    console.log("NAME:", name);
-console.log("PHONE:", phone);
-console.log("ADDRESS:", address);
-
-console.log("STEP 2");
     const cart = (typeof getCart === "function") ? getCart() : [];
 
-console.log("CART:", cart);
 
-console.log("STEP 3");
     // 1. Validation using your new Toast System
     if (!name || !phone || !address) {
         return window.showToast("Please fill in all details! 🚚");
@@ -75,6 +60,7 @@ console.log("STEP 3");
     let total = subtotal + delivery;
 
     const orderPayload = {
+        orderId: "ORD-" + Date.now(), // Ensure this matches backend schema
         customerName: name,
         customerAddress: address,
         customerPhone: cleanPhone,
@@ -94,7 +80,7 @@ console.log("STEP 3");
           console.log(
     "Order URL:",
     window.UniMartConfig.getEndpoint("orders")
-     );
+);
 
        const response = await fetch(
        window.UniMartConfig.getEndpoint("orders"), {
