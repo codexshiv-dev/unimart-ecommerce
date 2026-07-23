@@ -1,20 +1,30 @@
 require("dotenv").config();
+
+const dns = require("dns");
+
+// TEMPORARY TEST
+dns.setServers(["8.8.8.8"]);
+console.log("DNS Servers:", dns.getServers());
+
+
 const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
-const helmet = require("helmet"); 
+const helmet = require("helmet");
 const mongoSanitize = require("express-mongo-sanitize");
 const rateLimit = require("express-rate-limit");
+const cookieParser = require("cookie-parser");
 
 const app = express();
 
 app.set('trust proxy', 1);
 
 // 1. SETUP FIRST
-app.use(helmet()); 
+app.use(helmet());
 
 // 2. PARSE JSON FIRST (Crucial: Data must exist before it can be sanitized)
-app.use(express.json({ limit: '20mb' })); 
+app.use(express.json({ limit: '20mb' }));
+app.use(cookieParser()); // makes req.cookies available, needed to read the httpOnly auth cookie
 // Add this block directly above app.use(mongoSanitize())
 app.use((req, res, next) => {
     Object.defineProperty(req, 'query', {
@@ -29,13 +39,14 @@ app.use((req, res, next) => {
 
 
 // 3. SANITIZE SECOND
-app.use(mongoSanitize()); 
+app.use(mongoSanitize());
 
 // 4. RATE LIMITER
 const limiter = rateLimit({
     windowMs: 15 * 60 * 1000,
     max: 100,
-    message: { message: "Too many requests, please slow down." }
+    message: { success: false,
+        message: "Too many requests, please slow down." }
 });
 app.use("/api/", limiter);
 
@@ -46,13 +57,13 @@ app.use(cors({
     origin: function (origin, callback) {
         // ALLOW requests with no origin (like mobile apps, postman, or direct browser URLs)
         if (!origin) return callback(null, true);
-        
-        if (allowedOrigins.includes(origin) || 
-            origin.includes("localhost") || 
+
+        if (allowedOrigins.includes(origin) ||
+            origin.includes("localhost") ||
             origin.includes("127.0.0.1")) {
             callback(null, true);
         } else {
-            // Instead of throwing an Error (which crashes the request), 
+            // Instead of throwing an Error (which crashes the request),
             // return false to simply deny access cleanly
             callback(null, false);
         }
@@ -74,6 +85,7 @@ const connectDB = async () => {
 connectDB();
 
 // 🚀 ROUTES
+app.use("/api/auth", require("./routes/authRoutes"));
 app.use("/api/products", require("./routes/productRoutes"));
 app.use("/api/orders", require("./routes/orderRoutes"));
 app.get("/api/health", (req, res) => res.status(200).json({ status: "ok" }));
