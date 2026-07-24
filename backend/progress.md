@@ -20,7 +20,7 @@
 | --------------- | ------------- | -------- |
 | Authentication  | ✅ Completed   | 100%     |
 | Categories      | ✅ Completed | 100%       |
-| Products        | 🟨 Testing / QA | 0%       |
+| Products        | ✅ Completed | 100%      |
 | Image Upload    | ⬜ Not Started | 0%       |
 | Cart            | ⬜ Not Started | 0%       |
 | Orders          | ✅ Completed | 100%       |
