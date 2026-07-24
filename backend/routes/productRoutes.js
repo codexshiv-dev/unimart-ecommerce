@@ -7,8 +7,8 @@ const {
   createProduct,
   updateProduct,
   deleteProduct,
-  updateProductStatus // Make sure you import this, or use updateProduct
 } = require("../controllers/productController");
+const { protect, authorize } = require("../middleware/auth");
 
 // GET all products
 router.get("/", getProducts);
@@ -17,15 +17,15 @@ router.get("/", getProducts);
 router.get("/:id", getProductById);
 
 // CREATE product
-router.post("/", createProduct);
+router.post("/", protect, authorize("admin"), createProduct);
 
 // UPDATE product (PUT)
-router.put("/:id", updateProduct);
+router.put("/:id", protect, authorize("admin"), updateProduct);
 
-//ADD THIS LINE: Allows PATCH requests for partial updates
-router.patch("/:id", updateProduct); 
+// Allows PATCH requests for partial updates
+router.patch("/:id", protect, authorize("admin"), updateProduct);
 
 // DELETE product
-router.delete("/:id", deleteProduct);
+router.delete("/:id", protect, authorize("admin"), deleteProduct);
 
 module.exports = router;

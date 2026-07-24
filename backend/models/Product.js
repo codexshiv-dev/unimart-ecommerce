@@ -39,6 +39,7 @@ const productSchema = new mongoose.Schema(
     sku: {
       type: String,
       unique: true,
+      sparse: true,
     },
     isFeatured: {
       type: Boolean,
