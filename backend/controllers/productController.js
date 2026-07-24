@@ -1,4 +1,5 @@
 const Product = require("../models/Product");
+const Category = require("../models/Category");
 
 /**
  * ==========================================================================
@@ -19,7 +20,24 @@ exports.getProducts = async (req, res, next) => {
     }
 
     if (search) queryPipeline.name = { $regex: search, $options: "i" };
-    if (category && category !== "all") queryPipeline.category = category;
+
+    // category is now an ObjectId reference, but the frontend still filters by
+    // the human-readable slug (e.g. ?category=toys) - resolve it here.
+    if (category && category !== "all") {
+      const categoryDoc = await Category.findOne({ slug: category.toLowerCase().trim() });
+      if (!categoryDoc) {
+        // No matching category - return an empty result explicitly rather than
+        // querying with a filter that can't match anything, or crash trying to
+        // cast an arbitrary string into an ObjectId.
+        return res.status(200).json({
+          success: true,
+          count: 0,
+          pagination: { totalItems: 0, totalPages: 0, currentPage: Number(page), limit: Number(limit) },
+          data: [],
+        });
+      }
+      queryPipeline.category = categoryDoc._id;
+    }
 
     if (minPrice || maxPrice) {
       queryPipeline.price = {};
@@ -31,6 +49,7 @@ exports.getProducts = async (req, res, next) => {
     
     const [products, totalProducts] = await Promise.all([
       Product.find(queryPipeline)
+        .populate("category", "name slug")
         .sort({ createdAt: -1 })
         .skip(skipIndex)
         .limit(Number(limit))
@@ -57,7 +76,7 @@ exports.getProducts = async (req, res, next) => {
 // @desc   Get single product by Object Identifier
 exports.getProductById = async (req, res, next) => {
   try {
-    const product = await Product.findById(req.params.id).lean();
+    const product = await Product.findById(req.params.id).populate("category", "name slug").lean();
     if (!product) return res.status(404).json({ success: false, message: "Product not found." });
     res.status(200).json({ success: true, data: product });
   } catch (error) {
@@ -72,10 +91,20 @@ exports.createProduct = async (req, res, next) => {
   try {
     const { name, price, oldPrice, category, stockQuantity, description, images, tags, sku } = req.body;
 
+    // Category is now a reference, not free text - confirm it actually points
+    // at a real Category document before saving, so Product.category never
+    // holds a dangling/invalid id.
+    if (category) {
+      const categoryExists = await Category.exists({ _id: category });
+      if (!categoryExists) {
+        return res.status(400).json({ success: false, message: "Invalid category" });
+      }
+    }
+
     const productData = {
       name: name?.trim(),
       description: description?.trim(),
-      category: category?.toLowerCase()?.trim(),
+      category: category || undefined,
       price: Math.abs(Number(price || 0)),
       oldPrice: oldPrice ? Math.abs(Number(oldPrice)) : undefined,
       stockQuantity: Math.abs(Math.floor(Number(stockQuantity || 0))),

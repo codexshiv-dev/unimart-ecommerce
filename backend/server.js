@@ -7,6 +7,8 @@ dns.setServers(["8.8.8.8"]);
 console.log("DNS Servers:", dns.getServers());
 
 
+
+
 const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
@@ -45,8 +47,7 @@ app.use(mongoSanitize());
 const limiter = rateLimit({
     windowMs: 15 * 60 * 1000,
     max: 100,
-    message: { success: false,
-        message: "Too many requests, please slow down." }
+    message: { message: "Too many requests, please slow down." }
 });
 app.use("/api/", limiter);
 
@@ -86,6 +87,7 @@ connectDB();
 
 // 🚀 ROUTES
 app.use("/api/auth", require("./routes/authRoutes"));
+app.use("/api/categories", require("./routes/categoryRoutes"));
 app.use("/api/products", require("./routes/productRoutes"));
 app.use("/api/orders", require("./routes/orderRoutes"));
 app.get("/api/health", (req, res) => res.status(200).json({ status: "ok" }));
