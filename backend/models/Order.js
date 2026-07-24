@@ -90,11 +90,15 @@ const orderSchema = new mongoose.Schema({
 });
 
 // AUTO orderId generator (PRODUCTION SAFE)
-orderSchema.pre("save", function (next) {
+// Runs in pre("validate"), not pre("save") - orderId is required, and
+// validation runs BEFORE pre("save") hooks fire.
+// No `next` parameter - Mongoose 9's hook execution doesn't support the old
+// callback-style next() the way earlier versions did. Same fix already
+// applied to User.js's password-hashing hook.
+orderSchema.pre("validate", function () {
     if (!this.orderId) {
         this.orderId = "ORD-" + Date.now() + "-" + Math.floor(Math.random() * 1000);
     }
-    next();
 });
 
 module.exports = mongoose.model("Order", orderSchema);

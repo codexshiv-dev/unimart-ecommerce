@@ -1,12 +1,3 @@
-# Technical Debt Summary
-
-Open Items: 7
-
-Completed Items: 6
-
-Last Updated:
-24 July 2026
-
 # UNiMART — Technical Debt Log
 
 This file is the single source of truth for every intentionally deferred issue
@@ -59,7 +50,7 @@ Update this file whenever:
   single responsibility per the agreed workflow.
 - **Risk Level:** High (live data exposure — real customer PII)
 - **Planned Milestone:** Order Module
-- **Status:** Open
+- **Status:** Completed (Order Management & Security Module)
 
 ---
 
@@ -74,7 +65,7 @@ Update this file whenever:
   consolidate into the controller and delete the dead duplicate.
 - **Risk Level:** Medium (maintainability — no functional bug today)
 - **Planned Milestone:** Order Module
-- **Status:** Open
+- **Status:** Completed (Order Management & Security Module) — logic consolidated into `orderController.js`, `orderRoutes.js` is now a thin wiring file matching the Products/Categories pattern
 
 ---
 
@@ -188,3 +179,39 @@ Update this file whenever:
 - **Risk Level:** Medium
 - **Planned Milestone:** Product Module
 - **Status:** Completed (Module 3 — Product Management)
+
+---
+
+## 14. Order pricing trusts client-submitted values
+
+- **Description:** `createOrder` validates that item prices and `totalAmount`
+  are positive numbers, but does not verify they match the real, current
+  price of each product in the `Product` collection. A request could submit
+  a full cart of expensive items with a low `totalAmount` and low per-item
+  prices, and the server would accept it as-is.
+- **Why deferred:** A proper fix means calculating the order total
+  server-side from `Product.price` at the moment of order creation, which
+  is a pricing-authority decision that belongs together with the broader
+  Checkout redesign (cart integrity, stock checks, and pricing all need to
+  be considered as one unit) - not bolted on as a partial check now.
+- **Risk Level:** Medium-High (price tampering)
+- **Planned Milestone:** Checkout Module
+- **Status:** Open
+
+---
+
+## 15. API response shape is inconsistent across resources
+
+- **Description:** `authController.js`, `categoryController.js`, and
+  `productController.js` all return `{ success, data, message }`-shaped
+  JSON. `orderController.js` returns raw objects/arrays with `{ message }`
+  only on error, no `success` field - the original shape, deliberately
+  preserved during the Order module to avoid breaking whatever frontend
+  code already parses order responses in that format.
+- **Why deferred:** Standardizing this means touching frontend JS
+  (checkout, admin orders page) that hasn't been reviewed yet. Not safe to
+  change as a side effect of a security-focused module.
+- **Risk Level:** Low (consistency/maintainability, not a functional bug)
+- **Planned Milestone:** A dedicated API standardization pass, or naturally
+  during the Checkout Module when order-handling frontend code is touched anyway
+- **Status:** Open
