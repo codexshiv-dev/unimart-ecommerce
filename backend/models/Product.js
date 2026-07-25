@@ -24,7 +24,16 @@ const productSchema = new mongoose.Schema(
       type: Number,
     },
     images: {
-      type: [String], // Array of image URLs
+      // Array of {url, publicId} - publicId is required to delete the image
+      // from Cloudinary later. _id:false because each image doesn't need its
+      // own separate identifier beyond publicId, which already serves that role.
+      type: [
+        {
+          url: { type: String, required: true },
+          publicId: { type: String, required: true },
+          _id: false,
+        },
+      ],
       default: [],
     },
     stockQuantity: {

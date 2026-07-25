@@ -1,5 +1,6 @@
 const Product = require("../models/Product");
 const Category = require("../models/Category");
+const cloudinary = require("../config/cloudinary");
 
 /**
  * ==========================================================================
@@ -11,7 +12,7 @@ const Category = require("../models/Category");
 // for fields that weren't included in the request, since a PATCH-style partial
 // update shouldn't fail just because it left `name` out.
 const validateProductFields = (data, isUpdate = false) => {
-  const { name, price, oldPrice, stockQuantity } = data;
+  const { name, price, oldPrice, stockQuantity, images } = data;
 
   if (!isUpdate || name !== undefined) {
     if (!name || !String(name).trim()) {
@@ -37,6 +38,21 @@ const validateProductFields = (data, isUpdate = false) => {
     const numericStock = Number(stockQuantity);
     if (isNaN(numericStock) || numericStock < 0 || !Number.isInteger(numericStock)) {
       return "Stock quantity must be a non-negative whole number";
+    }
+  }
+
+  // Images are now {url, publicId} objects, not bare strings. publicId in
+  // particular is required for the automatic Cloudinary cleanup on delete to
+  // work - without it, that image can never be removed from storage later.
+  if (images !== undefined) {
+    if (!Array.isArray(images)) {
+      return "Images must be an array";
+    }
+    const hasInvalidImage = images.some(
+      (img) => !img || typeof img !== "object" || !img.url || !img.publicId
+    );
+    if (hasInvalidImage) {
+      return "Each image must include a valid url and publicId";
     }
   }
 
@@ -233,6 +249,24 @@ exports.deleteProduct = async (req, res, next) => {
         success: false,
         message: "Cannot delete an active product. Set its status to inactive first.",
       });
+    }
+
+    // Clean up Cloudinary images before removing the product record, so no
+    // orphaned files are left behind in storage. A failure to delete one
+    // image doesn't block the product deletion itself - it's logged
+    // server-side instead, since the admin's primary intent (remove the
+    // product) shouldn't be blocked by a secondary cleanup step failing.
+    if (Array.isArray(product.images) && product.images.length > 0) {
+      await Promise.all(
+        product.images
+          .filter((img) => img.publicId)
+          .map((img) =>
+            cloudinary.uploader.destroy(img.publicId).catch((err) => {
+              console.error(`⚠️ Failed to delete Cloudinary image ${img.publicId}:`, err.message);
+              return null;
+            })
+          )
+      );
     }
 
     await product.deleteOne();

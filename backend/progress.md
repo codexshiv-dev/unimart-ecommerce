@@ -675,3 +675,43 @@ Status
 ✅ Order Management & Security
 
 Ready for Image Upload Module.
+
+
+# ✅ Module 5 — Cloudinary Image Upload
+
+## Status
+
+🟩 Complete
+
+## Features
+
+- Cloudinary integration
+- Secure image upload
+- Multi-image upload (max 5)
+- Multer memory storage
+- Image type validation
+- Image size validation (5MB)
+- Admin-only upload
+- Manual image deletion
+- Cascade image deletion when product is deleted
+- Product schema updated to store:
+  - url
+  - publicId
+
+## Testing
+
+✅ Upload image
+✅ Upload multiple images
+✅ Invalid file type
+✅ Maximum file count
+✅ File size validation
+✅ Product creation using uploaded images
+✅ Image validation
+✅ Manual delete
+✅ Cascade delete
+
+## Deferred
+
+- Upload rate limiter stress test
+- Duplicate image detection
+- Primary image support
