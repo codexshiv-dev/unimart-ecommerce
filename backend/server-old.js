@@ -1,5 +1,6 @@
 require("dotenv").config();
 
+
 const dns = require("dns");
 
 // TEMPORARY TEST
@@ -90,7 +91,6 @@ app.use("/api/categories", require("./routes/categoryRoutes"));
 app.use("/api/products", require("./routes/productRoutes"));
 app.use("/api/orders", require("./routes/orderRoutes"));
 app.use("/api/uploads", require("./routes/uploadRoutes"));
-app.use("/api/cart", require("./routes/cartRoutes"));
 app.get("/api/health", (req, res) => res.status(200).json({ status: "ok" }));
 
 // 4. GLOBAL ERROR HANDLER (Don't let errors leak internal details!)
