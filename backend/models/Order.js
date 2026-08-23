@@ -9,6 +9,15 @@ const orderSchema = new mongoose.Schema({
         index:true
     },
 
+    // Optional - present for logged-in checkouts, absent for guest orders.
+    // Guest checkout must remain fully supported, so this is never required.
+    user:{
+        type:mongoose.Schema.Types.ObjectId,
+        ref:"User",
+        required:false,
+        index:true
+    },
+
     customerName:{
         type:String,
         required:true,

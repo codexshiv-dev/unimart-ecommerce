@@ -1,11 +1,11 @@
 const express = require("express");
 const router = express.Router();
 
-const { createOrder, getAllOrders, updateOrderStatus } = require("../controllers/orderController");
+const { getAllOrders, updateOrderStatus } = require("../controllers/orderController");
 const { protect, authorize } = require("../middleware/auth");
 
-// CREATE ORDER - stays public to preserve guest checkout
-router.post("/", createOrder);
+// Order creation no longer lives here - see routes/checkoutRoutes.js
+// (POST /api/checkout). This file is now admin-management only.
 
 // GET ALL ORDERS - admin only
 router.get("/", protect, authorize("admin"), getAllOrders);

@@ -79,7 +79,7 @@ Update this file whenever:
   supported, so this field will be optional.
 - **Risk Level:** Medium
 - **Planned Milestone:** Checkout / Order Management Module
-- **Status:** Open
+- **Status:** Completed (Checkout Module — `Order.user` added, optional)
 
 ---
 
@@ -196,7 +196,9 @@ Update this file whenever:
   be considered as one unit) - not bolted on as a partial check now.
 - **Risk Level:** Medium-High (price tampering)
 - **Planned Milestone:** Checkout Module
-- **Status:** Open
+- **Status:** Completed (Checkout Module — `POST /api/checkout` resolves
+  price/status/stock server-side for every item; old client-trusting
+  `POST /api/orders` removed entirely, not just bypassed)
 
 ---
 
@@ -326,4 +328,24 @@ Update this file whenever:
   be enforced right before a purchase is finalized, not earlier.
 - **Risk Level:** Medium
 - **Planned Milestone:** Checkout Module (alongside #14)
+- **Status:** Completed (Checkout Module — atomic `findOneAndUpdate` stock
+  decrement per item, inside a transaction with the rest of the order)
+
+---
+
+## 23. Checkout has no duplicate-submission (idempotency) protection
+
+- **Description:** A double-click or network retry on `POST /api/checkout`
+  would currently create two separate orders and decrement stock twice -
+  there's no idempotency key or dedup mechanism.
+- **Why deferred:** A correct fix (client-generated idempotency key + a
+  server-side dedup lookup) is a real feature, not proportional to bundle
+  into this pass. The interim mitigation is frontend-side (disable the
+  submit button after first click), which belongs to the Frontend Module.
+  Flagged explicitly here rather than silently left out, since it's
+  financial-correctness-adjacent.
+- **Risk Level:** Medium
+- **Planned Milestone:** Frontend Module (interim), true fix TBD
 - **Status:** Open
+- **Status:** Open
+
