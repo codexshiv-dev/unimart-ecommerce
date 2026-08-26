@@ -1,244 +1,99 @@
-// ==========================================
-// 🏬 UNIMART CENTRAL PRODUCT VIEW ENGINE
-// ==========================================
-if (window.location.pathname.includes("product.html")) {
-    initializeProductPage();
-}
-function setupBackButton() {
-    const backBtn = document.getElementById("backBtn");
-    if (backBtn) {
-        backBtn.onclick = () => window.history.back();
+/**
+ * UNiMART — Product detail page (product.html).
+ * Related products now request the backend's own category filter
+ * (?category=slug&limit=6) instead of fetching the entire catalog and
+ * filtering client-side.
+ */
+(() => {
+  const params = new URLSearchParams(window.location.search);
+  const productId = params.get("id");
+
+  const btnCart = document.getElementById("btnCart");
+  const whatsappBtn = document.getElementById("whatsappBtn");
+
+  const loadRelated = async (product) => {
+    const slug = Normalize.getCategorySlug(product);
+    if (!slug) {
+      window.renderRelatedProducts?.([]);
+      return;
     }
-}
-window.setupBackButton = setupBackButton; // Ensure it's available globally
-     
-async function initializeProductPage() {
-
-    setupBackButton();
-
-    const params =
-        new URLSearchParams(window.location.search);
-
-    const productId =
-        params.get("id");
-
-    if (!productId) {
-
-        alert("No product selected.");
-
-        window.location.href =
-            "index.html";
-
-        return;
-    }
-
-    await  loadProduct(productId);
-
-}
-async function loadProduct(productId) {
     try {
+      const res = await ProductService.getProducts({ category: slug, limit: 7, onlyActive: true });
+      const related = (res?.data || []).filter((p) => p._id !== product._id).slice(0, 6);
+      window.renderRelatedProducts?.(related);
+    } catch (error) {
+      window.renderRelatedProducts?.([]);
+    }
+  };
 
-        const product =
-            await ProductService.getProductById(productId);
+  const init = async () => {
+    if (!productId) {
+      window.location.href = UniMartConfig.getPath("index.html");
+      return;
+    }
 
-        if (!product || !product._id) {
-            throw new Error("Invalid product data received");
+    let product;
+    try {
+      product = await ProductService.getProductById(productId);
+    } catch (error) {
+      product = null;
+    }
+
+    if (!product) {
+      window.showToast?.("Product not found");
+      setTimeout(() => (window.location.href = UniMartConfig.getPath("index.html")), 1200);
+      return;
+    }
+
+    document.title = `${product.name} - Unimart`;
+
+    window.renderGallery?.(product);
+    window.renderProductInfo?.(product);
+    window.renderStockInfo?.(product);
+    window.renderTags?.(product);
+    window.renderRibbons?.(product);
+    window.renderRating?.(product);
+    loadRelated(product);
+
+    const isUnavailable = product.status !== "active";
+    if (btnCart) {
+      btnCart.disabled = isUnavailable;
+      btnCart.textContent = isUnavailable ? "Unavailable" : "Add to Cart";
+
+      let isSubmitting = false;
+      btnCart.addEventListener("click", async () => {
+        if (isUnavailable || isSubmitting) return;
+
+        isSubmitting = true;
+        btnCart.disabled = true;
+        btnCart.textContent = "Adding...";
+
+        try {
+          await CartState.addItem(Normalize.product(product), 1);
+          window.showToast?.("Added to cart");
+          window.updateCartBadge?.();
+
+          // Clear success state: button becomes an explicit "go to cart"
+          // action instead of silently returning to "Add to Cart" (which
+          // invited repeat clicks to stack quantity by accident).
+          btnCart.textContent = "Go to Cart";
+          btnCart.disabled = false;
+          btnCart.onclick = () => { window.location.href = UniMartConfig.getPath("pages/cart.html"); };
+        } catch (error) {
+          window.showToast?.(error.message || "Could not add to cart");
+          btnCart.textContent = "Add to Cart";
+          btnCart.disabled = false;
+          isSubmitting = false;
         }
-
-        await processProduct(product);
-
-    } catch (err) {
-
-        console.error(err);
-
-        alert("Error loading product");
-
-        window.location.href = "index.html";
-    }
-}
-
-   
-async function loadRelatedProducts(product){
-
-    try{
-
-
-      
-      const allProducts =await ProductService.getProducts();
-
-        const related =
-            allProducts.filter(p =>
-                p._id !== product._id &&
-                p.category?.toLowerCase() ===
-                product.category?.toLowerCase() &&
-                p.status !== "inactive"
-            );
-
-        renderRelatedProducts(
-            related.slice(0,6)
-        );
-
+      });
     }
 
-    catch(err){
-
-        console.error(
-            "Related products error:",
-            err
-        );
-
+    if (whatsappBtn) {
+      const message = encodeURIComponent(`Hi, I'm interested in "${product.name}" (₹${product.price})`);
+      whatsappBtn.href = `https://wa.me/9779700013011?text=${message}`;
     }
+  };
 
-}
+  document.addEventListener("DOMContentLoaded", init);
+})();
 
-async function processProduct(product) {
-
-      // Block access to inactive products
-      if (product.status === 'inactive') {
-        alert("This product is currently unavailable.");
-        window.location.href = "index.html";
-        return;
-      }
-     
-
-        //calling
-        const zoomImage = document.getElementById("zoomImage");
-         const isOutOfStock = renderStockInfo(product);
-
-         
-        //  renderStockInfo(product);
-         renderGallery(product, zoomImage);
-         renderRating(product);
-         renderTags(product);
-         renderRibbons(product);
-        
-         setupCartActions(product, isOutOfStock);
-         setupShareButton(product);
-        await loadRelatedProducts(product);
-         renderProductInfo(product);
-      
-    
-}
- 
-     
-    
-      function setupCartActions( product, isOutOfStock ){
-             // CART & WHATSAPP BUTTON LOGIC 
-             const quantity = 1;   
-             const btnCart = document.querySelector(".btn-cart");
-             const whatsappBtn = document.getElementById("whatsappBtn");
-             const cart = JSON.parse(localStorage.getItem("cart")) || [];
-             const isInCart = cart.some(item => item._id === product._id);
-
-            if (isOutOfStock) {
-             
-               if (btnCart) {
-                 btnCart.disabled = true;
-                 btnCart.textContent = "Out of Stock";
-               }
-             
-               if (whatsappBtn) {
-                 whatsappBtn.style.display = "none";
-               }
-             
-             } else {
-             
-               if (btnCart) {
-             
-                 if (isInCart) {
-             
-                   btnCart.textContent = "Go to Cart";
-             
-                   btnCart.onclick = () => {
-                     window.location.href = "/pages/cart.html";
-                   };
-             
-                 } else {
-             
-                   btnCart.onclick = () => {
-             
-                     if (typeof addToCart === "function") {
-     
-                       addToCart(product,  quantity);
-                        updateCartCount();
-                     
-                     }
-             
-                     showToast("Added to cart! 🛍️");
-             
-                     btnCart.innerHTML =
-                       `<i class="fa-solid fa-check"></i> Added`;
-             
-                     btnCart.style.background = "#19af50";
-             
-                     setTimeout(() => {
-             
-                       btnCart.textContent = "Go to Cart";
-             
-                       btnCart.style.background = "";
-             
-                       btnCart.onclick = () => {
-                         window.location.href = "/pages/cart.html";
-                       
-                       };
-             
-                     }, 1000);
-                   };
-                 }
-               }
-             
-                  if (whatsappBtn) {
-
-                       whatsappBtn.onclick = e => {
-                   
-                           e.preventDefault();
-                   
-                          if (typeof addToCart === "function") {
-
-                              addToCart(product, quantity);
-                          
-                              updateCartCount();
-                          }
-                           window.location.href =
-                               "/pages/checkout.html";
-                          
-                   
-                       };
-
-                     }   
-             }
-      }
-
-      function setupShareButton(product) {
-         // SHARE LOGIC
-          const shareBtn = document.getElementById("shareBtn");
-          if(shareBtn) {
-            shareBtn.onclick = () => {
-              if (navigator.share) {
-                navigator.share({ title: product.name, url: window.location.href });
-              } else {
-               navigator.clipboard
-                  .writeText(window.location.href)
-                  .then(() => {
-                
-                    alert("Link copied!");
-                
-                  })
-                  .catch(() => {
-                
-                    alert("Unable to copy link.");
-                
-                  });
-              }
-            };
-          }
-   
-
-      }
-     
-
-
-      
-     
-
-     

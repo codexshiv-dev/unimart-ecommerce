@@ -342,4 +342,25 @@ body.menu-open {
   .hamburger {
     display: block;
   }
+
+  /* Touch targets: icon-only buttons need real padding, not just a large
+     font-size, to be comfortable to tap. */
+  .hamburger,
+  .header-right a {
+    min-width: 40px;
+    min-height: 40px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .mobile-filter-btn {
+    display: flex;
+  }
+}
+
+@media (min-width: 769px) {
+  .mobile-filter-btn {
+    display: none;
+  }
 }

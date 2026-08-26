@@ -2,84 +2,64 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-
     <title>Unimart – Smart Gadgets & Kids Products in Nepal</title>
     <link rel="stylesheet" href="css/style.css" />
     <link rel="stylesheet" href="css/header.css" />
     <link rel="stylesheet" href="css/product.css" />
     <link rel="stylesheet" href="css/footer.css" />
-    <link
-      rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
-    <link
-      rel="icon"
-      type="images/png"
-      sizes="32x32"
-      href="../assets/icons/favicon-letter.svg" />
-    <meta
-      name="description"
-      content="Unimart offers smart gadgets, kids toys, night lamps and home decor in Nepal. Order easily via WhatsApp. Fast delivery & trusted store." />
-    <meta
-      name="keywords"
-      content="unimart, gadgets nepal, kids toys nepal, night lamp nepal, online store nepal" />
+    <link rel="stylesheet" href="css/components.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+    <link rel="icon" type="images/png" sizes="32x32" href="assets/icons/favicon-letter.svg" />
+    <meta name="description" content="Unimart offers smart gadgets, kids toys, night lamps and home decor in Nepal. Order easily via WhatsApp. Fast delivery & trusted store." />
+    <meta name="keywords" content="unimart, gadgets nepal, kids toys nepal, night lamp nepal, online store nepal" />
     <meta name="author" content="Unimart" />
     <meta property="og:title" content="Unimart - Smart Gadgets Store" />
-    <meta
-      property="og:description"
-      content="Smart gadgets, toys & night lights for kids. Order easily via WhatsApp." />
+    <meta property="og:description" content="Smart gadgets, toys & night lights for kids. Order easily via WhatsApp." />
     <meta property="og:type" content="website" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   </head>
   <body>
-    <!-- header -->
-    <div id="header" class="site-header"></div>
+    <!-- ================= HEADER (inlined - no runtime fetch) ================= -->
+    <header class="site-header">
+      <div class="header-top">
+        <div class="header-left">
+          <button class="hamburger" id="openMenu" aria-label="Open Menu"><i class="fa fa-bars"></i></button>
+          <div class="logo"><a href="index.html"><img src="assets/icons/logo.svg" alt="Unimart Logo" /></a></div>
+        </div>
+        <div class="header-search desktop-search">
+          <input type="text" placeholder="Search your products..." id="searchInputDesktop" />
+          <button aria-label="Search"><i class="fa fa-search"></i></button>
+        </div>
+        <div class="header-right footer-social">
+          <a href="#" aria-label="Wishlist"><i class="fa-regular fa-heart"></i></a>
+          <a href="pages/cart.html" aria-label="Cart" class="cart-wrapper">
+            <i class="fa-solid fa-cart-shopping"></i>
+            <span id="cartCount" class="cart-count">0</span>
+          </a>
+          <a href="#" aria-label="Account" id="accountLink"><i class="fa-regular fa-user"></i></a>
+        </div>
+      </div>
+      <form class="header-search mobile-search" role="search" onsubmit="return false;">
+        <input type="search" placeholder="Search your products..." id="searchInputMobile" />
+        <button type="submit" aria-label="Search"><i class="fa fa-search"></i></button>
+      </form>
+    </header>
+
     <!-- Mobile Sidebar Menu -->
     <aside class="mobile-menu" id="mobileMenu">
       <div class="mobile-menu-header">
-        <!-- <span>Menu</span> -->
-        <!-- <h3>Menu</h3> -->
-        <div class="logo">
-          <a href="/index.html">
-            <img src="../assets/icons/logo.svg" alt="Unimart Logo"
-          /></a>
-        </div>
+        <div class="logo"><a href="index.html"><img src="assets/icons/logo.svg" alt="Unimart Logo" /></a></div>
         <button id="closeMenu">✖</button>
       </div>
       <nav class="mobile-nav">
         <button class="dropdown-toggle">Categories <span>▾</span></button>
-
-        <div class="dropdown-menu">
-          <button class="mobile-category active" data-category="all">
-            All
-          </button>
-          <button class="mobile-category" data-category="lights">
-            💡 Lights
-          </button>
-          <button class="mobile-category" data-category="toys">
-            🧸 Smart Toys
-          </button>
-          <button class="mobile-category" data-category="watches">
-            ⌚ Smart Watches
-          </button>
-          <button class="mobile-category" data-category="decor">
-            🏠 Home Decor
-          </button>
-          <button class="mobile-category" data-category="games">🎮Games</button>
-          <button class="mobile-category" data-category="electronics">
-            🖨 Electronics
-          </button>
-        </div>
-
+        <div class="dropdown-menu"><!-- populated dynamically from GET /api/categories --></div>
         <hr />
-
         <a href="#">Wishlist</a>
-        <a href="#">Cart</a>
+        <a href="pages/cart.html">Cart</a>
         <a href="#" class="contact-btn">Contact</a>
         <div class="product-action-bar">
-          <!-- <button class="btn-cart">Add to Cart</button> -->
-          <a id="whatsappBtn" target="_blank" class="btn-whatsapp">
-            <i class="fa-brands fa-whatsapp"></i> Order on WhatsApp
-          </a>
+          <a id="whatsappBtn" target="_blank" class="btn-whatsapp"><i class="fa-brands fa-whatsapp"></i> Order on WhatsApp</a>
         </div>
       </nav>
     </aside>
@@ -87,136 +67,96 @@
     <div class="overlay" id="overlay"></div>
 
     <main class="layout">
-      <!-- FILTER SIDEBAR -->
       <aside class="filters">
         <h2>Filters</h2>
-
-        <!-- CATEGORIES -->
         <section id="categories" class="section dark">
           <h2>Categories</h2>
-          <div class="categories">
-            <button class="category-card active" data-category="all">
-              All
-            </button>
-            <button class="category-card" data-category="lights">
-              💡 Lights
-            </button>
-            <button class="category-card" data-category="toys">
-              🧸 Smart Toys
-            </button>
-            <button class="category-card" data-category="watches">
-              ⌚ Smart Watches
-            </button>
-            <button class="category-card" data-category="decor">
-              🏠 Home Decor
-            </button>
-            <button class="category-card" data-category="games">
-              🎮 Games
-            </button>
-            <button class="category-card" data-category="electronics">
-              🖨 Electronics
-            </button>
-          </div>
+          <div class="categories"><!-- populated dynamically from GET /api/categories --></div>
         </section>
-
         <section>
           <h3>Price</h3>
           <input type="range" />
         </section>
-
         <section>
           <h3>Discount</h3>
           <input type="range" />
         </section>
-
         <button class="clear-btn">Clear All</button>
       </aside>
 
       <section class="products-wrapper">
+        <button id="openFilters" class="mobile-filter-btn"><i class="fa fa-sliders"></i> Filters & Categories</button>
         <div id="indexLoader" class="main-loading">
           <div class="spinner"></div>
           <span>Fetching Latest Gadgets...</span>
         </div>
-
-        <!-- PRODUCT GRID -->
         <div id="indexContent" style="display: none">
-          <section class="product-grid" id="productGrid">
-            <!-- <article
-            class="product-card"
-            data-id="2"
-            data-name="Panda Night Lamp for Kids"
-            data-price="699"
-            data-oldprice="1499"
-            data-category="lights"
-            data-desc="Soft LED night light for kids room"
-            data-img="/images/img2.jpeg"
-            data-discount="53"
-            onclick="
-              openProduct(
-                this.dataset.name,
-                this.dataset.price,
-                this.dataset.desc,
-                this.dataset.img,
-              )
-            ">
-            <div class="product-img">
-              <img
-                src="images/img2.jpeg"
-                alt="Panda Night Lamp for Kids"
-                loading="lazy"
-                onerror="this.src = 'images/no-image'" />
-
-          
-              <span
-                class="wishlist"
-                aria-label="Add to wishlist"
-                onclick="event.stopPropagation()">
-                <i class="fa fa-heart"></i>
-              </span>
-            </div>
-
-            <div class="product-info">
-              <h3 class="product-title">Panda Night Lamp for Kids</h3>
-              <p class="short-desc">Soft LED night light for kids room</p>
-
-              <div class="price-row">
-                <span class="price">₹699</span>
-                <span class="old-price">₹1499</span>
-                <span class="discount">53% OFF</span>
-              </div>
-            </div>
-          </article>-->
-            <!-- Dynamic JS will populate products here -->
-          </section>
+          <section class="product-grid" id="productGrid"></section>
           <p id="noResult" style="display: none"></p>
           <div class="pagination" id="pagination"></div>
         </div>
       </section>
     </main>
 
-    <!-- FOOTER -->
-    <div id="footer"></div>
+    <!-- ================= FOOTER (inlined - no runtime fetch) ================= -->
+    <footer class="site-footer">
+      <div class="footer-container">
+        <div class="footer-col">
+          <a href="index.html"><img src="assets/icons/logo.svg" alt="Unimart Logo" class="footer-logo" /></a>
+          <p class="footer-text">Unimart is your trusted store for smart gadgets, toys and home decor for kids and families.</p>
+        </div>
+        <div class="footer-col">
+          <h4>Quick Links</h4>
+          <ul>
+            <li><a href="#new">New Arrivals</a></li>
+            <li><a href="#categories">Categories</a></li>
+            <li><a href="#new">Shop</a></li>
+            <li><a href="#">Home</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>Contact</h4>
+          <p><i class="fa fa-phone"></i> <a href="tel:+9779700013011">+977 9700013011</a></p>
+          <p><i class="fa fa-envelope"></i> <a href="mailto:support@unimart.com">support@unimart.com</a></p>
+          <p><i class="fa fa-location-dot"></i> <a href="https://maps.app.goo.gl/A4eyLsyo5tmei9HPA" target="_blank" class="footer-location">Siddharthanagar (Bhairahawa), Rupandehi, Nepal</a></p>
+        </div>
+        <div class="footer-col">
+          <h4>Follow Us</h4>
+          <div class="footer-social">
+            <a href="https://www.facebook.com/share/1DSb6HU8iD/" target="_blank" rel="noopener" aria-label="Facebook"><i class="fa-brands fa-facebook-f"></i></a>
+            <a href="https://www.instagram.com/unimart2025?igsh=MWdmcjViZ21uZTh0aA==" target="_blank" rel="noopener" aria-label="Instagram"><i class="fa-brands fa-instagram"></i></a>
+            <a href="https://www.tiktok.com/@unimart_25" target="_blank" rel="noopener" aria-label="Tiktok"><i class="fa-brands fa-tiktok"></i></a>
+            <a href="https://wa.me/9779700013011?text=Hello%20Unimart%20Team,%20I%20want%20to%20know%20more" target="_blank" rel="noopener" aria-label="WhatsApp"><i class="fa-brands fa-whatsapp"></i></a>
+          </div>
+          <p class="trust-text">✔ Secure Orders <br />✔ Fast Delivery <br />✔ Quality Products</p>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>© 2026 Unimart | All Rights Reserved</p>
+        <p class="dev-credit">Designed & Developed by <a href="https://sng.com.np" target="_blank">SNG Web Studio</a></p>
+      </div>
+    </footer>
 
-    <!-- Floating WhatsApp -->
-    <a
-      href="https://wa.me/9779700013011"
-      class="whatsapp-float"
-      target="_blank"
-      aria-label="Chat on WhatsApp">
-      <img src="../assets/icons/whatsapp1.svg" alt="WhatsApp" />
+    <a href="https://wa.me/9779700013011" class="whatsapp-float" target="_blank" aria-label="Chat on WhatsApp">
+      <img src="assets/icons/whatsapp1.svg" alt="WhatsApp" />
     </a>
+    <div id="toast" class="toast"></div>
 
-    <!-- JS ORDER IMPORTANT -->
+    <!-- JS ORDER MATTERS: config -> utils -> services -> state -> components -> layout -> page script -->
     <script src="js/config.js"></script>
+    <script src="js/utils/toast.js"></script>
+    <script src="js/utils/normalize.js"></script>
+    <script src="js/utils/debounce.js"></script>
+    <script src="js/services/apiClient.js"></script>
+    <script src="js/services/authService.js"></script>
+    <script src="js/services/categoryService.js"></script>
     <script src="js/services/productService.js"></script>
-
-    <script src="js/components/rating.js"></script>
-    <script src="js/components/ribbons.js"></script>
-  
-    <script src="js/cart.js"></script>
-
+    <script src="js/services/cartService.js"></script>
+    <script src="js/services/checkoutService.js"></script>
+    <script src="js/state/authState.js"></script>
+    <script src="js/state/cartState.js"></script>
     <script src="js/layout.js"></script>
-    <script src="js/product.js"></script>
     <script src="js/script.js"></script>
   </body>
 </html>
+

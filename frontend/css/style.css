@@ -391,7 +391,24 @@ main.layout {
 
   .filters.active {
     transform: translateX(0);
+    padding-top: 20px;
+    padding-bottom: 20px;
   }
+}
+
+.mobile-filter-btn {
+  display: none;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 12px 14px;
+  margin-bottom: 14px;
+  border: 1px solid var(--border-light);
+  border-radius: 10px;
+  background: var(--bg-card);
+  font-weight: 600;
+  cursor: pointer;
+  min-height: 44px;
 }
 
 @media (max-width: 480px) {

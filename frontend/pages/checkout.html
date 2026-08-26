@@ -6,15 +6,12 @@
     <title>Checkout - Unimart</title>
     <link rel="stylesheet" href="../css/style.css" />
     <link rel="stylesheet" href="../css/checkout.css" />
-    <link
-      rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+    <link rel="stylesheet" href="../css/components.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
   </head>
   <body>
     <div class="checkout-header-mobile">
-      <button onclick="history.back()" class="back-btn" aria-label="Go Back">
-        <i class="fa-solid fa-arrow-left"></i>
-      </button>
+      <button onclick="history.back()" class="back-btn" aria-label="Go Back"><i class="fa-solid fa-arrow-left"></i></button>
       <h2>Order Summary</h2>
     </div>
 
@@ -23,22 +20,9 @@
         <section class="checkout-card" id="shippingForm">
           <h3><i class="fa-solid fa-truck"></i> Shipping Details</h3>
           <div class="form-group">
-            <input
-              type="text"
-              id="userName"
-              placeholder="Your Full Name"
-              required />
-            <input
-              type="tel"
-              id="userPhone"
-              placeholder="WhatsApp Number (e.g., 98xxxxxxxx)"
-              required
-              pattern="[0-9]{10}" />
-            <textarea
-              id="userAddress"
-              placeholder="Full Delivery Address (House No, Street, City, Pincode)"
-              rows="3"
-              required></textarea>
+            <input type="text" id="userName" placeholder="Your Full Name" required />
+            <input type="tel" id="userPhone" placeholder="WhatsApp Number (e.g., 98xxxxxxxx)" required pattern="(98|97)[0-9]{8}" />
+            <textarea id="userAddress" placeholder="Full Delivery Address (House No, Street, City, Pincode)" rows="3" required></textarea>
           </div>
         </section>
 
@@ -53,7 +37,6 @@
               </div>
               <i class="fa-brands fa-whatsapp whatsapp-icon"></i>
             </label>
-
             <label class="payment-card-option disabled">
               <input type="radio" name="payment" value="esewa" disabled />
               <div class="pay-info">
@@ -66,37 +49,20 @@
       </div>
 
       <div class="checkout-right">
-        <div class="checkout-card sticky-summary">
+        <div class="checkout-card sticky-summary" id="summaryTarget">
           <h3>Price Details</h3>
           <div id="priceSummary" class="price-details-box"></div>
-          <button class="btn-continue" id="checkoutBtn" >
-            PLACE ORDER VIA WHATSAPP
-          </button>
+          <button class="btn-continue" id="checkoutBtn">PLACE ORDER VIA WHATSAPP</button>
         </div>
       </div>
     </main>
+
     <div class="mobile-bottom-bar">
       <div class="price-info">
         <span class="final-price" id="mobileTotalAmount">₹0</span>
-
-        <span
-          class="view-details"
-          onclick="
-            document
-              .getElementById('summaryTarget')
-              .scrollIntoView({ behavior: 'smooth' })
-          ">
-          View Details
-        </span>
+        <span class="view-details" onclick="document.getElementById('summaryTarget').scrollIntoView({ behavior: 'smooth' })">View Details</span>
       </div>
-      <button class="mobile-place-order" id="mobileCheckoutBtn">
-        CONTINUE
-      </button>
-    </div>
-    <div class="checkout-card sticky-summary" id="summaryTarget">
-      <h3>Price Details</h3>
-      <!-- <div id="priceSummary" class="price-details-box"></div> -->
-      ...
+      <button class="mobile-place-order" id="mobileCheckoutBtn">CONTINUE</button>
     </div>
 
     <div id="orderOverlay" class="order-overlay" style="display: none">
@@ -107,9 +73,18 @@
     </div>
     <div id="toast" class="toast"></div>
 
+    <script src="../js/config.js"></script>
     <script src="../js/utils/toast.js"></script>
-    <script src="../js/config.js"></script> <!-- IMPORTANT -->
-    <script src="../js/cart.js"></script>
+    <script src="../js/utils/normalize.js"></script>
+    <script src="../js/utils/debounce.js"></script>
+    <script src="../js/services/apiClient.js"></script>
+    <script src="../js/services/authService.js"></script>
+    <script src="../js/services/categoryService.js"></script>
+    <script src="../js/services/productService.js"></script>
+    <script src="../js/services/cartService.js"></script>
+    <script src="../js/services/checkoutService.js"></script>
+    <script src="../js/state/authState.js"></script>
+    <script src="../js/state/cartState.js"></script>
     <script src="../js/checkout.js"></script>
   </body>
 </html>

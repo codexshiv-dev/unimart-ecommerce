@@ -327,4 +327,38 @@ body {
         font-size: 1.1rem;
     }
 
+  /* Touch targets: 28px qty buttons are below comfortable tap size on
+     mobile - enlarged here only, desktop's compact style is untouched. */
+  .qty-control button {
+    width: 40px;
+    height: 40px;
+    font-size: 1.2rem;
+  }
+  .qty-input {
+    width: 40px;
+  }
+  .remove-btn {
+    padding: 8px 4px;
+    min-height: 40px;
+  }
+  .cart-item-actions {
+    gap: 12px;
+    justify-content: space-between;
+  }
+
+  /* Prevent the fixed 100px image + text from overflowing very narrow
+     screens (320-360px) */
+  .cart-img {
+    width: 76px;
+    height: 76px;
+    flex-shrink: 0;
+  }
+  .cart-item-main {
+    gap: 10px;
+  }
+  .product-title {
+    font-size: 0.95rem;
+    word-break: break-word;
+  }
+
 }

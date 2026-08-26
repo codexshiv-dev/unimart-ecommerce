@@ -5,13 +5,12 @@ function showToast(msg) {
         return;
     }
     toast.textContent = msg;
-    toast.style.display = "block"; // Make it visible
-    
-    setTimeout(() => {
-        toast.style.display = "none";
+    toast.classList.add("show"); // CSS visibility is opacity-based via .show, not display
+
+    clearTimeout(window.__toastTimer);
+    window.__toastTimer = setTimeout(() => {
+        toast.classList.remove("show");
     }, 2000);
 };
 
-// Ensure this line is present
-console.log("✅ Toast utility loaded successfully");
 window.showToast = showToast;

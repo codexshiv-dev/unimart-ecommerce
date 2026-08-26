@@ -1,398 +1,125 @@
 /**
- * ==========================================================================
- * 🛒 UNIMART PRODUCTION STOREFRONT MOTOR ENGINE (FUTURE-PROOF & SCALABLE)
- * ==========================================================================
+ * UNiMART — Product listing page (index.html).
+ * Search/category/pagination now all go through the backend's real query
+ * params instead of fetching every product and filtering in the browser.
+ * A request token guards against a slow earlier request overwriting a
+ * faster later one (e.g. typing quickly in search).
  */
-document.addEventListener("DOMContentLoaded", () => {
+(() => {
+  const grid = document.getElementById("productGrid");
+  if (!grid) return; // not on the listing page
 
-    // ==========================================
-    // 🧠 CENTRAL ARCHITECTURAL DATA CORE STATES
-    // ==========================================
-    let products = [];
-    let activeCategory = "all";
-    let currentPage = 1;
-    const productsPerPage = 12;
+  const loader = document.getElementById("indexLoader");
+  const content = document.getElementById("indexContent");
+  const noResult = document.getElementById("noResult");
+  const pagination = document.getElementById("pagination");
 
-    // ==========================================
-    // 🎛️ CORE DOM LAYOUT SELECTORS REF NODES
-    // ==========================================
-    const productGrid = document.getElementById("productGrid");
-    const noResult = document.getElementById("noResult");
-    const paginationDiv = document.querySelector(".pagination");
-    const searchDesktop = document.getElementById("searchInputDesktop");
-    const searchMobile = document.getElementById("searchInputMobile");
-    const categoryButtons = document.querySelectorAll(".category-card");
-    const mobileCategories = document.querySelectorAll(".mobile-category");
+  const state = {
+    page: 1,
+    limit: 20,
+    category: new URLSearchParams(window.location.search).get("category") || "",
+    search: new URLSearchParams(window.location.search).get("search") || "",
+  };
 
-    // ==========================================
-    // ⚙️ INJECT DECOUPLED HOOK ROUTER GATEWAYS
-    // ==========================================
-    window.resetPageAndRender = () => { 
+  let requestToken = 0;
 
-        const query = (searchDesktop?.value || searchMobile?.value || "").trim();
+  const renderCard = (product) => {
+    const p = Normalize.product(product);
+    const discount = p.oldPrice && p.oldPrice > p.price
+      ? Math.round(((p.oldPrice - p.price) / p.oldPrice) * 100)
+      : null;
 
-        if (!query) {
-            const url = new URL(window.location);
-            url.searchParams.delete('search');
-            window.history.pushState({}, '', url);
-        }
-
-        currentPage = 1;
-        renderPage(1);
-    };
-
-    // ==========================================
-    // 📥 REST API NETWORKING SUBSYSTEM
-    // ==========================================
-    async function fetchProducts() {
-        const loader = document.getElementById("indexLoader");
-        const content = document.getElementById("indexContent");
-
-        // 1. SHOW SKELETON IMMEDIATELY
-        renderSkeletonCards();
-
-        try {
-            if (loader) loader.style.display = "flex";
-            if (content) content.style.display = "none";
-
-            // ✅ REAL-WORLD FUTURE PROOFING: Automatically uses UniMartConfig registry maps!
-            products = await ProductService.getProducts();
-            
-            
-            if (loader) loader.style.display = "none";
-            if (content) content.style.display = "block";
-
-            syncSearchFromURL();
-            renderPage(1);
-       } catch (err) {
-            console.error("[Network Fatal Error] Storefront runtime connection drop:", err);
-            
-            // This is the correct place for the error state
-            if (productGrid) {
-                productGrid.innerHTML = `
-                <div class="error-state" style="grid-column: 1/-1; text-align:center; padding: 60px;">
-                    <svg width="100" height="100" viewBox="0 0 24 24" fill="none" stroke="#cbd5e1" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-bottom: 20px;">
-                      <path d="M1 1l22 22M16.72 11.08A6 6 0 0 0 7.28 11.08M21.1 6.7a10 10 0 0 0-14.14 0M12 20h.01"></path>
-                    </svg>
-                    <h3 style="color:#1e293b;">Oops! Catalog unavailable</h3>
-                    <p style="color:#64748b; margin-bottom:20px;">Please check your connection and try again.</p>
-                    <button onclick="window.location.reload()" style="padding:10px 25px; background:#ff9f00; color:#fff; border:none; border-radius:5px; cursor:pointer;">
-                        Retry Connection
-                    </button>
-                </div>`;
-            }
-        }
-    }
-
-    // ==========================================
-    // 🔍 ENGINE MEMORY SEARCH & FILTER FILTERS
-    // ==========================================
-    function getFilteredProducts() { 
-       
-        let query = (searchDesktop?.value || searchMobile?.value || "").trim();
-
-        if (!query) {
-            const params = new URLSearchParams(window.location.search);
-            query = (params.get("search") || "").toLowerCase().trim();
-            if (query) {
-                if (searchDesktop) searchDesktop.value = query;
-                if (searchMobile) searchMobile.value = query;
-            }
-        }
-      
-        return products.filter(p => {
-            
-           if (p.status !== "active") return false; // Use 'p' to match the parameter
-
-
-            const name = (p.name || "").toLowerCase();
-            const cat = (p.category || "").toLowerCase();
-            const desc = (p.description || "").toLowerCase();
-            
-            const matchesQuery = name.includes(query) || cat.includes(query) || desc.includes(query);
-            const matchesCategory = activeCategory === "all" || cat === activeCategory.toLowerCase();
-      
-            return matchesCategory && (query === "" || matchesQuery);
-        });
-    }
-    // ==========================================
-    // 🎨Dynamic Discount
-    // ==========================================
-    function getDiscountPercentage(product) {
-
-    if (
-        !product.oldPrice ||
-        product.oldPrice <= product.price
-    ) {
-        return 0;
-    }
-
-    return Math.round(
-        (
-            (product.oldPrice - product.price)
-            /
-            product.oldPrice
-        ) * 100
-    );
-    }
-
-  //Extract Ribbon Helper function
-  function getRibbonHTML(product) {
-
-    let ribbon = "";
-
-    if (product.isNew)
-        ribbon +=
-        `<span class="ribbon new">NEW</span>`;
-
-    if (product.isFeatured)
-        ribbon +=
-        `<span class="ribbon featured">FEATURED</span>`;
-
-    if (product.isBestSeller)
-        ribbon +=
-        `<span class="ribbon best-seller">BESTSELLER</span>`;
-
-    return ribbon;
-  }
-
-    //Extract Ratting Helper function
-    function getRatingHTML(product) {
-
-    if (!product.ratings)
-        return "";
-
-    const fullStars =
-        Math.floor(product.ratings);
-
-    const halfStar =
-        product.ratings % 1 >= 0.5
-            ? 1
-            : 0;
-
-    const emptyStars =
-        5 - fullStars - halfStar;
-
-    return `
-    <div class="rating">
-        ${'★'.repeat(fullStars)}
-        ${halfStar ? '½' : ''}
-        ${'☆'.repeat(emptyStars)}
-    </div>
-    `;
-    }
-    function renderSkeletonCards() {
-    const productGrid = document.getElementById("productGrid");
-    if (!productGrid) return;
-    
-    // Create 8 skeleton cards (adjust as needed for your row size)
-    productGrid.innerHTML = Array(8).fill(0).map(() => `
-        <div class="skeleton-card">
-            <div class="skeleton-img"></div>
-            <div class="skeleton-text" style="width: 80%;"></div>
-            <div class="skeleton-text" style="width: 60%;"></div>
-            <div class="skeleton-text" style="width: 40%;"></div>
+    const card = document.createElement("article");
+    card.className = "product-card";
+    card.innerHTML = `
+      <div class="product-img">
+        <img src="${p.imageUrl}" alt="${p.name}" loading="lazy" onerror="this.src='${Normalize.PLACEHOLDER_IMAGE}'">
+        <span class="wishlist" aria-label="Add to wishlist" onclick="event.stopPropagation()"><i class="fa fa-heart"></i></span>
+      </div>
+      <div class="product-info">
+        <h3 class="product-title">${p.name}</h3>
+        <p class="short-desc">${(p.description || "").slice(0, 60)}</p>
+        <div class="price-row">
+          <span class="price">₹${p.price}</span>
+          ${p.oldPrice ? `<span class="old-price">₹${p.oldPrice}</span>` : ""}
+          ${discount ? `<span class="discount">${discount}% OFF</span>` : ""}
         </div>
-    `).join("");
-    }
-
-    // ==========================================
-    // 🎨 RENDER INTERACTION CATALOG PIPELINE
-    // ==========================================
-    function renderProducts(productsToRender) {
-        if (!productGrid) return;
-        productGrid.innerHTML = "";
-
-        if (!productsToRender.length) {
-            if (noResult) {
-                noResult.style.display = "block";
-                const currentQuery = (searchDesktop?.value || searchMobile?.value || "");
-                noResult.innerHTML = `
-                    <div class="no-result-container" style="text-align:center; padding: 50px 20px;">
-                        <i class="fa-solid fa-magnifying-glass" style="font-size: 32px; color: #94a3b8; margin-bottom: 15px;"></i>
-                        <h2 style="font-size: 20px; color: #1e293b; margin-bottom: 8px;">No products found</h2>
-                        <p style="color: #64748b; max-width: 400px; margin: 0 auto 20px;">We couldn't find anything matching "${sanitizeHTML(currentQuery)}". Try checking your spelling or using different keywords.</p>
-                        <button class="btn-reset-search" onclick="window.location.href='index.html'" style="cursor:pointer; padding: 10px 20px; border-radius: 6px;">Clear All Filters</button>
-                    </div>`;
-            }
-            return;
-        } 
-        
-        if (noResult) noResult.style.display = "none";
-
-        productsToRender.forEach(item => {
-            const card = document.createElement("article");
-            card.className = "product-card";
-            card.dataset.category = item.category;
-            card.dataset.desc = item.description;
-            
-            // Core Stock Inventory Logic Parsing
-            const stock = item.stockQuantity ?? item.stock ?? 0;
-            const isOutOfStock = stock <= 0;
-            if (isOutOfStock) {
-                card.classList.add("out-of-stock");
-                // card.style.opacity = "0.6";
-                // card.style.pointerEvents = "none";
-            }
-
-            const stockBadge = isOutOfStock ? `<span class="out-badge">OUT OF STOCK</span>` : "";
-           
-            // Ribbon System Badges function call
-            const ribbon = getRibbonHTML(item);
-    
-
-            // Star Ratings Engine function call
-            const stars = getRatingHTML(item);
-            
-
-            const productImage = item.images?.[0] || "../assets/images/no-image.png";
-
-            card.innerHTML = `
-                <div class="product-img" style="position:relative; overflow:hidden;">
-                     ${ribbon}
-                     ${stockBadge}
-
-                     <img src="${productImage}" alt="${sanitizeHTML(item.name)}" loading="lazy">
-                     <span class="wishlist" aria-label="Add to wishlist"><i class="fa fa-heart"></i></span>
-                </div>
-                <div class="product-info">
-                     ${stars}
-                     <h3 class="product-title">${sanitizeHTML(item.name)}</h3>
-                     <p class="short-desc">${sanitizeHTML(truncateString(item.description, 70))}</p>
-                     <div class="price-row">
-                         <span class="price">₹${item.price.toLocaleString('en-IN')}</span>
-                         ${item.oldPrice ? `<span class="old-price">₹${item.oldPrice.toLocaleString('en-IN')}</span>` : ''}
-                         ${getDiscountPercentage(item) > 0
-                           ? `
-                           <span class="discount">
-                              ${getDiscountPercentage(item)}% OFF
-                           </span>
-                           `
-                           : ''}
-                     </div>
-                </div>
-            `;
-
-            card.onclick = () => {
-                window.location.href = `product.html?id=${item._id}`;
-            };
-
-            productGrid.appendChild(card);
-        });
-    }
-
-    // ==========================================
-    // 🔢 PAGINATION CONTROL SUBSYSTEMS
-    // ==========================================
-    function renderPage(page) {
-        currentPage = page;
-        const filtered = getFilteredProducts();
-        const start = (currentPage - 1) * productsPerPage;
-        const end = start + productsPerPage;
-        renderProducts(filtered.slice(start, end));
-        renderPagination(filtered);
-    }
-
-    function renderPagination(productsToRender) {
-        if (!paginationDiv) return;
-        paginationDiv.innerHTML = "";
-        
-        const totalPages = Math.ceil(productsToRender.length / productsPerPage);
-        if (totalPages <= 1) return;
-
-        const createBtn = (text, targetPage, active = false, disabled = false) => {
-            const btn = document.createElement("button");
-            btn.textContent = text;
-            if (active) btn.className = "active";
-            btn.disabled = disabled;
-            btn.onclick = () => renderPage(targetPage);
-            return btn;
-        };
-
-        paginationDiv.appendChild(createBtn("Previous", currentPage - 1, false, currentPage === 1));
-
-        for (let i = 1; i <= totalPages; i++) {
-            paginationDiv.appendChild(createBtn(i, i, i === currentPage));
-        }
-
-        paginationDiv.appendChild(createBtn("Next", currentPage + 1, false, currentPage === totalPages));
-    }
-
-    // ==========================================
-    // ⚡ INTERACTIVE DATA CONTEXT EVENT LOOPS
-    // ==========================================
-    categoryButtons.forEach(btn => btn.addEventListener("click", () => {
-        activeCategory = btn.dataset.category;
-        categoryButtons.forEach(b => b.classList.remove("active"));
-        btn.classList.add("active");
-        mobileCategories.forEach(b => b.classList.toggle("active", b.dataset.category === activeCategory));
-        window.resetPageAndRender();
-    }));
-
-    mobileCategories.forEach(btn => btn.addEventListener("click", () => {
-        activeCategory = btn.dataset.category;
-        mobileCategories.forEach(b => b.classList.remove("active"));
-        btn.classList.add("active");
-        categoryButtons.forEach(b => b.classList.toggle("active", b.dataset.category === activeCategory));
-        window.resetPageAndRender();
-    }));
-
-    // Explicit delegation mapping targeting context loops cleanly
-    document.addEventListener("input", (e) => {
-        if (e.target.id === "searchInputDesktop" || e.target.id === "searchInputMobile") {
-            window.resetPageAndRender();
-        }
+      </div>
+    `;
+    card.addEventListener("click", () => {
+      window.location.href = UniMartConfig.getPath(`product.html?id=${p._id}`);
     });
+    return card;
+  };
 
-   
-    function syncSearchFromURL() {
+  const renderPagination = (meta) => {
+    pagination.innerHTML = "";
+    if (!meta || meta.totalPages <= 1) return;
 
-    const query =
-        new URLSearchParams(window.location.search)
-            .get("search") || "";
-
-    if (searchDesktop)
-        searchDesktop.value = query;
-
-    if (searchMobile)
-        searchMobile.value = query;
+    for (let i = 1; i <= meta.totalPages; i++) {
+      const btn = document.createElement("button");
+      btn.textContent = i;
+      btn.className = i === meta.currentPage ? "active" : "";
+      btn.addEventListener("click", () => {
+        state.page = i;
+        load();
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      });
+      pagination.appendChild(btn);
     }
+  };
 
-    // ==========================================
-    // 👤 NAVIGATION INTERACTIVE HANDLERS
-    // ==========================================
-    const dropdownToggle = document.querySelector(".dropdown-toggle");
-    const dropdownMenu = document.querySelector(".dropdown-menu");
-    dropdownToggle?.addEventListener("click", (e) => {
-        e.stopPropagation();
-        dropdownMenu?.classList.toggle("show");
-    });
+  const load = async () => {
+    const thisRequest = ++requestToken;
+    loader.style.display = "flex";
+    content.style.display = "none";
 
-    document.addEventListener("click", () => {
-        if (dropdownMenu?.classList.contains("show")) {
-            dropdownMenu.classList.remove("show");
-        }
-    });
+    try {
+      const res = await ProductService.getProducts({
+        page: state.page,
+        limit: state.limit,
+        category: state.category || undefined,
+        search: state.search || undefined,
+        onlyActive: true,
+      });
 
-    // ==========================================
-    // 🛠️ UTILITY HELPER FUNCTIONS (ANTI-XSS)
-    // ==========================================
-    function sanitizeHTML(str) {
-        if (!str) return "";
-        return String(str)
-            .replace(/&/g, "&amp;")
-            .replace(/</g, "&lt;")
-            .replace(/>/g, "&gt;")
-            .replace(/"/g, "&quot;")
-            .replace(/'/g, "&#039;");
+      if (thisRequest !== requestToken) return; // a newer request already superseded this one
+
+      grid.innerHTML = "";
+      const products = res?.data || [];
+
+      if (products.length === 0) {
+        noResult.style.display = "block";
+        noResult.textContent = "No products found.";
+      } else {
+        noResult.style.display = "none";
+        products.forEach((p) => grid.appendChild(renderCard(p)));
+      }
+
+      renderPagination(res?.pagination);
+    } catch (error) {
+      if (thisRequest !== requestToken) return;
+      noResult.style.display = "block";
+      noResult.textContent = "Something went wrong loading products. Please try again.";
+    } finally {
+      if (thisRequest === requestToken) {
+        loader.style.display = "none";
+        content.style.display = "block";
+      }
     }
+  };
 
-    function truncateString(str, num) {
-        if (!str) return "";
-        if (str.length <= num) return str;
-        return str.slice(0, num) + "...";
-    }
+  // Exposed for layout.js (search box + category nav) to call into.
+  window.applySearch = (value) => {
+    state.search = value;
+    state.page = 1;
+    load();
+  };
+  window.applyCategoryFilter = (slug) => {
+    state.category = slug || "";
+    state.page = 1;
+    load();
+  };
 
-    // EXECUTE CATALOG INSTANCE FETCH RUN
-    fetchProducts();
-});
+  load();
+})();

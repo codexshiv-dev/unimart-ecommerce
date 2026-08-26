@@ -1,0 +1,104 @@
+/* New UI pieces introduced by v1.7.0 storefront integration.
+   Kept in its own file rather than mixed into header.css/product.css so
+   it's obvious what's new vs. what's part of the original design. */
+
+.auth-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 16px;
+}
+
+.auth-modal {
+  background: #fff;
+  border-radius: 12px;
+  padding: 28px 24px;
+  width: 100%;
+  max-width: 360px;
+  position: relative;
+}
+
+.auth-modal h3 {
+  margin: 0 0 18px;
+}
+
+.auth-modal-close {
+  position: absolute;
+  top: 12px;
+  right: 14px;
+  background: none;
+  border: none;
+  font-size: 1.1rem;
+  cursor: pointer;
+  min-width: 36px;
+  min-height: 36px;
+}
+
+.auth-modal form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.auth-modal input {
+  padding: 12px 14px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  font-size: 1rem;
+}
+
+.auth-error {
+  color: #d32f2f;
+  font-size: 0.85rem;
+  margin: 0;
+}
+
+.auth-toggle {
+  text-align: center;
+  font-size: 0.9rem;
+  margin: 16px 0 0;
+  color: #666;
+}
+
+.auth-toggle a {
+  color: inherit;
+  font-weight: 600;
+  text-decoration: underline;
+}
+
+.auth-modal button[type="submit"]:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+}
+
+.order-confirmation {
+  text-align: center;
+  padding: 60px 20px;
+  max-width: 480px;
+  margin: 0 auto;
+}
+
+.order-confirmation .confirm-icon {
+  font-size: 3rem;
+  margin-bottom: 12px;
+}
+
+.cart-item-unavailable {
+  opacity: 0.6;
+}
+
+.unavailable-msg {
+  color: #d32f2f;
+  font-size: 0.85rem;
+  margin: 2px 0;
+}
+
+@media (max-width: 480px) {
+  .auth-modal {
+    padding: 22px 18px;
+  }
+}

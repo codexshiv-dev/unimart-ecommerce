@@ -35,7 +35,7 @@ function initSearch() {
     if (onIndex && window.applySearch) {
       window.applySearch(trimmed); // index.html handles it in-page
     } else if (trimmed) {
-      window.location.href = UniMartConfig.getPath(`index.html?search=${encodeURIComponent(trimmed)}`);
+      window.location.href = `/index.html?search=${encodeURIComponent(trimmed)}`;
     }
   }, 350);
 
@@ -72,6 +72,8 @@ function renderAccountIcon() {
       e.preventDefault();
       await AuthState.logout();
       window.showToast?.("Logged out");
+      renderAccountIcon();
+      updateCartBadge();
     };
   } else {
     accountLink.innerHTML = `<i class="fa-regular fa-user"></i>`;
@@ -83,106 +85,50 @@ function renderAccountIcon() {
   }
 }
 
-// ---- Login / Sign Up modal (one modal, two modes - not two separate pages) ----
+// ---- Minimal login modal (kept intentionally simple - full account pages are a future module) ----
 function openLoginModal() {
   if (document.getElementById("authModal")) return;
-  let mode = "login"; // or "register"
 
   const modal = document.createElement("div");
   modal.id = "authModal";
   modal.className = "auth-modal-overlay";
+  modal.innerHTML = `
+    <div class="auth-modal">
+      <button class="auth-modal-close" aria-label="Close">✖</button>
+      <h3>Log In</h3>
+      <form id="authForm">
+        <input type="email" id="authEmail" placeholder="Email" required />
+        <input type="password" id="authPassword" placeholder="Password" required />
+        <button type="submit" class="btn-checkout">Log In</button>
+        <p class="auth-error" id="authError" style="display:none"></p>
+      </form>
+    </div>
+  `;
   document.body.appendChild(modal);
 
-  const render = () => {
-    const isRegister = mode === "register";
-    modal.innerHTML = `
-      <div class="auth-modal">
-        <button class="auth-modal-close" aria-label="Close">✖</button>
-        <h3>${isRegister ? "Create Account" : "Log In"}</h3>
-        <form id="authForm">
-          ${isRegister ? '<input type="text" id="authName" placeholder="Full Name" required />' : ""}
-          <input type="email" id="authEmail" placeholder="Email" required />
-          <input type="password" id="authPassword" placeholder="Password${isRegister ? " (min 8 characters)" : ""}" required />
-          ${isRegister ? '<input type="tel" id="authPhone" placeholder="Phone (optional)" />' : ""}
-          <button type="submit" class="btn-checkout" id="authSubmitBtn">${isRegister ? "Create Account" : "Log In"}</button>
-          <p class="auth-error" id="authError" style="display:none"></p>
-          <p class="auth-error" id="authSuccess" style="display:none; color: #1a7f37;"></p>
-        </form>
-        <p class="auth-toggle">
-          ${isRegister ? "Already have an account?" : "New here?"}
-          <a href="#" id="authToggleLink">${isRegister ? "Log In" : "Create one"}</a>
-        </p>
-      </div>
-    `;
-
-    modal.querySelector(".auth-modal-close").addEventListener("click", close);
-    modal.querySelector("#authToggleLink").addEventListener("click", (e) => {
-      e.preventDefault();
-      mode = isRegister ? "login" : "register";
-      render();
-    });
-
-    modal.querySelector("#authForm").addEventListener("submit", async (e) => {
-      e.preventDefault();
-      const errorEl = document.getElementById("authError");
-      const successEl = document.getElementById("authSuccess");
-      const submitBtn = document.getElementById("authSubmitBtn");
-      errorEl.style.display = "none";
-      successEl.style.display = "none";
-
-      const email = document.getElementById("authEmail").value.trim();
-      const password = document.getElementById("authPassword").value;
-
-      if (isRegister) {
-        const name = document.getElementById("authName").value.trim();
-        const phone = document.getElementById("authPhone").value.trim();
-
-        if (name.length < 2) return showError(errorEl, "Please enter your full name");
-        if (password.length < 8) return showError(errorEl, "Password must be at least 8 characters");
-
-        submitBtn.disabled = true;
-        submitBtn.textContent = "Creating account...";
-        try {
-          await AuthState.register(name, email, password, phone || undefined);
-          try {
-            await CartState.syncGuestCartToServer();
-          } catch (syncError) {
-            console.warn("[Auth] Guest cart sync failed after registration:", syncError.message);
-          }
-          successEl.textContent = "Account created! You're now logged in.";
-          successEl.style.display = "block";
-          setTimeout(close, 900);
-        } catch (error) {
-          showError(errorEl, error.message || "Could not create account");
-          submitBtn.disabled = false;
-          submitBtn.textContent = "Create Account";
-        }
-      } else {
-        submitBtn.disabled = true;
-        submitBtn.textContent = "Logging in...";
-        try {
-          await AuthState.login(email, password);
-          try {
-            await CartState.syncGuestCartToServer();
-          } catch (syncError) {
-            console.warn("[Auth] Guest cart sync failed after login:", syncError.message);
-          }
-          window.showToast?.("Logged in");
-          close();
-        } catch (error) {
-          showError(errorEl, error.message || "Login failed");
-          submitBtn.disabled = false;
-          submitBtn.textContent = "Log In";
-        }
-      }
-    });
-  };
-
-  const showError = (el, message) => { el.textContent = message; el.style.display = "block"; };
   const close = () => modal.remove();
   modal.addEventListener("click", (e) => { if (e.target === modal) close(); });
+  modal.querySelector(".auth-modal-close").addEventListener("click", close);
 
-  render();
+  modal.querySelector("#authForm").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const email = document.getElementById("authEmail").value;
+    const password = document.getElementById("authPassword").value;
+    const errorEl = document.getElementById("authError");
+    errorEl.style.display = "none";
+
+    try {
+      await AuthState.login(email, password);
+      await CartState.syncGuestCartToServer();
+      window.showToast?.("Logged in");
+      close();
+      renderAccountIcon();
+      updateCartBadge();
+    } catch (error) {
+      errorEl.textContent = error.message || "Login failed";
+      errorEl.style.display = "block";
+    }
+  });
 }
 
 // ---- Categories (shared render for the desktop filter sidebar + mobile dropdown) ----
@@ -229,15 +175,8 @@ async function renderCategoryNav() {
 document.addEventListener("DOMContentLoaded", async () => {
   initMobileMenu();
   initSearch();
-
-  // One subscription covers every way auth state can change - login,
-  // register, logout, or a mid-session expiry detected by apiClient.js -
-  // so each of those call sites doesn't need to remember to re-render itself.
-  AuthState.onChange(() => {
-    renderAccountIcon();
-    updateCartBadge();
-  });
-
   await AuthState.init();
+  renderAccountIcon();
+  updateCartBadge();
   renderCategoryNav();
 });

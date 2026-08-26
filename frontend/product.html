@@ -7,113 +7,145 @@
     <link rel="stylesheet" href="css/header.css" />
     <link rel="stylesheet" href="css/product.css" />
     <link rel="stylesheet" href="css/footer.css" />
-    <link
-      rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+    <link rel="stylesheet" href="css/components.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   </head>
   <body>
-    <!-- ================= HEADER ================= -->
-    <div id="header" class="site-header"></div>
-    <header class="back-shop product-header">
-      <a  id="back-shop" href="/index.html">⬅ Back to Shop</a>
+    <!-- ================= HEADER (inlined - no runtime fetch) ================= -->
+    <header class="site-header">
+      <div class="header-top">
+        <div class="header-left">
+          <button class="hamburger" id="openMenu" aria-label="Open Menu"><i class="fa fa-bars"></i></button>
+          <div class="logo"><a href="index.html"><img src="assets/icons/logo.svg" alt="Unimart Logo" /></a></div>
+        </div>
+        <div class="header-search desktop-search">
+          <input type="text" placeholder="Search your products..." id="searchInputDesktop" />
+          <button aria-label="Search"><i class="fa fa-search"></i></button>
+        </div>
+        <div class="header-right footer-social">
+          <a href="#" aria-label="Wishlist"><i class="fa-regular fa-heart"></i></a>
+          <a href="pages/cart.html" aria-label="Cart" class="cart-wrapper">
+            <i class="fa-solid fa-cart-shopping"></i>
+            <span id="cartCount" class="cart-count">0</span>
+          </a>
+          <a href="#" aria-label="Account" id="accountLink"><i class="fa-regular fa-user"></i></a>
+        </div>
+      </div>
+      <form class="header-search mobile-search" role="search" onsubmit="return false;">
+        <input type="search" placeholder="Search your products..." id="searchInputMobile" />
+        <button type="submit" aria-label="Search"><i class="fa fa-search"></i></button>
+      </form>
     </header>
 
-    <!-- ================= MAIN ================= -->
-    
+    <aside class="mobile-menu" id="mobileMenu">
+      <div class="mobile-menu-header">
+        <div class="logo"><a href="index.html"><img src="assets/icons/logo.svg" alt="Unimart Logo" /></a></div>
+        <button id="closeMenu">✖</button>
+      </div>
+      <nav class="mobile-nav">
+        <button class="dropdown-toggle">Categories <span>▾</span></button>
+        <div class="dropdown-menu"></div>
+        <hr />
+        <a href="#">Wishlist</a>
+        <a href="pages/cart.html">Cart</a>
+        <a href="#" class="contact-btn">Contact</a>
+      </nav>
+    </aside>
+    <div class="overlay" id="overlay"></div>
+
+    <header class="back-shop product-header">
+      <a id="back-shop" href="index.html">⬅ Back to Shop</a>
+    </header>
+
+    <main>
       <section class="product-layout">
-        <!-- ===== LEFT: GALLERY ===== -->
         <div class="product-gallery">
           <div class="gallery-grid">
-            <!-- Thumbnails -->
             <div class="thumbs" id="thumbs"></div>
-
-            <!-- Main Image -->
             <div class="main-image" id="zoomContainer">
               <div class="zoom-image" id="zoomImage"></div>
               <img id="productImg" src="" alt="Product" />
-
-              <span class="share-btn" id="shareBtn">
-                <i class="fa-solid fa-share-nodes"></i>
-              </span>
-
+              <span class="share-btn" id="shareBtn"><i class="fa-solid fa-share-nodes"></i></span>
               <button class="close-btn" onclick="history.back()">✖</button>
             </div>
           </div>
-          <!-- TAGS BELOW IMAGE -->
           <ul id="productTags"></ul>
         </div>
 
-        <!-- ===== RIGHT: INFO ===== -->
         <div class="product-info">
           <h1 id="productName"></h1>
-
-          <!-- PRICE -->
           <div class="price-row">
             <span class="price" id="productPrice"></span>
             <span class="old-price" id="oldPrice"></span>
             <span class="discount" id="discount"></span>
           </div>
-
-          <!-- Ratings -->
-          <!-- <div id="productRating" class="rating"></div> -->
-
-          <!-- STOCK + SKU -->
           <div class="meta-row">
             <span id="productStock"></span>
             <span id="productSKU"></span>
           </div>
-
-          <!-- DESCRIPTION -->
           <p id="productDesc"></p>
-
-          <!-- FEATURES -->
           <ul class="features">
             <li><i class="fa fa-truck"></i> Free Delivery</li>
             <li><i class="fa fa-money-bill"></i> Cash on Delivery</li>
             <li><i class="fa fa-check"></i> 7 Days Replacement</li>
           </ul>
-
-          <!-- Reviews -->
           <div id="productReviews"></div>
         </div>
         <div id="toast" class="toast"></div>
       </section>
 
-      <!-- RELATED PRODUCTS -->
       <section class="related-section">
         <h2>You may also like</h2>
         <div class="related-grid" id="relatedProducts"></div>
       </section>
     </main>
 
-    <!-- footer  -->
-    <div id="footer"></div>
+    <!-- ================= FOOTER (inlined - no runtime fetch) ================= -->
+    <footer class="site-footer">
+      <div class="footer-container">
+        <div class="footer-col">
+          <a href="index.html"><img src="assets/icons/logo.svg" alt="Unimart Logo" class="footer-logo" /></a>
+          <p class="footer-text">Unimart is your trusted store for smart gadgets, toys and home decor for kids and families.</p>
+        </div>
+        <div class="footer-col">
+          <h4>Contact</h4>
+          <p><i class="fa fa-phone"></i> <a href="tel:+9779700013011">+977 9700013011</a></p>
+          <p><i class="fa fa-envelope"></i> <a href="mailto:support@unimart.com">support@unimart.com</a></p>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>© 2026 Unimart | All Rights Reserved</p>
+      </div>
+    </footer>
 
-    <!-- STICKY ACTION BAR -->
     <div class="product-action-bar">
       <button class="btn-cart" id="btnCart">Add to Cart</button>
-      <a id="whatsappBtn" target="_blank" class="btn-whatsapp">
-        <i class="fa-brands fa-whatsapp"></i> Order on WhatsApp
-      </a>
+      <a id="whatsappBtn" target="_blank" class="btn-whatsapp"><i class="fa-brands fa-whatsapp"></i> Order on WhatsApp</a>
     </div>
 
-     <script src="js/config.js"></script>
-     <script src="js/services/productService.js"></script>
-     
-<script src="js/components/gallery.js"></script>
-<script src="js/components/productInfo.js"></script>
-<script src="js/components/stock.js"></script>
-<script src="js/components/tags.js"></script>
-<script src="js/components/relatedProducts.js"></script>
-<script src="js/components/rating.js"></script>
-<script src="js/components/ribbons.js"></script>
+    <script src="js/config.js"></script>
+    <script src="js/utils/toast.js"></script>
+    <script src="js/utils/normalize.js"></script>
+    <script src="js/utils/debounce.js"></script>
+    <script src="js/services/apiClient.js"></script>
+    <script src="js/services/authService.js"></script>
+    <script src="js/services/categoryService.js"></script>
+    <script src="js/services/productService.js"></script>
+    <script src="js/services/cartService.js"></script>
+    <script src="js/services/checkoutService.js"></script>
+    <script src="js/state/authState.js"></script>
+    <script src="js/state/cartState.js"></script>
 
-<!-- Utils -->
- <script src="../js/utils/toast.js"></script>
+    <script src="js/components/gallery.js"></script>
+    <script src="js/components/productInfo.js"></script>
+    <script src="js/components/stock.js"></script>
+    <script src="js/components/tags.js"></script>
+    <script src="js/components/relatedProducts.js"></script>
+    <script src="js/components/rating.js"></script>
+    <script src="js/components/ribbons.js"></script>
 
-     <script src="js/cart.js"></script>
-     <script src="js/layout.js"></script>
-     <script src="js/product.js"></script>
+    <script src="js/layout.js"></script>
+    <script src="js/product.js"></script>
   </body>
 </html>
