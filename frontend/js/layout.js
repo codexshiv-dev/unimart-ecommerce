@@ -59,19 +59,21 @@ async function updateCartBadge() {
 }
 window.updateCartBadge = updateCartBadge;
 
-// ---- Auth-aware account icon ----
+// ---- Auth-aware account icon + dropdown ----
 function renderAccountIcon() {
   const accountLink = document.getElementById("accountLink");
   if (!accountLink) return;
 
+  document.getElementById("accountDropdown")?.remove();
+
   if (AuthState.isLoggedIn()) {
     const user = AuthState.getUser();
     accountLink.innerHTML = `<i class="fa-solid fa-circle-user"></i>`;
-    accountLink.title = `${user.name} (click to log out)`;
-    accountLink.onclick = async (e) => {
+    accountLink.title = user.name;
+    accountLink.onclick = (e) => {
       e.preventDefault();
-      await AuthState.logout();
-      window.showToast?.("Logged out");
+      e.stopPropagation();
+      toggleAccountDropdown(user);
     };
   } else {
     accountLink.innerHTML = `<i class="fa-regular fa-user"></i>`;
@@ -81,6 +83,43 @@ function renderAccountIcon() {
       openLoginModal();
     };
   }
+}
+
+function toggleAccountDropdown(user) {
+  const existing = document.getElementById("accountDropdown");
+  if (existing) {
+    existing.remove();
+    return;
+  }
+
+  const dropdown = document.createElement("div");
+  dropdown.id = "accountDropdown";
+  dropdown.className = "account-dropdown";
+  dropdown.innerHTML = `
+    <div class="account-dropdown-header">
+      <strong>${user.name}</strong>
+      <span>${user.email}</span>
+    </div>
+    <a href="${UniMartConfig.getPath("pages/orders.html")}">My Orders</a>
+    <button id="dropdownLogoutBtn">Logout</button>
+  `;
+  document.getElementById("accountLink")?.appendChild(dropdown);
+
+  dropdown.querySelector("#dropdownLogoutBtn").addEventListener("click", async () => {
+    await AuthState.logout();
+    window.showToast?.("Logged out");
+    dropdown.remove();
+  });
+
+  // Close on outside click - registered once, removes itself after firing.
+  setTimeout(() => {
+    document.addEventListener("click", function closeOnOutsideClick(e) {
+      if (!dropdown.contains(e.target)) {
+        dropdown.remove();
+        document.removeEventListener("click", closeOnOutsideClick);
+      }
+    });
+  }, 0);
 }
 
 // ---- Login / Sign Up modal (one modal, two modes - not two separate pages) ----
@@ -195,6 +234,14 @@ async function renderCategoryNav() {
   try {
     categories = await CategoryService.getCategories();
   } catch (error) {
+    console.error("[Categories] Failed to load:", { status: error.status, message: error.message, networkError: error.networkError || false });
+    if (error.networkError) {
+      console.error("[Categories] Likely cause: backend unreachable.");
+    } else if (error.status === 429) {
+      console.error("[Categories] Likely cause: rate limit exceeded (429).");
+    } else if (error.status >= 500) {
+      console.error("[Categories] Likely cause: backend server error (5xx).");
+    }
     return; // Category nav failing shouldn't break the page
   }
 
@@ -214,7 +261,7 @@ async function renderCategoryNav() {
       btn.addEventListener("click", () => {
         document.querySelectorAll(selector).forEach((b) => b.classList.remove("active"));
         btn.classList.add("active");
-        window.applyCategoryFilter?.(btn.dataset.category);
+        window.applyCategoryFilter?.(btn.dataset.category, btn.textContent.trim());
         document.getElementById("mobileMenu")?.classList.remove("active");
         document.querySelector(".filters")?.classList.remove("active");
         document.getElementById("overlay")?.classList.remove("active");
@@ -223,6 +270,15 @@ async function renderCategoryNav() {
   };
   wireClicks(".category-card");
   wireClicks(".mobile-category");
+
+  // Lets script.js's active-filter chip reset the nav highlight back to
+  // "All" when the customer clears the filter from the chip instead of
+  // from the nav itself - keeps the two UI surfaces in sync.
+  window.resetCategoryNavHighlight = () => {
+    document.querySelectorAll(".category-card, .mobile-category").forEach((b) => {
+      b.classList.toggle("active", !b.dataset.category);
+    });
+  };
 }
 
 // ---- Init ----

@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>My Orders - Unimart</title>
+     <link rel="stylesheet" href="../css/tokens.css" />
+    <link rel="stylesheet" href="../css/style.css" />
+    <link rel="stylesheet" href="../css/header.css" />
+    <link rel="stylesheet" href="../css/cart.css" />
+    <link rel="stylesheet" href="../css/footer.css" />
+    <link rel="stylesheet" href="../css/components.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="header-top">
+        <div class="header-left">
+          <button class="hamburger" id="openMenu" aria-label="Open Menu"><i class="fa fa-bars"></i></button>
+          <div class="logo"><a href="../index.html"><img src="../assets/icons/logo.svg" alt="Unimart Logo" /></a></div>
+        </div>
+        <div class="header-right footer-social">
+          <a href="cart.html" aria-label="Cart" class="cart-wrapper">
+            <i class="fa-solid fa-cart-shopping"></i>
+            <span id="cartCount" class="cart-count">0</span>
+          </a>
+          <a href="#" aria-label="Account" id="accountLink"><i class="fa-regular fa-user"></i></a>
+        </div>
+      </div>
+    </header>
+    <aside class="mobile-menu" id="mobileMenu">
+      <div class="mobile-menu-header">
+        <div class="logo"><a href="../index.html"><img src="../assets/icons/logo.svg" alt="Unimart Logo" /></a></div>
+        <button id="closeMenu">✖</button>
+      </div>
+      <nav class="mobile-nav"><div class="dropdown-menu"></div></nav>
+    </aside>
+    <div class="overlay" id="overlay"></div>
+
+    <main class="cart-container">
+      <h2>My Orders</h2>
+      <div id="ordersContainer" class="orders-list"></div>
+    </main>
+
+    <footer class="site-footer">
+      <div class="footer-bottom"><p>© 2026 Unimart | All Rights Reserved</p></div>
+    </footer>
+
+    <div id="toast" class="toast"></div>
+
+    <script src="../js/config.js"></script>
+    <script src="../js/utils/toast.js"></script>
+    <script src="../js/utils/normalize.js"></script>
+    <script src="../js/utils/debounce.js"></script>
+    <script src="../js/services/apiClient.js"></script>
+    <script src="../js/services/authService.js"></script>
+    <script src="../js/services/categoryService.js"></script>
+    <script src="../js/services/productService.js"></script>
+    <script src="../js/services/cartService.js"></script>
+    <script src="../js/services/checkoutService.js"></script>
+    <script src="../js/services/orderService.js"></script>
+    <script src="../js/state/authState.js"></script>
+    <script src="../js/state/cartState.js"></script>
+    <script src="../js/layout.js"></script>
+    <script src="../js/orders.js"></script>
+  </body>
+</html>

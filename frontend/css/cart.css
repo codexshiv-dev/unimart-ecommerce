@@ -1,15 +1,15 @@
 :root {
-  
-   --primary: #F59E0B;
-    --primary-dark: #D97706;
-    --success: #388e3c;
-    --danger: #ff7675;
-    --text-main: #212121;
-    --text-muted: #878787;
-    --bg-body: #f1f3f6;
-    --white: #ffffff;
-    --radius: 8px;
-    --shadow: 0 4px 12px rgba(0,0,0,0.05);
+  /* Consolidated to css/tokens.css (loaded first). --white and --text-muted
+     already matched exactly, removed here (not aliased, to avoid a
+     self-reference) - they inherit directly from tokens.css. */
+   --primary: var(--brand-primary);
+    --primary-dark: var(--brand-primary-hover);
+    --success: var(--status-success);
+    --danger: var(--status-error);
+    --text-main: var(--text-primary);
+    --bg-body: var(--surface-page);
+    --radius: var(--radius-sm);
+    --shadow: var(--shadow-md);
 }
 * {
   margin: 0;
@@ -81,7 +81,7 @@ body {
   display: inline-block;
   margin-top: 15px;
   transition: opacity 0.2s;
- 
+
 }
 .shop-now-btn:hover {
   opacity: 0.8;
@@ -108,7 +108,7 @@ body {
     height: 100px;
     object-fit: contain;
     border-radius: 4px;
-    background: #f9f9f9; 
+    background: #f9f9f9;
 }
 .cart-info {
     flex: 1;
@@ -148,13 +148,13 @@ body {
 }
 .old-price {
    color: var(--text-muted);
-   text-decoration: line-through; 
-   font-size: 0.9rem; 
+   text-decoration: line-through;
+   font-size: 0.9rem;
   }
-.discount-tag { 
-  color: var(--success); 
-  font-weight: 600; 
-  font-size: 0.85rem; 
+.discount-tag {
+  color: var(--success);
+  font-weight: 600;
+  font-size: 0.85rem;
 }
 
 /* ==============================
@@ -175,7 +175,7 @@ body {
     align-items: center;
     border: 1px solid #ddd;
     border-radius: 4px;
-    
+
 }
 
 /*. Modern Square Buttons */
@@ -212,14 +212,14 @@ body {
   font-size: 1rem;
   color: var(--text-main);
   outline: none;
- 
+
 }
 
 /* Removes arrows in Chrome/Safari */
-.qty-input::-webkit-inner-spin-button, 
-.qty-input::-webkit-outer-spin-button { 
-  -webkit-appearance: none; 
-  margin: 0; 
+.qty-input::-webkit-inner-spin-button,
+.qty-input::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
 }
 
 /*  Minimalist Remove Button */
@@ -255,14 +255,14 @@ body {
     padding-top: 15px;
 }
 
-.free { 
-  color: var(--success); 
-  font-weight: bold; 
+.free {
+  color: var(--success);
+  font-weight: bold;
 }
-.savings-msg { 
-  color: var(--success); 
-  font-weight: 600; 
-  margin-top: 10px; 
+.savings-msg {
+  color: var(--success);
+  font-weight: 600;
+  margin-top: 10px;
 }
 
 /* Professional Sticky Bottom Bar */
@@ -301,7 +301,7 @@ body {
 }
 
 .btn-checkout:hover {
-  background-color: var(--primary-dark); 
+  background-color: var(--primary-dark);
 
 }
 
@@ -313,12 +313,12 @@ body {
 .old-price-row del {
     color: var(--text-muted);
     font-size: 1.02rem;
-    
+
 }
 
 /* Mobile Optimization */
 @media (max-width: 600px) {
- 
+
   .btn-checkout {
         padding: 12px 15px;
         font-size: 0.8rem;

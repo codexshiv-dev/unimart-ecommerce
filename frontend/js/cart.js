@@ -19,7 +19,17 @@ async function loadCart() {
   const actionBar = document.querySelector(".cart-action-bar");
   if (!cartContainer) return;
 
-  const items = await CartState.getItems();
+  cartContainer.innerHTML = `<div class="main-loading"><div class="spinner"></div><span>Loading your cart...</span></div>`;
+  if (actionBar) actionBar.style.display = "none";
+
+  let items;
+  try {
+    items = await CartState.getItems();
+  } catch (error) {
+    cartContainer.innerHTML = `<p class="orders-error">Couldn't load your cart. <button id="retryCartBtn" class="link-btn">Try Again</button></p>`;
+    document.getElementById("retryCartBtn")?.addEventListener("click", loadCart);
+    return;
+  }
   cartContainer.innerHTML = "";
 
   if (items.length === 0) {
@@ -135,4 +145,3 @@ document.addEventListener("DOMContentLoaded", async () => {
   }
   loadCart();
 });
-

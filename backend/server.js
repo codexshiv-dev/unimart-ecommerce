@@ -1,10 +1,10 @@
-require("dotenv").config();
 const dns = require("dns");
 
 // TEMPORARY TEST
 dns.setServers(["8.8.8.8"]);
 console.log("DNS Servers:", dns.getServers());
 
+require("dotenv").config();
 const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
@@ -39,15 +39,9 @@ app.use((req, res, next) => {
 // 3. SANITIZE SECOND
 app.use(mongoSanitize());
 
-// 4. RATE LIMITER
-const limiter = rateLimit({
-    windowMs: 15 * 60 * 1000,
-    max: 100,
-    message: { message: "Too many requests, please slow down." }
-});
-app.use("/api/", limiter);
-
-// 5. CORS
+// 4. CORS (moved before the rate limiter - a rate-limited response must
+// still carry CORS headers, otherwise the browser reports it as a CORS
+// failure instead of the real 429, masking the actual cause)
 const allowedOrigins = process.env.ALLOWED_ORIGINS ? process.env.ALLOWED_ORIGINS.split(",") : [];
 
 app.use(cors({
@@ -68,6 +62,14 @@ app.use(cors({
     methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],
     credentials: true
 }));
+
+// 5. RATE LIMITER
+const limiter = rateLimit({
+    windowMs: 15 * 60 * 1000,
+    max: 100,
+    message: { message: "Too many requests, please slow down." }
+});
+app.use("/api/", limiter);
 
 // 🔗 MONGODB CONNECTION
 const connectDB = async () => {

@@ -56,12 +56,42 @@
 
 .header-right a {
   font-size: 18px;
-  transition: 0.2s ease;
+  transition: background-color 0.15s ease, transform 0.1s ease;
+  border-radius: 50%;
 }
 
 .header-right a:hover {
-  transform: translateY(-0.5px);
-  /* color: var(--accent); */
+  background-color: rgba(0, 0, 0, 0.08);
+}
+
+.header-right a:active {
+  background-color: rgba(0, 0, 0, 0.14);
+  transform: scale(0.94);
+}
+
+.header-right a:focus-visible,
+.hamburger:focus-visible {
+  outline: 2px solid var(--text-dark);
+  outline-offset: 2px;
+}
+
+/* Was entirely unstyled before - rendered as a full-width raw block */
+.back-shop {
+  position: static;
+  padding: 10px 14px;
+  background: var(--bg-card, #fff);
+  border-bottom: 1px solid var(--border-light, #e5e7eb);
+}
+
+.back-shop #back-shop {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--text-dark);
+  text-decoration: none;
+  font-size: 0.9rem;
+  font-weight: 500;
+  padding: 6px 4px;
 }
 
 /* SEARCH */
@@ -363,4 +393,39 @@ body.menu-open {
   .mobile-filter-btn {
     display: none;
   }
+}
+
+.active-filter-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 14px;
+}
+
+.filter-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--primary);
+  color: #fff;
+  padding: 6px 8px 6px 14px;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.filter-chip button {
+  background: rgba(255, 255, 255, 0.25);
+  border: none;
+  color: #fff;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 0.75rem;
+  line-height: 1;
+}
+
+.filter-chip button:hover {
+  background: rgba(255, 255, 255, 0.4);
 }

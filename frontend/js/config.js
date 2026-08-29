@@ -28,6 +28,7 @@ const UniMartConfig = (() => {
     cartItem: "/api/cart/item",
     cartSync: "/api/cart/sync",
     checkout: "/api/checkout",
+    orders: "/api/orders",
   };
 
   // Builds a full URL for a registered endpoint, optionally with a path

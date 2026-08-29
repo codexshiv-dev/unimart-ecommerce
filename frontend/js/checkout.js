@@ -3,6 +3,10 @@
  * Calls CheckoutService (POST /api/checkout) only. No price or total is
  * ever computed here for submission - they're shown for the customer's
  * benefit, but the server independently resolves the real values.
+ *
+ * Order success is determined ENTIRELY by the backend response. WhatsApp is
+ * an optional follow-up action offered after success, never a precondition
+ * for the order being considered placed.
  */
 function formatINR(amount) {
   return Number(amount || 0).toLocaleString("en-IN", {
@@ -42,58 +46,139 @@ async function renderSummary() {
   return total;
 }
 
+// Pre-fills what the account already reliably has (name, phone) for a
+// logged-in customer - address is never pre-filled, since it isn't part of
+// the current User model. The customer can still edit any field.
+function prefillFromAccount() {
+  if (!AuthState.isLoggedIn()) return;
+  const user = AuthState.getUser();
+  const nameEl = document.getElementById("userName");
+  const phoneEl = document.getElementById("userPhone");
+  if (nameEl && user.name && !nameEl.value) nameEl.value = user.name;
+  if (phoneEl && user.phone && !phoneEl.value) phoneEl.value = user.phone;
+}
+
 function validateNepaliPhone(phone) {
   return /^(98|97)\d{8}$/.test(phone.replace(/\s+/g, ""));
 }
 
+// ---- Inline field validation ----
+function setFieldError(inputEl, errorEl, message) {
+  inputEl.classList.add("invalid");
+  errorEl.textContent = message;
+  errorEl.classList.add("show");
+}
+
+function clearFieldError(inputEl, errorEl) {
+  inputEl.classList.remove("invalid");
+  errorEl.classList.remove("show");
+}
+
+// Clears a field's invalid state as soon as the customer starts fixing it.
+function wireLiveValidationClear(inputEl, errorEl) {
+  inputEl.addEventListener("input", () => clearFieldError(inputEl, errorEl));
+}
+
+// Returns {valid, values} - validates all three fields, applies inline
+// errors, and focuses the first invalid field, per the required UX.
+function validateForm() {
+  const nameEl = document.getElementById("userName");
+  const phoneEl = document.getElementById("userPhone");
+  const addressEl = document.getElementById("userAddress");
+  const nameError = document.getElementById("errorName");
+  const phoneError = document.getElementById("errorPhone");
+  const addressError = document.getElementById("errorAddress");
+
+  [[nameEl, nameError], [phoneEl, phoneError], [addressEl, addressError]].forEach(
+    ([el, errEl]) => clearFieldError(el, errEl)
+  );
+
+  const name = nameEl.value.trim();
+  const phone = phoneEl.value.trim();
+  const address = addressEl.value.trim();
+
+  let firstInvalid = null;
+
+  if (!name) {
+    setFieldError(nameEl, nameError, "Please enter your full name");
+    firstInvalid = firstInvalid || nameEl;
+  }
+  if (!validateNepaliPhone(phone)) {
+    setFieldError(phoneEl, phoneError, "Enter a valid number (98xxxxxxxx or 97xxxxxxxx)");
+    firstInvalid = firstInvalid || phoneEl;
+  }
+  if (!address) {
+    setFieldError(addressEl, addressError, "Please enter your delivery address");
+    firstInvalid = firstInvalid || addressEl;
+  }
+
+  if (firstInvalid) {
+    firstInvalid.focus();
+    return { valid: false };
+  }
+
+  return { valid: true, values: { name, phone, address } };
+}
+
+// ---- Success state - WhatsApp is optional, shown only after real backend success ----
 function showOrderConfirmation(order) {
   const container = document.querySelector(".checkout-container");
   const mobileBar = document.querySelector(".mobile-bottom-bar");
   const mobileHeader = document.querySelector(".checkout-header-mobile");
   if (mobileBar) mobileBar.style.display = "none";
   if (mobileHeader) mobileHeader.style.display = "none";
+  if (!container) return;
 
-  if (container) {
-    container.innerHTML = `
-      <div class="order-confirmation">
-        <div class="confirm-icon">✅</div>
-        <h2>Order Placed!</h2>
-        <p>Your order <strong>${order.orderId}</strong> has been received.</p>
-        <p>We'll contact you shortly to confirm delivery details.</p>
+  container.innerHTML = `
+    <div class="order-confirmation">
+      <div class="confirm-icon">✅</div>
+      <h2>Order Placed Successfully</h2>
+      <p>Order ID: <strong>${order.orderId}</strong></p>
+      <p>We'll contact you shortly to confirm delivery details.</p>
+      <p>Would you like to send the order details to WhatsApp?</p>
+      <div class="confirmation-actions">
+        ${AuthState.isLoggedIn() ? `<a href="${UniMartConfig.getPath(`pages/orders.html?id=${order._id}`)}" class="shop-now-btn">View Order</a>` : ""}
+        <button id="sendWhatsappBtn" class="btn-continue">Send on WhatsApp</button>
         <a href="${UniMartConfig.getPath("index.html")}" class="shop-now-btn">Continue Shopping</a>
       </div>
-    `;
-  }
+    </div>
+  `;
+
+  document.getElementById("sendWhatsappBtn")?.addEventListener("click", () => {
+    const message = encodeURIComponent(
+      `Hi, I just placed order ${order.orderId} on Unimart. Total: ${formatINR(order.totalAmount)}`
+    );
+    window.open(`https://wa.me/9779700013011?text=${message}`, "_blank");
+    // Nothing about order status depends on what happens in this window -
+    // the order was already confirmed by the backend before this button
+    // even existed.
+  });
 }
 
 async function submitOrder() {
-  console.log("[DEBUG] submitOrder fired"); // TEMPORARY - remove after diagnosis
-
   const checkoutBtn = document.getElementById("checkoutBtn");
   const mobileBtn = document.getElementById("mobileCheckoutBtn");
   const overlay = document.getElementById("orderOverlay");
 
-  const nameEl = document.getElementById("userName");
-  const phoneEl = document.getElementById("userPhone");
-  const addressEl = document.getElementById("userAddress");
-  console.log("[DEBUG] form elements found:", { nameEl, phoneEl, addressEl }); // TEMPORARY
+  const { valid, values } = validateForm();
+  if (!valid) return;
+  const { name, phone, address } = values;
 
-  const name = nameEl.value.trim();
-  const phone = phoneEl.value.trim();
-  const address = addressEl.value.trim();
-
-  if (!name) { console.log("[DEBUG] validation failed: name"); return window.showToast?.("Please enter your name"); }
-  if (!validateNepaliPhone(phone)) { console.log("[DEBUG] validation failed: phone", phone); return window.showToast?.("Please enter a valid WhatsApp number (98xxxxxxxx or 97xxxxxxxx)"); }
-  if (!address) { console.log("[DEBUG] validation failed: address"); return window.showToast?.("Please enter your delivery address"); }
-  console.log("[DEBUG] validation passed. isLoggedIn:", AuthState.isLoggedIn(), "cartItemsCache.length:", cartItemsCache.length); // TEMPORARY
   if (!AuthState.isLoggedIn() && cartItemsCache.length === 0) {
-    console.log("[DEBUG] blocked: guest with empty cartItemsCache"); // TEMPORARY
-    return window.showToast?.("Your cart couldn't be loaded. Please refresh the page and try again.");
+    window.showToast?.("Your cart couldn't be loaded. Please refresh the page and try again.");
+    return;
   }
 
-  // Idempotency interim fix: disable both submit buttons for the duration
-  // of the request, so a double-tap can't fire two checkout requests.
-  [checkoutBtn, mobileBtn].forEach((btn) => { if (btn) { btn.disabled = true; btn.dataset.originalText = btn.textContent; btn.textContent = "Placing order..."; } });
+  // Duplicate-submission guard: disable both buttons for the duration of
+  // the request, so a double-tap (or hitting desktop + mobile controls)
+  // can't fire two requests.
+  [checkoutBtn, mobileBtn].forEach((btn) => {
+    if (btn) {
+      btn.disabled = true;
+      btn.dataset.originalText = btn.textContent;
+      btn.textContent = "Placing order...";
+    }
+  });
   if (overlay) overlay.style.display = "flex";
 
   try {
@@ -106,41 +191,46 @@ async function submitOrder() {
       ? undefined
       : cartItemsCache.map((i) => ({ productId: i.productId, quantity: i.quantity }));
 
-    console.log("[DEBUG] calling CheckoutService.placeOrder with:", { contact, items }); // TEMPORARY
     const order = await CheckoutService.placeOrder(contact, items);
-    console.log("[DEBUG] placeOrder resolved:", order); // TEMPORARY
 
+    // Order is confirmed the moment this line is reached - everything after
+    // this point is cleanup/UI, not a condition for the order's validity.
     await CartState.clearCart();
     window.updateCartBadge?.();
 
-    const whatsappMessage = encodeURIComponent(
-      `Hi, I just placed order ${order.orderId} on Unimart. Total: ${formatINR(order.totalAmount)}`
-    );
-
     if (overlay) overlay.style.display = "none";
     showOrderConfirmation(order);
-    window.open(`https://wa.me/9779700013011?text=${whatsappMessage}`, "_blank");
   } catch (error) {
-    console.log("[DEBUG] placeOrder threw:", error); // TEMPORARY
     if (overlay) overlay.style.display = "none";
     window.showToast?.(error.message || "Could not place your order. Please try again.");
-    [checkoutBtn, mobileBtn].forEach((btn) => { if (btn) { btn.disabled = false; btn.textContent = btn.dataset.originalText; } });
+    [checkoutBtn, mobileBtn].forEach((btn) => {
+      if (btn) {
+        btn.disabled = false;
+        btn.textContent = btn.dataset.originalText;
+      }
+    });
   }
 }
 
 document.addEventListener("DOMContentLoaded", async () => {
-  const checkoutBtnEl = document.getElementById("checkoutBtn");
-  const mobileBtnEl = document.getElementById("mobileCheckoutBtn");
-  console.log("[DEBUG] buttons found at load:", { checkoutBtnEl, mobileBtnEl }); // TEMPORARY
+  // Button listeners attach unconditionally, before anything that could
+  // fail - a failure loading the cart summary must never leave the button
+  // dead with no explanation.
+  document.getElementById("checkoutBtn")?.addEventListener("click", submitOrder);
+  document.getElementById("mobileCheckoutBtn")?.addEventListener("click", submitOrder);
 
-  checkoutBtnEl?.addEventListener("click", submitOrder);
-  mobileBtnEl?.addEventListener("click", submitOrder);
-  console.log("[DEBUG] listeners attached"); // TEMPORARY
+  const nameEl = document.getElementById("userName");
+  const phoneEl = document.getElementById("userPhone");
+  const addressEl = document.getElementById("userAddress");
+  wireLiveValidationClear(nameEl, document.getElementById("errorName"));
+  wireLiveValidationClear(phoneEl, document.getElementById("errorPhone"));
+  wireLiveValidationClear(addressEl, document.getElementById("errorAddress"));
 
   try {
     if (window.AuthState && !AuthState.initialized) {
       await AuthState.init();
     }
+    prefillFromAccount();
     await renderSummary();
   } catch (error) {
     window.showToast?.(error.message || "Could not load your cart. Please refresh and try again.");

@@ -2,18 +2,17 @@
    1. VARIABLES & THEME
    ========================================================================== */
 :root {
-  --primary: #f59e0b;
-  --primary-hover: #d97706;
-  --white: #ffffff;
-  --bg-main: #f1f3f6;
-  --bg-card: #ffffff;
-  --bg-light: #f9fafb;
-  --text-dark: #212121;
-  --text-muted: #878787;
-  --text-discount: #388e3c;
-  --radius-md: 12px;
-  --radius-sm: 8px;
-  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.1);
+  /* Consolidated to css/tokens.css (loaded first). --white, --bg-card,
+     --text-muted, --radius-md, --radius-sm, --shadow-sm already matched
+     tokens.css exactly by name and value, so they're removed here (not
+     aliased - aliasing an identical name would be a self-reference) and
+     now inherit directly from tokens.css's earlier :root declaration. */
+  --primary: var(--brand-primary);
+  --primary-hover: var(--brand-primary-hover);
+  --bg-main: var(--surface-page);
+  --bg-light: var(--surface-soft);
+  --text-dark: var(--text-primary);
+  --text-discount: var(--status-success);
   --transition: 0.3s ease;
 }
 
@@ -99,7 +98,7 @@
 .product-card .old-price {
   text-decoration: line-through;
   color: var(--text-muted);
-  font-size: 9px;
+  font-size: 12px;
 }
 
 .product-card .discount {
@@ -108,11 +107,6 @@
   font-weight: 600;
 }
 
-
-.product-card.short-desc {
-  font-size: 12px;
-  color: var(--text-muted);
-}
 
 .short-desc {
   font-size: 12px;
@@ -148,22 +142,23 @@
   z-index: 5;
 }
 
-/* .wishlist:hover {
+.wishlist:hover {
     box-shadow: 0 5px 12px rgba(0,0,0,0.25);
     transform: scale(1.1);
-} */
+}
+
+.wishlist:active {
+    transform: scale(0.95);
+}
+
+.wishlist:focus-visible {
+    outline: 2px solid var(--primary);
+    outline-offset: 2px;
+}
 
 /* ==========================================================================
    3. PRODUCT DETAIL PAGE (Layout)
    ========================================================================== */
-
-.product-page {
-  max-width: 1100px;
-  margin: 20px auto;
-  padding: 10px;
-  background: var(--bg-main);
-  padding-bottom: 100px;
-}
 
 .product-layout {
   display: grid;
@@ -285,7 +280,7 @@
    ========================================================================== */
 .product-info h1 {
   font-weight: 700;
-  color: #111;
+  color: var(--text-dark);
   font-size: 20px;
   margin-top: 5px;
   margin-bottom: 5px;
@@ -306,7 +301,7 @@
 .product-info .price {
   font-weight: 700;
   font-size: 22px;
-  color: var(--text-dark);
+  color: var(--primary);
 }
 
 .product-info .old-price {
@@ -322,7 +317,7 @@
 
 #productDesc {
   font-size: 14px;
-  color: #555;
+  color: var(--text-muted);
   margin: 5px 0;
   line-height: 1.5;
 }
@@ -341,15 +336,15 @@
 }
 
 #productStock.in-stock {
-  color: #1a7f37;
+  color: var(--status-success);
   font-weight: 600;
 }
 #productStock.out-stock {
-  color: #d93025;
+  color: var(--status-error);
   font-weight: 600;
 }
 #productSKU {
-  color: #777;
+  color: var(--text-muted);
 }
 
 /* TAGS */
@@ -364,7 +359,7 @@
   z-index: 1;
 }
 #productTags li {
-  background: #f1f1f1;
+  background: var(--bg-light);
   padding: 4px 12px;
   border-radius: 20px;
   font-size: 12px;
@@ -388,7 +383,7 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  background: #f9f9f9;
+  background: var(--bg-light);
   padding: 10px;
   border-radius: 8px;
   font-size: 13px;
@@ -479,6 +474,40 @@
   box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.1);
   z-index: 1000;
   justify-content: center;
+  align-items: center;
+}
+
+.qty-selector {
+  display: flex;
+  align-items: center;
+  border: 1px solid var(--border-light, #e5e7eb);
+  border-radius: 8px;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.qty-selector button {
+  width: 36px;
+  height: 36px;
+  border: none;
+  background: var(--bg-card, #fff);
+  font-size: 1.1rem;
+  cursor: pointer;
+}
+
+.qty-selector button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.qty-selector span {
+  width: 32px;
+  text-align: center;
+  font-weight: 600;
+}
+
+.qty-selector.hidden {
+  display: none;
 }
 
 .btn-cart,
@@ -620,10 +649,11 @@
   .thumbs {
     flex-direction: row; /* Horizontal thumbs on mobile */
     justify-content: center;
+    flex-wrap: wrap;
   }
 
   .related-section {
-    border-top: 8px solid #f1f3f6;
+    border-top: 8px solid var(--bg-main);
     margin: 20px 0 !important; /* Reset side margins to 0 */
     padding: 0 15px;
   }
@@ -657,5 +687,14 @@
     min-width: unset;
     font-size: 14px;
     padding: 12px 10px;
+  }
+
+  /* Confirmed by arithmetic: three controls (qty-selector + two flex
+     buttons) share ~328px on a 360px screen, leaving ~101px per button -
+     "Order on WhatsApp" (18 chars) cannot fit on one line at that width
+     and would clip against the row's fixed height. Shortened to "WhatsApp"
+     on mobile only; full label returns above this breakpoint. */
+  .btn-label-full {
+    display: none;
   }
 }

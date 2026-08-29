@@ -1,0 +1,44 @@
+/**
+ * UNiMART — Design Tokens (single source of truth)
+ * Loaded FIRST on every page, before any other stylesheet. Every other CSS
+ * file's own :root block now aliases these instead of redeclaring raw
+ * values - previously each file had its own slightly different hex values
+ * for the same concept, and because :root is global, whichever file loaded
+ * last silently won for the whole page. That's fixed by having exactly one
+ * real source; other files' :root blocks are now just local-name aliases
+ * (kept so existing var(--flipkart-orange) etc. usages don't need to be
+ * hunted down individually across every file).
+ */
+:root {
+  /* Brand */
+  --brand-primary: #f59e0b;
+  --brand-primary-hover: #d97706;
+  --brand-accent: #d97706;
+
+  /* WhatsApp is a distinct brand color, never to be confused with --brand-primary */
+  --brand-whatsapp: #25d366;
+
+  /* Surfaces */
+  --surface-page: #f1f3f6;
+  --surface-card: #ffffff;
+  --surface-soft: #f9fafb;
+  --white: #ffffff;
+
+  /* Text */
+  --text-primary: #212121;
+  --text-muted: #878787;
+  --text-on-brand: #ffffff;
+
+  /* Borders / shadows / radius */
+  --border-light: #e5e7eb;
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.1);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.08);
+
+  /* Status */
+  --status-success: #1a7f37;
+  --status-error: #d32f2f;
+  --status-warning: #f0ad4e;
+}
+

@@ -56,6 +56,43 @@
     loadRelated(product);
 
     const isUnavailable = product.status !== "active";
+    const stockLimit = Math.max(1, product.stockQuantity || 1);
+    let quantity = 1;
+
+    const qtyValueEl = document.getElementById("qtyValue");
+    const qtyMinusBtn = document.getElementById("qtyMinus");
+    const qtyPlusBtn = document.getElementById("qtyPlus");
+
+    const renderQty = () => {
+      if (qtyValueEl) qtyValueEl.textContent = quantity;
+      if (qtyMinusBtn) qtyMinusBtn.disabled = quantity <= 1;
+      if (qtyPlusBtn) qtyPlusBtn.disabled = quantity >= stockLimit;
+    };
+    qtyMinusBtn?.addEventListener("click", () => { if (quantity > 1) { quantity--; renderQty(); } });
+    qtyPlusBtn?.addEventListener("click", () => { if (quantity < stockLimit) { quantity++; renderQty(); } });
+    renderQty();
+
+    // If this product is already in the cart, reflect that immediately
+    // instead of showing "Add to Cart" as though nothing happened yet.
+    const setGoToCartState = () => {
+      if (btnCart) {
+        btnCart.textContent = "Go to Cart";
+        btnCart.disabled = false;
+        btnCart.onclick = () => { window.location.href = UniMartConfig.getPath("pages/cart.html"); };
+      }
+    };
+    try {
+      const existingItems = await CartState.getItems();
+      const existing = existingItems.find((i) => i.productId === product._id);
+      if (existing) {
+        document.getElementById("qtySelector")?.classList.add("hidden");
+        setGoToCartState();
+      }
+    } catch (error) {
+      // Cart-state check failing shouldn't block the page - Add to Cart just
+      // stays in its default state.
+    }
+
     if (btnCart) {
       btnCart.disabled = isUnavailable;
       btnCart.textContent = isUnavailable ? "Unavailable" : "Add to Cart";
@@ -69,16 +106,11 @@
         btnCart.textContent = "Adding...";
 
         try {
-          await CartState.addItem(Normalize.product(product), 1);
+          await CartState.addItem(Normalize.product(product), quantity);
           window.showToast?.("Added to cart");
           window.updateCartBadge?.();
-
-          // Clear success state: button becomes an explicit "go to cart"
-          // action instead of silently returning to "Add to Cart" (which
-          // invited repeat clicks to stack quantity by accident).
-          btnCart.textContent = "Go to Cart";
-          btnCart.disabled = false;
-          btnCart.onclick = () => { window.location.href = UniMartConfig.getPath("pages/cart.html"); };
+          document.getElementById("qtySelector")?.classList.add("hidden");
+          setGoToCartState();
         } catch (error) {
           window.showToast?.(error.message || "Could not add to cart");
           btnCart.textContent = "Add to Cart";
@@ -96,4 +128,3 @@
 
   document.addEventListener("DOMContentLoaded", init);
 })();
-

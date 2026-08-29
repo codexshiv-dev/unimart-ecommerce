@@ -9,24 +9,22 @@
 }
 
 :root {
-  /* Brand */
-  --primary: #f59e0b;
-  --primary-hover: #d97706;
-  --accent: #d97706;
+  /* Aliased to css/tokens.css (loaded first) - single source of truth,
+     no more independently-declared values that could drift out of sync.
+     --text-muted, --white, --border-light are deliberately NOT redeclared
+     here - they already match tokens.css exactly, so they inherit from
+     there directly. Redeclaring them as var(--text-muted) etc. would be a
+     self-referential cycle, which CSS treats as invalid. */
+  --primary: var(--brand-primary);
+  --primary-hover: var(--brand-primary-hover);
+  --accent: var(--brand-accent);
 
-  /* Backgrounds */
-  --bg-main: #f9fafb;
-  --bg-card: #ffffff;
-  --bg-soft: #f3f4f6;
+  --bg-main: var(--surface-page);
+  --bg-card: var(--surface-card);
+  --bg-soft: var(--surface-soft);
 
-  /* Text */
-  --text-dark: #111827;
-  --text-muted: #6b7280;
-  --text-light: #ffffff; /* ✅ FIXED */
-  --white: #ffffff;
-
-  /* Borders */
-  --border-light: #e5e7eb;
+  --text-dark: var(--text-primary);
+  --text-light: var(--text-on-brand);
 
   /* Radius */
   --radius-sm: 10px;
@@ -400,15 +398,16 @@ main.layout {
   display: none;
   align-items: center;
   gap: 8px;
-  width: 100%;
-  padding: 12px 14px;
+  width: auto;
+  padding: 10px 16px;
   margin-bottom: 14px;
   border: 1px solid var(--border-light);
-  border-radius: 10px;
+  border-radius: 20px;
   background: var(--bg-card);
   font-weight: 600;
+  font-size: 0.9rem;
   cursor: pointer;
-  min-height: 44px;
+  min-height: 40px;
 }
 
 @media (max-width: 480px) {

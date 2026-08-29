@@ -7,15 +7,27 @@
 const AuthState = (() => {
   let currentUser = null;
   let initialized = false;
+  let initPromise = null;
+  let lastAuthenticatedAt = 0;
   const listeners = [];
 
   const notify = () => listeners.forEach((fn) => fn(currentUser));
 
-  const init = async () => {
-    currentUser = await AuthService.getCurrentUser();
-    initialized = true;
-    notify();
-    return currentUser;
+  // Idempotent: if init() is already in flight (or done), every caller
+  // awaits the SAME promise instead of firing its own /api/auth/me request.
+  // This matters because pages that load layout.js alongside their own
+  // script (cart.html + cart.js, orders.html + orders.js) both call
+  // init() from separate DOMContentLoaded listeners - without this,
+  // each would race a redundant, independent network call.
+  const init = () => {
+    if (initPromise) return initPromise;
+    initPromise = (async () => {
+      currentUser = await AuthService.getCurrentUser();
+      initialized = true;
+      notify();
+      return currentUser;
+    })();
+    return initPromise;
   };
 
   const isLoggedIn = () => Boolean(currentUser);
@@ -24,6 +36,7 @@ const AuthState = (() => {
   const login = async (email, password) => {
     const res = await AuthService.login(email, password);
     currentUser = res?.user || null;
+    lastAuthenticatedAt = Date.now();
     notify();
     return currentUser;
   };
@@ -31,6 +44,7 @@ const AuthState = (() => {
   const register = async (name, email, password, phone) => {
     const res = await AuthService.register(name, email, password, phone);
     currentUser = res?.user || null; // register already sets the auth cookie server-side, same as login
+    lastAuthenticatedAt = Date.now();
     notify();
     return currentUser;
   };
@@ -49,6 +63,16 @@ const AuthState = (() => {
   // resets currentUser to null, so any subsequent call becomes a no-op.
   const handleSessionExpired = () => {
     if (!currentUser) return;
+
+    // A 401 within a few seconds of a successful login/register is far more
+    // likely to be a same-flow follow-up request hitting a transient
+    // cookie-delivery issue than a genuine mid-session expiry - a session
+    // that just started isn't the kind that expires. Log it, don't demote.
+    if (Date.now() - lastAuthenticatedAt < 5000) {
+      console.warn("[AuthState] Ignoring 401 shortly after login/register - treating as transient, not a real session expiry.");
+      return;
+    }
+
     currentUser = null;
     notify();
     window.showToast?.("Your session has expired. Please log in again.");

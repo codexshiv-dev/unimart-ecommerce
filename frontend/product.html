@@ -3,6 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <title>Unimart - Product Details</title>
+    <link rel="stylesheet" href="css/tokens.css" />
     <link rel="stylesheet" href="css/style.css" />
     <link rel="stylesheet" href="css/header.css" />
     <link rel="stylesheet" href="css/product.css" />
@@ -85,11 +86,6 @@
             <span id="productSKU"></span>
           </div>
           <p id="productDesc"></p>
-          <ul class="features">
-            <li><i class="fa fa-truck"></i> Free Delivery</li>
-            <li><i class="fa fa-money-bill"></i> Cash on Delivery</li>
-            <li><i class="fa fa-check"></i> 7 Days Replacement</li>
-          </ul>
           <div id="productReviews"></div>
         </div>
         <div id="toast" class="toast"></div>
@@ -120,8 +116,13 @@
     </footer>
 
     <div class="product-action-bar">
+      <div class="qty-selector" id="qtySelector">
+        <button type="button" id="qtyMinus" aria-label="Decrease quantity">−</button>
+        <span id="qtyValue">1</span>
+        <button type="button" id="qtyPlus" aria-label="Increase quantity">+</button>
+      </div>
       <button class="btn-cart" id="btnCart">Add to Cart</button>
-      <a id="whatsappBtn" target="_blank" class="btn-whatsapp"><i class="fa-brands fa-whatsapp"></i> Order on WhatsApp</a>
+      <a id="whatsappBtn" target="_blank" class="btn-whatsapp"><i class="fa-brands fa-whatsapp"></i> <span class="btn-label-full">Order on </span>WhatsApp</a>
     </div>
 
     <script src="js/config.js"></script>

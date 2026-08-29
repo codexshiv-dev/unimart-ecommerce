@@ -4,6 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Checkout - Unimart</title>
+     <link rel="stylesheet" href="../css/tokens.css" />
     <link rel="stylesheet" href="../css/style.css" />
     <link rel="stylesheet" href="../css/checkout.css" />
     <link rel="stylesheet" href="../css/components.css" />
@@ -20,9 +21,18 @@
         <section class="checkout-card" id="shippingForm">
           <h3><i class="fa-solid fa-truck"></i> Shipping Details</h3>
           <div class="form-group">
-            <input type="text" id="userName" placeholder="Your Full Name" required />
-            <input type="tel" id="userPhone" placeholder="WhatsApp Number (e.g., 98xxxxxxxx)" required pattern="(98|97)[0-9]{8}" />
-            <textarea id="userAddress" placeholder="Full Delivery Address (House No, Street, City, Pincode)" rows="3" required></textarea>
+            <div>
+              <input type="text" id="userName" placeholder="Your Full Name" required />
+              <p class="field-error" id="errorName"></p>
+            </div>
+            <div>
+              <input type="tel" id="userPhone" placeholder="WhatsApp Number (e.g., 98xxxxxxxx)" required pattern="(98|97)[0-9]{8}" />
+              <p class="field-error" id="errorPhone"></p>
+            </div>
+            <div>
+              <textarea id="userAddress" placeholder="Full Delivery Address (House No, Street, City, Pincode)" rows="3" required></textarea>
+              <p class="field-error" id="errorAddress"></p>
+            </div>
           </div>
         </section>
 

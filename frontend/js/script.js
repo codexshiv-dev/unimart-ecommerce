@@ -18,10 +18,30 @@
     page: 1,
     limit: 20,
     category: new URLSearchParams(window.location.search).get("category") || "",
+    categoryName: "",
     search: new URLSearchParams(window.location.search).get("search") || "",
   };
 
   let requestToken = 0;
+
+  const renderActiveFilterChip = () => {
+    const row = document.getElementById("activeFilterRow");
+    if (!row) return;
+    if (!state.category) {
+      row.innerHTML = "";
+      return;
+    }
+    row.innerHTML = `
+      <div class="filter-chip">
+        ${state.categoryName || state.category}
+        <button aria-label="Remove filter" id="clearCategoryChip">✕</button>
+      </div>
+    `;
+    document.getElementById("clearCategoryChip").addEventListener("click", () => {
+      window.applyCategoryFilter(null, null);
+      window.resetCategoryNavHighlight?.();
+    });
+  };
 
   const renderCard = (product) => {
     const p = Normalize.product(product);
@@ -73,6 +93,7 @@
     const thisRequest = ++requestToken;
     loader.style.display = "flex";
     content.style.display = "none";
+    renderActiveFilterChip();
 
     try {
       const res = await ProductService.getProducts({
@@ -90,7 +111,17 @@
 
       if (products.length === 0) {
         noResult.style.display = "block";
-        noResult.textContent = "No products found.";
+        noResult.innerHTML = state.category || state.search
+          ? `No products found.${' '}<button id="clearFiltersBtn" class="link-btn">Clear filters</button>`
+          : "No products found.";
+        document.getElementById("clearFiltersBtn")?.addEventListener("click", () => {
+          state.category = "";
+          state.categoryName = "";
+          state.search = "";
+          state.page = 1;
+          window.resetCategoryNavHighlight?.();
+          load();
+        });
       } else {
         noResult.style.display = "none";
         products.forEach((p) => grid.appendChild(renderCard(p)));
@@ -99,8 +130,21 @@
       renderPagination(res?.pagination);
     } catch (error) {
       if (thisRequest !== requestToken) return;
+
+      // Customer-facing message stays simple; the actual cause goes to
+      // console only, so it can be diagnosed without exposing internals.
+      console.error("[Products] Failed to load:", { status: error.status, message: error.message, networkError: error.networkError || false });
+      if (error.networkError) {
+        console.error("[Products] Likely cause: backend unreachable - server down, wrong API_BASE_URL, or the request never got an HTTP response at all.");
+      } else if (error.status === 429) {
+        console.error("[Products] Likely cause: rate limit exceeded (429) - expected under heavy repeated requests, not a bug.");
+      } else if (error.status >= 500) {
+        console.error("[Products] Likely cause: backend server error (5xx) - check backend logs / MongoDB connection.");
+      }
+
       noResult.style.display = "block";
-      noResult.textContent = "Something went wrong loading products. Please try again.";
+      noResult.innerHTML = `Couldn't load products. <button id="retryLoadBtn" class="link-btn">Try Again</button>`;
+      document.getElementById("retryLoadBtn")?.addEventListener("click", load);
     } finally {
       if (thisRequest === requestToken) {
         loader.style.display = "none";
@@ -115,8 +159,9 @@
     state.page = 1;
     load();
   };
-  window.applyCategoryFilter = (slug) => {
+  window.applyCategoryFilter = (slug, name) => {
     state.category = slug || "";
+    state.categoryName = name || "";
     state.page = 1;
     load();
   };
