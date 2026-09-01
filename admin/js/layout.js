@@ -1,129 +1,130 @@
-// ========================================================
-// GLOBAL REUSABLE INTERFACE TOOGLE DELEGATOR
-// ========================================================
-document.addEventListener("click", (e) => {
-  const sidebar = document.getElementById("sidebar");
-  const overlay = document.getElementById("sidebarOverlay");
-  
-  // --- 👤 SAFE PROFILE DROPDOWN LOGIC (No Mutation Triggers) ---
-  const hub = document.getElementById("profileDropdownHub");
-  const trigger = hub?.querySelector(".profile-box");
+/**
+ * UNiMART Admin — Shell layout. Renders the sidebar + topbar into
+ * #adminShellRoot on every authenticated admin page, wires up mobile nav
+ * toggle, active-route highlighting, user info, and logout.
+ *
+ * Usage: each protected page includes config.js, apiClient.js, authService.js,
+ * authState.js, toast.js, then this file, then calls:
+ *   AdminLayout.guardAndRender('dashboard')  // 'dashboard' | 'categories' | 'products' | 'orders'
+ * which resolves to the current user (redirecting to login if not an admin)
+ * and only then renders the shell + reveals the page content.
+ */
+const AdminLayout = (() => {
+  const NAV_ITEMS = [
+    { key: "dashboard", label: "Dashboard", href: "dashboard.html", icon: "\u25A6" },
+    { key: "categories", label: "Categories", href: "categories.html", icon: "\u2637" },
+    { key: "products", label: "Products", href: "products.html", icon: "\u25A3" },
+    { key: "orders", label: "Orders", href: "orders.html", icon: "\u2637" },
+  ];
 
-  if (hub && trigger) {
-    if (e.target.closest(".profile-box")) {
-      e.stopPropagation();
-      const isOpen = hub.classList.contains("dropdown-active");
-      if (isOpen) {
-        hub.classList.remove("dropdown-active");
-        trigger.setAttribute("aria-expanded", "false");
-      } else {
-        hub.classList.add("dropdown-active");
-        trigger.setAttribute("aria-expanded", "true");
+  const initials = (name) => {
+    if (!name) return "A";
+    const parts = name.trim().split(/\s+/);
+    return ((parts[0]?.[0] || "") + (parts[1]?.[0] || "")).toUpperCase() || "A";
+  };
+
+  const renderShell = (activeKey, user) => {
+    const root = document.getElementById("adminShellRoot");
+    if (!root) return;
+
+    const navHtml = NAV_ITEMS.map((item) => `
+      <a class="admin-nav-link" href="${item.href}" ${item.key === activeKey ? 'aria-current="page"' : ""}>
+        <span class="admin-nav-icon" aria-hidden="true">${item.icon}</span>
+        <span>${item.label}</span>
+      </a>
+    `).join("");
+
+    root.innerHTML = `
+      <div class="admin-sidebar-backdrop" id="adminSidebarBackdrop"></div>
+      <aside class="admin-sidebar" id="adminSidebar" aria-label="Admin navigation">
+        <div class="admin-sidebar__brand">
+          <span class="admin-sidebar__brand-mark" aria-hidden="true">U</span>
+          <span>UNiMART Admin</span>
+        </div>
+        <nav class="admin-sidebar__nav">${navHtml}</nav>
+        <div class="admin-sidebar__footer">
+          <a class="admin-nav-link" href="${AdminConfig.getPath("index.html")}" data-storefront-link>
+            <span class="admin-nav-icon" aria-hidden="true">\u2192</span>
+            <span>View Storefront</span>
+          </a>
+        </div>
+      </aside>
+      <div class="admin-main">
+        <header class="admin-topbar">
+          <div class="admin-topbar__left">
+            <button class="admin-mobile-toggle" id="adminMobileToggle" aria-label="Toggle navigation menu" aria-expanded="false">
+              <span aria-hidden="true">\u2630</span>
+            </button>
+            <span class="admin-topbar__title" id="adminTopbarTitle"></span>
+          </div>
+          <div class="admin-topbar__right">
+            <div class="admin-user-menu">
+              <div class="admin-user-avatar" aria-hidden="true">${initials(user.name)}</div>
+              <div class="admin-user-info">
+                <span class="admin-user-name">${user.name || "Admin"}</span>
+                <span class="admin-user-role">${user.role || "admin"}</span>
+              </div>
+            </div>
+            <button class="admin-logout-btn" id="adminLogoutBtn" type="button">Log out</button>
+          </div>
+        </header>
+        <main class="admin-content" id="adminContent"></main>
+      </div>
+      <div id="toastContainer" aria-live="polite"></div>
+    `;
+
+    const activeItem = NAV_ITEMS.find((i) => i.key === activeKey);
+    const titleEl = document.getElementById("adminTopbarTitle");
+    if (titleEl) titleEl.textContent = activeItem ? activeItem.label : "Admin";
+
+    // Mobile nav toggle
+    const shell = document.getElementById("adminShell");
+    const toggleBtn = document.getElementById("adminMobileToggle");
+    const backdrop = document.getElementById("adminSidebarBackdrop");
+    const closeSidebar = () => {
+      shell?.classList.remove("admin-sidebar-open");
+      toggleBtn?.setAttribute("aria-expanded", "false");
+    };
+    toggleBtn?.addEventListener("click", () => {
+      const isOpen = shell?.classList.toggle("admin-sidebar-open");
+      toggleBtn.setAttribute("aria-expanded", String(Boolean(isOpen)));
+    });
+    backdrop?.addEventListener("click", closeSidebar);
+    document.querySelectorAll(".admin-nav-link").forEach((link) => link.addEventListener("click", closeSidebar));
+
+    // Logout
+    document.getElementById("adminLogoutBtn")?.addEventListener("click", async (e) => {
+      const btn = e.currentTarget;
+      btn.disabled = true;
+      btn.textContent = "Logging out…";
+      try {
+        await AdminAuthState.logout();
+      } catch (err) {
+        // Even if the network call fails, we still want to send the admin
+        // back to login rather than leave them stuck on a broken button.
+        console.error("[AdminLayout] Logout request failed:", err);
       }
-    } else if (!hub.contains(e.target)) { // 🛡️ Now safely wrapped within the parent "if (hub)" guard block
-      hub.classList.remove("dropdown-active");
-      trigger.setAttribute("aria-expanded", "false");
+      window.location.href = AdminConfig.getPath("pages/login.html");
+    });
+  };
+
+  // Resolves the current admin, redirecting to login when not authenticated
+  // or not an admin. Returns the user object on success so the calling page
+  // can proceed to render its own content. This is a UX guard only - the
+  // real security boundary is the backend's protect + authorize("admin").
+  const guardAndRender = async (activeKey) => {
+    const user = await AdminAuthState.init();
+
+    if (!user || user.role !== "admin") {
+      window.location.href = AdminConfig.getPath("pages/login.html");
+      return null;
     }
-  }
 
-  // --- 🚪 LOGOUT TOAST NOTIFICATION PROXY ---
-  if (e.target.id === "navbarLogoutBtn" || e.target.closest("#navbarLogoutBtn")) {
-    if (typeof window.showToast === "function") {
-      window.showToast("Logging out of Administrator panel securely...", "warning");
-    }
-  }
+    renderShell(activeKey, user);
+    return user;
+  };
 
-  if (!sidebar) return;
+  return { guardAndRender, NAV_ITEMS };
+})();
 
-  // 1. Open / Close Menu Sidebars
-  if (e.target.id === "toggleSidebar" || e.target.closest("#toggleSidebar")) {
-    if (window.innerWidth <= 768) {
-      sidebar.classList.toggle("mobile-open");
-      overlay?.classList.toggle("show");
-      document.body.classList.toggle("no-scroll");
-    } else {
-      sidebar.classList.toggle("collapsed");
-    }
-  }
-
-  // 2. Dismiss mobile drawer menu layout when clicking the overlay layer
-  if (e.target.id === "sidebarOverlay") {
-    sidebar.classList.remove("mobile-open");
-    overlay.classList.remove("show");
-    document.body.classList.remove("no-scroll");
-  }
-});
-
-// ✨ PERFORMANCE OPTIMIZATION: Debounced resize listener
-let resizeDebounceTimeout;
-window.addEventListener("resize", () => {
-  clearTimeout(resizeDebounceTimeout);
-  resizeDebounceTimeout = setTimeout(() => {
-    const sidebar = document.getElementById("sidebar");
-    const overlay = document.getElementById("sidebarOverlay");
-
-    if (window.innerWidth > 768) {
-      sidebar?.classList.remove("mobile-open");
-      overlay?.classList.remove("show");
-      document.body.classList.remove("no-scroll");
-    }
-  }, 60); 
-});
-
-// ========================================================
-// AUTOMATED HIGH-FIDELITY NAVIGATION SYNC ENGINE
-// ========================================================
-function highlightActiveSidebarMenu() {
-  const pathParts = window.location.pathname.split("/");
-  let currentFileName = pathParts.pop().toLowerCase();
-
-  if (!currentFileName && pathParts.length > 0) {
-    currentFileName = "dashboard.html"; 
-  }
-
-  const menuLinks = document.querySelectorAll(".sidebar-menu a");
-  if (menuLinks.length === 0) return;
-
-  menuLinks.forEach(link => {
-    link.classList.remove("active");
-
-    const linkHref = link.getAttribute("href");
-    if (!linkHref) return;
-
-    const targetFileName = linkHref.split("/").pop().toLowerCase();
-
-    if (currentFileName === targetFileName) {
-      link.classList.add("active");
-    }
-  });
-
-  if (currentFileName === "" || currentFileName === "index.html" || currentFileName === "dashboard.html") {
-    const dashboardLink = document.querySelector('.sidebar-menu a[href*="dashboard.html"]');
-    dashboardLink?.classList.add("active");
-  }
-}
-
-window.highlightActiveSidebarMenu = highlightActiveSidebarMenu;
-
-// ========================================================
-// ASYNCHRONOUS COMPONENT MOUNT OBSERVER LAYER
-// ========================================================
-const layoutObserver = new MutationObserver((mutations, observer) => {
-  const sidebarMenu = document.querySelector(".sidebar-menu");
-  if (sidebarMenu) {
-    window.highlightActiveSidebarMenu();
-    observer.disconnect(); 
-  }
-});
-
-layoutObserver.observe(document.body, {
-  childList: true,
-  subtree: true
-});
-
-if (document.readyState === "loading") {
-  document.addEventListener("DOMContentLoaded", window.highlightActiveSidebarMenu);
-} else {
-  window.highlightActiveSidebarMenu();
-}
-window.addEventListener("load", window.highlightActiveSidebarMenu);
+window.AdminLayout = AdminLayout;

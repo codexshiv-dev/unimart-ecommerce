@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>UNiMART Admin</title>
+  <link rel="stylesheet" href="css/tokens.css" />
+  <style>
+    body { display: grid; place-items: center; min-height: 100vh; background: var(--admin-bg); font-family: var(--admin-font); }
+    .admin-spinner { width: 32px; height: 32px; border-radius: 50%; border: 3px solid var(--admin-border); border-top-color: var(--admin-accent); animation: spin 0.7s linear infinite; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+  </style>
+</head>
+<body>
+  <div class="admin-spinner" role="status" aria-label="Loading"></div>
+
+  <script src="js/config.js"></script>
+  <script src="js/services/apiClient.js"></script>
+  <script src="js/services/authService.js"></script>
+  <script src="js/state/authState.js"></script>
+  <script>
+    (async () => {
+      const user = await AdminAuthState.init();
+      if (user && user.role === "admin") {
+        window.location.replace(AdminConfig.getPath("pages/dashboard.html"));
+      } else {
+        window.location.replace(AdminConfig.getPath("pages/login.html"));
+      }
+    })();
+  </script>
+</body>
+</html>

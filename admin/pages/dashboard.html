@@ -1,122 +1,67 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>UniMart Admin Dashboard</title>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dashboard — UNiMART Admin</title>
+  <link rel="stylesheet" href="../css/tokens.css" />
+  <link rel="stylesheet" href="../css/layout.css" />
+  <link rel="stylesheet" href="../css/dashboard.css" />
+</head>
+<body>
+  <div class="admin-shell" id="adminShell">
+    <div id="adminShellRoot"></div>
+  </div>
 
-    <link rel="stylesheet" href="../css/variables.css" />
-    <link rel="stylesheet" href="../css/layout.css" />
-    <link rel="stylesheet" href="../css/sidebar.css" />
-    <link rel="stylesheet" href="../css/navbar.css" />
-    <link rel="stylesheet" href="../css/dashboard.css" />
-    <link rel="stylesheet" href="../css/products.css" />
-
-    <style>
-      /* Prevent table layout popping issues when sticky headers render asynchronously */
-      .recent-orders th {
-        background: var(--neutral-light, #ffffff);
-        position: sticky;
-        top: 0;
-        z-index: 2;
-      }
-      /* Ensure scrollbars look professional inside layout containers */
-      .dashboard-scroll-viewport::-webkit-scrollbar {
-        width: 6px;
-      }
-      .dashboard-scroll-viewport::-webkit-scrollbar-track {
-        background: #f1f5f9;
-        border-radius: 4px;
-      }
-      .dashboard-scroll-viewport::-webkit-scrollbar-thumb {
-        background: #cbd5e1;
-        border-radius: 4px;
-      }
-    </style>
-  </head>
-
-  <body>
-    <div class="admin-layout">
-      <div id="sidebar-container"></div>
-      <div id="sidebarOverlay"></div>
-      <div id="shared-ui-layer-container"></div>
-
-      <div class="main-wrapper">
-        <div id="header-container"></div>
-
-        <main class="page-content">
-          <section class="dashboard-cards">
-            <div class="kpi-card products">
-              <h4>Total Products</h4>
-              <h2 id="kpiTotalProducts">0</h2>
-            </div>
-
-            <div class="kpi-card orders">
-              <h4>Total Orders</h4>
-              <h2 id="kpiTotalOrders">0</h2>
-            </div>
-
-            <div class="kpi-card revenue">
-              <h4>Total Revenue</h4>
-              <h2 id="kpiTotalRevenue">₹0</h2>
-            </div>
-
-            <div class="kpi-card customers">
-              <h4>Total Customers</h4>
-              <h2 id="kpiTotalCustomers">0</h2>
-            </div>
-          </section>
-
-          <section class="dashboard-grid">
-            <div class="dashboard-card">
-              <div class="card-header">
-                <h3>Recent Orders</h3>
-              </div>
-              <div
-                class="dashboard-scroll-viewport"
-                style="max-height: 280px; overflow-y: auto; position: relative">
-                <table
-                  class="recent-orders"
-                  style="width: 100%; border-collapse: collapse">
-                  <thead>
-                    <tr>
-                      <th style="text-align: left; padding: 12px 8px">ID</th>
-                      <th style="text-align: left; padding: 12px 8px">
-                        Customer
-                      </th>
-                      <th style="text-align: left; padding: 12px 8px">
-                        Amount
-                      </th>
-                      <th style="text-align: left; padding: 12px 8px">
-                        Status
-                      </th>
-                    </tr>
-                  </thead>
-                  <tbody id="recentOrdersTableBody"></tbody>
-                </table>
-              </div>
-            </div>
-
-            <div class="dashboard-card">
-              <div class="card-header">
-                <h3>Low Stock Products</h3>
-              </div>
-              <div
-                id="lowStockContainerList"
-                class="low-stock-list"
-                style="max-height: 280px; overflow-y: auto"></div>
-            </div>
-          </section>
-        </main>
+  <template id="dashboardTemplate">
+    <div class="admin-page-header">
+      <div>
+        <h1>Dashboard</h1>
+        <p>Overview of your store, pulled live from the backend.</p>
       </div>
+      <button class="admin-btn admin-btn--secondary" id="dashboardRefreshBtn" type="button">Refresh</button>
     </div>
 
-    <script src="../js/ui.js"></script>
-    <script src="../js/layout.js"></script>
+    <div id="dashboardStateArea"></div>
 
-    <script src="../js/categories.js"></script>
-    <script src="../js/products.js"></script>
+    <div id="dashboardBody" class="hidden">
+      <div class="admin-stat-grid" id="dashboardStats"></div>
 
-    <script src="../js/dashboard.js"></script>
-  </body>
+      <div class="admin-card admin-recent-orders">
+        <div class="admin-card__header">
+          <h2>Recent Orders</h2>
+          <a href="orders.html">View all orders</a>
+        </div>
+        <div class="admin-card__body" style="padding: 0;">
+          <div class="admin-table-wrap">
+            <table class="admin-table">
+              <thead>
+                <tr>
+                  <th>Order ID</th>
+                  <th>Customer</th>
+                  <th>Amount</th>
+                  <th>Status</th>
+                  <th>Placed</th>
+                </tr>
+              </thead>
+              <tbody id="dashboardRecentOrdersBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </template>
+
+  <script src="../js/config.js"></script>
+  <script src="../js/services/apiClient.js"></script>
+  <script src="../js/services/authService.js"></script>
+  <script src="../js/services/categoryService.js"></script>
+  <script src="../js/services/productService.js"></script>
+  <script src="../js/services/orderService.js"></script>
+  <script src="../js/state/authState.js"></script>
+  <script src="../js/utils/toast.js"></script>
+  <script src="../js/utils/format.js"></script>
+  <script src="../js/layout.js"></script>
+  <script src="../js/pages/dashboard.js"></script>
+</body>
 </html>

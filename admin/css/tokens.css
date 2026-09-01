@@ -1,0 +1,92 @@
+/**
+ * UNiMART Admin — Design tokens.
+ * A dedicated admin system (not copied from the storefront's consumer-facing
+ * styling): denser spacing, a neutral slate palette, and a single accent
+ * color reserved for primary actions and active state.
+ */
+:root {
+  /* ---- Color: neutrals ---- */
+  --admin-bg: #f4f6f9;
+  --admin-surface: #ffffff;
+  --admin-surface-alt: #f8fafc;
+  --admin-border: #e2e8f0;
+  --admin-border-strong: #cbd5e1;
+
+  --admin-text: #0f172a;
+  --admin-text-muted: #64748b;
+  --admin-text-faint: #94a3b8;
+  --admin-text-on-accent: #ffffff;
+
+  /* ---- Color: accent ---- */
+  --admin-accent: #2563eb;
+  --admin-accent-hover: #1d4ed8;
+  --admin-accent-active: #1e40af;
+  --admin-accent-soft: #eff6ff;
+  --admin-accent-soft-border: #bfdbfe;
+
+  /* ---- Color: semantic ---- */
+  --admin-success: #16a34a;
+  --admin-success-soft: #f0fdf4;
+  --admin-success-soft-border: #bbf7d0;
+
+  --admin-danger: #dc2626;
+  --admin-danger-hover: #b91c1c;
+  --admin-danger-soft: #fef2f2;
+  --admin-danger-soft-border: #fecaca;
+
+  --admin-warning: #d97706;
+  --admin-warning-soft: #fffbeb;
+  --admin-warning-soft-border: #fde68a;
+
+  --admin-info: #0891b2;
+  --admin-info-soft: #ecfeff;
+  --admin-info-soft-border: #a5f3fc;
+
+  /* ---- Sidebar (intentionally dark, distinct from the light content area) ---- */
+  --admin-sidebar-bg: #0f172a;
+  --admin-sidebar-bg-hover: #1e293b;
+  --admin-sidebar-bg-active: #1e40af;
+  --admin-sidebar-text: #cbd5e1;
+  --admin-sidebar-text-active: #ffffff;
+  --admin-sidebar-border: #1e293b;
+
+  /* ---- Typography ---- */
+  --admin-font: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --admin-font-mono: ui-monospace, SFMono-Regular, "SF Mono", Consolas, monospace;
+
+  --admin-fs-xs: 0.75rem;
+  --admin-fs-sm: 0.8125rem;
+  --admin-fs-base: 0.9375rem;
+  --admin-fs-md: 1rem;
+  --admin-fs-lg: 1.125rem;
+  --admin-fs-xl: 1.375rem;
+  --admin-fs-2xl: 1.75rem;
+
+  /* ---- Spacing (4px base scale) ---- */
+  --admin-sp-1: 4px;
+  --admin-sp-2: 8px;
+  --admin-sp-3: 12px;
+  --admin-sp-4: 16px;
+  --admin-sp-5: 20px;
+  --admin-sp-6: 24px;
+  --admin-sp-8: 32px;
+  --admin-sp-10: 40px;
+
+  /* ---- Radius / shadow ---- */
+  --admin-radius-sm: 6px;
+  --admin-radius-md: 8px;
+  --admin-radius-lg: 12px;
+  --admin-shadow-sm: 0 1px 2px rgba(15, 23, 42, 0.06);
+  --admin-shadow-md: 0 4px 12px rgba(15, 23, 42, 0.08);
+  --admin-shadow-lg: 0 12px 32px rgba(15, 23, 42, 0.14);
+
+  /* ---- Layout ---- */
+  --admin-sidebar-width: 248px;
+  --admin-sidebar-width-collapsed: 72px;
+  --admin-topbar-height: 64px;
+  --admin-content-max-width: 1400px;
+
+  /* ---- Motion (kept minimal per project priorities) ---- */
+  --admin-transition-fast: 120ms ease;
+  --admin-transition: 180ms ease;
+}

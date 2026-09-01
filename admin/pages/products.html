@@ -1,447 +1,176 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Products - UniMart Admin</title>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Products — UNiMART Admin</title>
+  <link rel="stylesheet" href="../css/tokens.css" />
+  <link rel="stylesheet" href="../css/layout.css" />
+  <link rel="stylesheet" href="../css/products.css" />
+</head>
+<body>
+  <div class="admin-shell" id="adminShell">
+    <div id="adminShellRoot"></div>
+  </div>
 
-    <link rel="stylesheet" href="../css/variables.css" />
-    <link rel="stylesheet" href="../css/layout.css" />
-    <link rel="stylesheet" href="../css/sidebar.css" />
-    <link rel="stylesheet" href="../css/navbar.css" />
-    <link rel="stylesheet" href="../css/products.css" />
-    <link rel="stylesheet" href="../css/product-modal.css" />
-  </head>
-
-  <body>
-    <div class="admin-layout">
-      <div id="sidebar-container"></div>
-      <div id="sidebarOverlay"></div>
-
-      <div class="main-wrapper">
-        <div id="header-container"></div>
-
-        <main class="page-content">
-          <section class="page-header">
-            <div class="header-title-block">
-              <h1>Products</h1>
-              <p>Manage all store products safely</p>
-            </div>
-
-            <div class="header-action-block">
-              <button class="btn-primary" id="addProductBtn">
-                + Add Product
-              </button>
-            </div>
-          </section>
-
-          <section class="filters-bar">
-            <input
-              type="text"
-              placeholder="Search products..."
-              id="searchProduct"
-              autocomplete="off" />
-
-            <select id="categoryFilter">
-              <option value="">All Categories</option>
-            </select>
-
-            <select id="statusFilter">
-              <option value="">All Status</option>
-              <option value="In Stock">In Stock</option>
-              <option value="Out Of Stock">Out Of Stock</option>
-            </select>
-          </section>
-
-          <section class="table-card">
-            <table class="products-table">
-              <thead>
-                <tr>
-                  <th style="width: 60px">#</th>
-                  <th>Image</th>
-                  <th>Product</th>
-                  <th>SKU</th>
-                  <th>Category</th>
-                  <th>Price</th>
-                  <th>Stock</th>
-                  <th>Status</th>
-                  <th>Featured</th>
-                  <th>Actions</th>
-                </tr>
-              </thead>
-              <tbody id="productsTableBody"></tbody>
-            </table>
-          </section>
-        </main>
+  <template id="productsTemplate">
+    <div class="admin-page-header">
+      <div>
+        <h1>Products</h1>
+        <p>Manage your product catalog and inventory.</p>
       </div>
+      <button class="admin-btn admin-btn--primary" id="addProductBtn" type="button">+ Add Product</button>
     </div>
 
-    <div id="product-modal-container"></div>
-    <div id="shared-ui-layer-container"></div>
+    <div class="admin-toolbar">
+      <input class="admin-input admin-search-input" type="search" id="productSearchInput" placeholder="Search products by name…" />
+      <select class="admin-select" id="productCategoryFilter">
+        <option value="all">All categories</option>
+      </select>
+      <select class="admin-select" id="productStatusFilter">
+        <option value="all">All statuses</option>
+        <option value="active">Active only</option>
+      </select>
+    </div>
 
-    <script>
-      // Global isolated reference arrays
-     window.uploadedImagesBase64 = [];
-    
-      let runningProductTags = [];
+    <div class="admin-card">
+      <div class="admin-card__body" style="padding: 0;" id="productsCardBody"></div>
+    </div>
 
-      // 🛡️ SECURITY LAYER: Character Sanitizer Script (Prevents XSS exploits inside text strings)
-      function sanitizeHTML(str) {
-        if (!str) return "";
-        return String(str)
-          .replace(/&/g, "&amp;")
-          .replace(/</g, "&lt;")
-          .replace(/>/g, "&gt;")
-          .replace(/"/g, "&quot;")
-          .replace(/'/g, "&#039;");
-      }
+    <div class="admin-pagination hidden" id="productsPagination"></div>
+  </template>
 
-      // ========================================================
-      // ⚡ DYNAMIC CATEGORY DROPDOWN SYNCHRONIZER ENGINE
-      // ========================================================
-      window.syncCategoriesToDropdowns = function () {
-        const activeCategories =
-          JSON.parse(localStorage.getItem("categories")) || [];
-        const filterDropdown = document.getElementById("categoryFilter");
-        const modalDropdown = document.getElementById("pCategory");
+  <template id="productFormModalTemplate">
+    <div class="admin-modal-backdrop" id="productModalBackdrop">
+      <div class="admin-modal admin-modal--wide" role="dialog" aria-modal="true" aria-labelledby="productModalTitle">
+        <div class="admin-modal__header">
+          <h2 id="productModalTitle">Add Product</h2>
+          <button class="admin-modal__close" id="productModalCloseBtn" type="button" aria-label="Close">&times;</button>
+        </div>
+        <div class="admin-modal__body">
+          <form id="productForm" novalidate>
+            <div class="admin-field admin-field--full">
+              <label>Product Images</label>
+              <label class="admin-image-upload" id="productImageDropzone">
+                <input type="file" id="productImageInput" accept="image/jpeg,image/png,image/webp" multiple />
+                <span class="admin-image-upload__label"><strong>Click to upload</strong> or drag images here — JPEG/PNG/WEBP, up to 5MB each, max 5 images</span>
+              </label>
+              <div class="admin-image-grid" id="productImageGrid"></div>
+              <span class="admin-error-text hidden" id="productImagesError"></span>
+            </div>
 
-        const generateOptionsMarkup = (defaultText) => {
-          let html = `<option value="">${defaultText}</option>`;
-          activeCategories.forEach((cat) => {
-            const val = sanitizeHTML(cat.slug || cat.name.toLowerCase());
-            const text = sanitizeHTML(`${cat.icon || "📦"} ${cat.name}`);
-            html += `<option value="${val}">${text}</option>`;
-          });
-          return html;
-        };
+            <div class="admin-form-grid">
+              <div class="admin-field admin-field--full">
+                <label for="productNameInput">Product Name</label>
+                <input class="admin-input" type="text" id="productNameInput" required />
+                <span class="admin-error-text hidden" id="productNameError"></span>
+              </div>
 
-        if (filterDropdown) {
-          filterDropdown.innerHTML = generateOptionsMarkup("All Categories");
-        }
+              <div class="admin-field admin-field--full">
+                <label for="productDescInput">Description</label>
+                <textarea class="admin-textarea" id="productDescInput"></textarea>
+              </div>
 
-        if (modalDropdown) {
-          modalDropdown.innerHTML = generateOptionsMarkup("Select Category");
+              <div class="admin-field">
+                <label for="productCategoryInput">Category</label>
+                <select class="admin-select" id="productCategoryInput">
+                  <option value="">No category</option>
+                </select>
+              </div>
 
-          // ✨ THE LIVE UPDATE FIX: Force the modal select tag to recalculate the SKU on change
-          modalDropdown.onchange = function () {
-            if (typeof window.autoGenerateSKU === "function") {
-              window.autoGenerateSKU();
-            }
-          };
-        }
-      };
+              <div class="admin-field">
+                <label for="productSkuInput">SKU</label>
+                <input class="admin-input" type="text" id="productSkuInput" placeholder="Auto-generated if left blank" />
+              </div>
 
-      window.triggerModalToast = function (message, type = "success") {
-        if (typeof window.showToast === "function") {
-          window.showToast(message, type);
-        } else {
-          console.log(`[Toast Fallback - ${type}]: ${message}`);
-        }
-      };
+              <div class="admin-field">
+                <label for="productPriceInput">Price</label>
+                <input class="admin-input" type="number" id="productPriceInput" min="0.01" step="0.01" required />
+                <span class="admin-error-text hidden" id="productPriceError"></span>
+              </div>
 
-      window.renderEmptyProductsState = function () {
-        const tableBody = document.getElementById("productsTableBody");
-        if (!tableBody) return;
+              <div class="admin-field">
+                <label for="productOldPriceInput">Old Price (optional)</label>
+                <input class="admin-input" type="number" id="productOldPriceInput" min="0" step="0.01" />
+                <span class="admin-error-text hidden" id="productOldPriceError"></span>
+              </div>
 
-        tableBody.innerHTML = `
-          <tr>
-            <td colspan="10" style="text-align: center; padding: 48px 16px; color: #64748b;">
-              <div style="font-size: 40px; margin-bottom: 12px;">🔍</div>
-              <h3 style="font-size: 16px; font-weight: 600; color: #334155; margin: 0 0 4px 0;">No Products Found</h3>
-              <p style="font-size: 14px; color: #94a3b8; margin: 0;">Your catalog store is currently empty or matches no active search criteria.</p>
-            </td>
-          </tr>`;
-      };
+              <div class="admin-field">
+                <label for="productStockInput">Stock Quantity</label>
+                <input class="admin-input" type="number" id="productStockInput" min="0" step="1" value="0" />
+                <span class="admin-error-text hidden" id="productStockError"></span>
+              </div>
 
-      // ========================================================
-      // 📦 EXPOSED ENGINE RE-INITIALIZATION METHOD
-      // ========================================================
-      window.initializePremiumGalleryEngine = function () {
-        const dropzone = document.getElementById("galleryDropzone");
-        const hiddenInput = document.getElementById("hiddenGalleryInput");
-        const urlInput = document.getElementById("pMediaUrlInput");
-        const addUrlBtn = document.getElementById("addUrlMediaBtn");
-        const previewWrapper = document.getElementById("galleryPreviewWrapper");
-        const heroDisplay = document.getElementById("galleryHeroDisplay");
-        const thumbGrid = document.getElementById("thumbnailStripGrid");
+              <div class="admin-field">
+                <label for="productStatusInput">Status</label>
+                <select class="admin-select" id="productStatusInput">
+                  <option value="active">Active</option>
+                  <option value="inactive">Inactive</option>
+                </select>
+              </div>
 
-        if (!dropzone || !hiddenInput) return;
+              <div class="admin-field admin-field--full">
+                <label for="productTagsInput">Tags (comma-separated)</label>
+                <input class="admin-input" type="text" id="productTagsInput" placeholder="e.g. summer, new-arrival" />
+              </div>
 
-        // Clean slate element assignments to stop cumulative event piling memory leaks
-        dropzone.onclick = (e) => {
-          if (e.target !== hiddenInput) hiddenInput.click();
-        };
+              <div class="admin-field admin-field--full" style="flex-direction: row; gap: var(--admin-sp-5); flex-wrap: wrap;">
+                <div class="admin-checkbox-row">
+                  <input type="checkbox" id="productFeaturedInput" />
+                  <label for="productFeaturedInput">Featured</label>
+                </div>
+                <div class="admin-checkbox-row">
+                  <input type="checkbox" id="productBestSellerInput" />
+                  <label for="productBestSellerInput">Best Seller</label>
+                </div>
+                <div class="admin-checkbox-row">
+                  <input type="checkbox" id="productNewInput" checked />
+                  <label for="productNewInput">Mark as New</label>
+                </div>
+              </div>
+            </div>
 
-        dropzone.ondragenter = dropzone.ondragover = (e) => {
-          e.preventDefault();
-          dropzone.classList.add("drag-over");
-        };
+            <div class="admin-form-actions">
+              <button class="admin-btn admin-btn--secondary" id="productCancelBtn" type="button">Cancel</button>
+              <button class="admin-btn admin-btn--primary" id="productSubmitBtn" type="submit">
+                <span id="productSubmitText">Save Product</span>
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </template>
 
-        dropzone.ondragleave = dropzone.ondragend = (e) => {
-          e.preventDefault();
-          dropzone.classList.remove("drag-over");
-        };
+  <template id="productDeleteModalTemplate">
+    <div class="admin-modal-backdrop" id="productDeleteBackdrop">
+      <div class="admin-modal" role="dialog" aria-modal="true" aria-labelledby="productDeleteTitle">
+        <div class="admin-modal__body">
+          <div class="admin-confirm-icon admin-confirm-icon--danger" aria-hidden="true">!</div>
+          <h2 id="productDeleteTitle">Delete product?</h2>
+          <p id="productDeleteMessage" style="color: var(--admin-text-muted); font-size: var(--admin-fs-sm); margin-top: var(--admin-sp-2);"></p>
+          <div class="admin-form-actions">
+            <button class="admin-btn admin-btn--secondary" id="productDeleteCancelBtn" type="button">Cancel</button>
+            <button class="admin-btn admin-btn--danger" id="productDeleteConfirmBtn" type="button">
+              <span id="productDeleteConfirmText">Delete</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </template>
 
-        dropzone.ondrop = (e) => {
-          e.preventDefault();
-          dropzone.classList.remove("drag-over");
-          processIncomingFiles(e.dataTransfer.files);
-        };
-
-        hiddenInput.onchange = (e) => {
-          processIncomingFiles(e.target.files);
-        };
-
-        if (addUrlBtn && urlInput) {
-          addUrlBtn.onclick = null; // Purge old hooks cleanly
-          addUrlBtn.onclick = () => {
-            const urlValue = urlInput.value.trim();
-            if (urlValue) {
-              if (window.uploadedImagesBase64.length >= 4) {
-                window.triggerModalToast(
-                  "Maximum limit of 4 product images reached.",
-                  "warning",
-                );
-                return;
-              }
-              window.uploadedImagesBase64.push(urlValue);
-              urlInput.value = "";
-              refreshGalleryPreviews();
-            }
-          };
-        }
-
-        function refreshGalleryPreviews() {
-          if (!previewWrapper || !heroDisplay || !thumbGrid) return;
-
-          if (window.uploadedImagesBase64.length === 0) {
-            previewWrapper.style.display = "none";
-            heroDisplay.src = "";
-            thumbGrid.innerHTML = "";
-            return;
-          }
-
-          previewWrapper.style.display = "grid";
-          thumbGrid.innerHTML = "";
-
-          // ✨ WORKFLOW ARRAY REFERENCE FIX: Point directly to index position 0 instead of the entire collection sequence
-         heroDisplay.src = (window.uploadedImagesBase64.length > 0)  ? window.uploadedImagesBase64[0] : "";
-
-          const fragment = document.createDocumentFragment();
-
-          window.uploadedImagesBase64.forEach((imageSrc, index) => {
-            const thumbBox = document.createElement("div");
-            thumbBox.className = `preview-thumb-box ${index === 0 ? "active-hero" : ""}`;
-
-            thumbBox.innerHTML = `
-              <img src="${sanitizeHTML(imageSrc)}" alt="Thumbnail preview ${index + 1}">
-              <button type="button" class="remove-media-btn" data-index="${index}">&times;</button>
-            `;
-
-            thumbBox.onclick = (e) => {
-              if (e.target.classList.contains("remove-media-btn")) return;
-              document
-                .querySelectorAll(".preview-thumb-box")
-                .forEach((b) => b.classList.remove("active-hero"));
-              thumbBox.classList.add("active-hero");
-              heroDisplay.src = imageSrc;
-            };
-
-            thumbBox.querySelector(".remove-media-btn").onclick = (e) => {
-              e.stopPropagation();
-              window.uploadedImagesBase64.splice(index, 1);
-              refreshGalleryPreviews();
-            };
-
-            fragment.appendChild(thumbBox);
-          });
-
-          thumbGrid.appendChild(fragment);
-        }
-
-        function processIncomingFiles(files) {
-          if (!files) return;
-
-          const remainingSlots = 4 - window.uploadedImagesBase64.length;
-          if (remainingSlots <= 0) {
-            window.triggerModalToast(
-              "Maximum limit of 4 product images reached.",
-              "warning",
-            );
-            return;
-          }
-
-          const filesToProcess = Array.from(files).slice(0, remainingSlots);
-
-          filesToProcess.forEach((file) => {
-            if (!file.type.startsWith("image/")) {
-              window.triggerModalToast(
-                `"${file.name}" is not a valid image. Please use PNG, JPG, or WEBP.`,
-                "danger",
-              );
-              return;
-            }
-
-            const MAX_SIZE_BYTES = 2 * 1024 * 1024; // 2MB Limit
-            if (file.size > MAX_SIZE_BYTES) {
-              const fileSizeInMB = (file.size / (1024 * 1024)).toFixed(2);
-              window.triggerModalToast(
-                `"${file.name}" is too heavy (${fileSizeInMB} MB). Limit is 2.00 MB.`,
-                "danger",
-              );
-              return;
-            }
-
-            const reader = new FileReader();
-
-            reader.onload = () => {
-            window.uploadedImagesBase64.push(reader.result);
-
-              console.log("IMAGE ADDED");
-              console.log(window.uploadedImagesBase64);
-
-              refreshGalleryPreviews();
-            };
-            reader.readAsDataURL(file);
-          });
-        }
-        refreshGalleryPreviews();
-      };
-
-      // ========================================================
-      // 🏷️ EXPOSED TAG PILLS LIFECYCLE MANAGEMENT ENGINE
-      // ========================================================
-      window.initializePremiumTagsEngine = function () {
-        const tagsInput = document.getElementById("pTags");
-        const pillsContainer = document.getElementById("tagsPillsContainer");
-        const wrapperCard = document.getElementById("tagsWrapperCard");
-
-        if (!tagsInput || !pillsContainer) return;
-
-        if (wrapperCard) {
-          wrapperCard.onclick = () => tagsInput.focus();
-        }
-
-        tagsInput.onkeydown = function (e) {
-          if (e.key === "Enter" || e.key === ",") {
-            e.preventDefault();
-
-            const tagValue = tagsInput.value
-              .replace(/[^a-zA-Z0-9\s-]/g, "")
-              .trim();
-
-            if (tagValue && !runningProductTags.includes(tagValue)) {
-              runningProductTags.push(tagValue);
-              renderVisualTagPills();
-            }
-            tagsInput.value = "";
-          }
-
-          if (
-            e.key === "Backspace" &&
-            tagsInput.value === "" &&
-            runningProductTags.length > 0
-          ) {
-            runningProductTags.pop();
-            renderVisualTagPills();
-          }
-        };
-
-        function renderVisualTagPills() {
-          pillsContainer.innerHTML = "";
-          const fragment = document.createDocumentFragment();
-
-          runningProductTags.forEach((tag, idx) => {
-            const pill = document.createElement("span");
-            pill.style.cssText =
-              "display: inline-flex; align-items: center; background: #e2e8f0; color: #334155; font-size: 12px; font-weight: 500; padding: 2px 8px; border-radius: 4px; gap: 4px; border: 1px solid #cbd5e1;";
-
-            // 🛡️ SECURITY FIX: Explicitly sanitize values using innerHTML text content frameworks safely
-            pill.innerHTML = `
-              <span>${sanitizeHTML(tag)}</span>
-              <span class="remove-tag-cross" style="cursor: pointer; font-weight: bold; color: #64748b; font-size: 14px; line-height: 1;">&times;</span>
-            `;
-
-            pill.querySelector(".remove-tag-cross").onclick = (event) => {
-              event.stopPropagation();
-              runningProductTags.splice(idx, 1);
-              renderVisualTagPills();
-            };
-
-            fragment.appendChild(pill);
-          });
-
-          pillsContainer.appendChild(fragment);
-        }
-        renderVisualTagPills();
-      };
-
-      // ========================================================
-      // 🛠️ EXPOSED UTILITIES FOR INTERACTIVE FORM STATES
-      // ========================================================
-      window.resetImageGallery = function () {
-       window.uploadedImagesBase64 = [];
-        const previewWrapper = document.getElementById("galleryPreviewWrapper");
-        if (previewWrapper) previewWrapper.style.display = "none";
-      };
-
-      window.loadImagesToGallery = function (imagesArray) {
-        window.uploadedImagesBase64 = Array.isArray(imagesArray)
-          ? [...imagesArray]
-          : imagesArray
-            ? [imagesArray]
-            : [];
-        if (document.getElementById("galleryDropzone")) {
-          window.initializePremiumGalleryEngine();
-        }
-      };
-
-      window.resetRunningTags = function () {
-        runningProductTags = [];
-        const container = document.getElementById("tagsPillsContainer");
-        if (container) container.innerHTML = "";
-      };
-
-      window.loadTagsToEngine = function (tagsArr) {
-        runningProductTags = Array.isArray(tagsArr) ? [...tagsArr] : [];
-        if (document.getElementById("pTags")) {
-          window.initializePremiumTagsEngine();
-        }
-      };
-
-      window.getCurrentProductTags = function () {
-        return runningProductTags;
-      };
-
-      // Initial structural framework setup bootstrapping triggers
-      document.addEventListener("DOMContentLoaded", () => {
-        window.syncCategoriesToDropdowns();
-
-        const modalContainer = document.getElementById(
-          "product-modal-container",
-        );
-        if (modalContainer) {
-          const asyncObserver = new MutationObserver((mutations, obs) => {
-            if (document.getElementById("pCategory")) {
-              window.syncCategoriesToDropdowns();
-              obs.disconnect(); // Save memory overhead allocations instantly
-            }
-          });
-          asyncObserver.observe(modalContainer, {
-            childList: true,
-            subtree: true,
-          });
-        }
-      });
-    </script>
-
-    <script src="../../frontend/js/config.js"></script>
-
-    <script src="../js/ui.js"></script>
-    <script src="../js/layout.js"></script>
-    <script src="../js/product-modal.js"></script>
-    <script src="../js/categories.js"></script>
-
-    <script src="../js/products.js"></script>
-  </body>
+  <script src="../js/config.js"></script>
+  <script src="../js/services/apiClient.js"></script>
+  <script src="../js/services/authService.js"></script>
+  <script src="../js/services/categoryService.js"></script>
+  <script src="../js/services/productService.js"></script>
+  <script src="../js/services/uploadService.js"></script>
+  <script src="../js/state/authState.js"></script>
+  <script src="../js/utils/toast.js"></script>
+  <script src="../js/utils/format.js"></script>
+  <script src="../js/utils/debounce.js"></script>
+  <script src="../js/layout.js"></script>
+  <script src="../js/pages/products.js"></script>
+</body>
 </html>

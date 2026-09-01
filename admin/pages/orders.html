@@ -1,188 +1,82 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Orders Management - UniMart Admin</title>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Orders — UNiMART Admin</title>
+  <link rel="stylesheet" href="../css/tokens.css" />
+  <link rel="stylesheet" href="../css/layout.css" />
+  <link rel="stylesheet" href="../css/orders.css" />
+</head>
+<body>
+  <div class="admin-shell" id="adminShell">
+    <div id="adminShellRoot"></div>
+  </div>
 
-    <link rel="stylesheet" href="../css/variables.css" />
-    <link rel="stylesheet" href="../css/layout.css" />
-    <link rel="stylesheet" href="../css/sidebar.css" />
-    <link rel="stylesheet" href="../css/navbar.css" />
-    <link rel="stylesheet" href="../css/products.css" />
-    <link rel="stylesheet" href="../css/categories.css" />
-    <link rel="stylesheet" href="../css/orders.css" />
-  </head>
-  <body>
-    <div class="admin-layout">
-      <div id="sidebar-container"></div>
-      <div id="sidebarOverlay"></div>
-      <div id="shared-ui-layer-container"></div>
-
-      <div class="main-wrapper">
-        <div id="header-container"></div>
-
-        <main class="page-content">
-          <section class="page-header">
-            <div class="header-title-block">
-              <h1>Sales Order Registry</h1>
-              <p>
-                Track, monitor, modify, and process real-time customer invoice
-                acquisitions safely.
-              </p>
-            </div>
-            <div class="action-btn-group" style="margin-top: 12px">
-              <button class="export-data-btn" id="exportOrdersCsvBtn">
-                📥 Export Dataset (.CSV)
-              </button>
-            </div>
-          </section>
-
-          <div class="orders-metrics-strip">
-            <div class="metric-card active-orders">
-              <div class="metric-meta">
-                <span class="metric-title">Awaiting Processing</span>
-                <h3 class="metric-value" id="metricPendingCount">0 Orders</h3>
-              </div>
-              <div class="metric-icon">⏳</div>
-            </div>
-            <div class="metric-card transit-orders">
-              <div class="metric-meta">
-                <span class="metric-title">Out for Dispatch</span>
-                <h3 class="metric-value" id="metricTransitCount">0 Packages</h3>
-              </div>
-              <div class="metric-icon">🚚</div>
-            </div>
-            <div class="metric-card completed-orders">
-              <div class="metric-meta">
-                <span class="metric-title">Gross Revenue</span>
-                <h3 class="metric-value" id="metricGrossRevenue">₹0</h3>
-              </div>
-              <div class="metric-icon">💰</div>
-            </div>
-          </div>
-
-          <div class="data-table-card">
-            <div class="table-utility-toolbar">
-              <div class="search-box-wrapper">
-                <span class="search-icon">🔍</span>
-                <input
-                  type="text"
-                  id="orderSearchInput"
-                  placeholder="Filter by ID, customer credential..." />
-              </div>
-            </div>
-
-            <div class="responsive-table-scroll-container">
-              <table class="orders-data-table" id="ordersDataTable">
-                <thead>
-                  <tr>
-                    <th>Order ID</th>
-                    <th>Customer Information</th>
-                    <th>Timestamp</th>
-                    <th>Financial Total</th>
-                    <th>Payment Status</th>
-                    <th>Operational Fulfillment</th>
-                    <th class="actions-th-header">Actions</th>
-                  </tr>
-                </thead>
-                <tbody>
-                </tbody>
-              </table>
-            </div>
-          </div>
-        </main>
+  <template id="ordersTemplate">
+    <div class="admin-page-header">
+      <div>
+        <h1>Orders</h1>
+        <p>All customer orders, newest first.</p>
       </div>
     </div>
 
-    <div
-      id="orderItemsModal"
-      style="
-        display: none;
-        position: fixed;
-        z-index: 9999;
-        left: 0;
-        top: 0;
-        width: 100%;
-        height: 100%;
-        background: rgba(15, 23, 42, 0.6);
-        align-items: center;
-        justify-content: center;
-        padding: 16px;
-      ">
-      <div
-        style="
-          background: #fff;
-          width: 100%;
-          max-width: 500px;
-          border-radius: 12px;
-          padding: 24px;
-          box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
-          display: flex;
-          flex-direction: column;
-          gap: 16px;
-        ">
-        <div
-          style="
-            display: flex;
-            justify-content: between;
-            align-items: center;
-            border-bottom: 1px solid #e2e8f0;
-            padding-bottom: 12px;
-          ">
-          <h3
-            id="modalOrderTitle"
-            style="margin: 0; font-size: 18px; color: #0f172a">
-            Order Items
-          </h3>
-          <button
-            onclick="closeOrderModal()"
-            style="
-              background: none;
-              border: none;
-              font-size: 20px;
-              cursor: pointer;
-              color: #64748b;
-            ">
-            &times;
-          </button>
+    <div class="admin-toolbar">
+      <select class="admin-select" id="orderStatusFilter">
+        <option value="all">All statuses</option>
+        <option value="Pending">Pending</option>
+        <option value="Processing">Processing</option>
+        <option value="Shipped">Shipped</option>
+        <option value="Delivered">Delivered</option>
+        <option value="Cancelled">Cancelled</option>
+      </select>
+      <input class="admin-input admin-search-input" type="search" id="orderSearchInput" placeholder="Search by order ID or customer name…" />
+    </div>
+
+    <div class="admin-card">
+      <div class="admin-card__body" style="padding: 0;" id="ordersCardBody"></div>
+    </div>
+  </template>
+
+  <template id="orderDetailModalTemplate">
+    <div class="admin-modal-backdrop" id="orderDetailBackdrop">
+      <div class="admin-modal admin-modal--wide" role="dialog" aria-modal="true" aria-labelledby="orderDetailTitle">
+        <div class="admin-modal__header">
+          <h2 id="orderDetailTitle">Order</h2>
+          <button class="admin-modal__close" id="orderDetailCloseBtn" type="button" aria-label="Close">&times;</button>
         </div>
-        <div
-          id="modalItemsContent"
-          style="
-            max-height: 260px;
-            overflow-y: auto;
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-          "></div>
-        <div
-          style="
-            border-top: 1px solid #e2e8f0;
-            padding-top: 12px;
-            display: flex;
-            justify-content: flex-end;
-          ">
-          <button
-            onclick="closeOrderModal()"
-            style="
-              background: var(--primary, #38bdf8);
-              color: #fff;
-              border: none;
-              padding: 8px 16px;
-              border-radius: 6px;
-              cursor: pointer;
-              font-weight: 600;
-            ">
-            Close
-          </button>
+        <div class="admin-modal__body" id="orderDetailBody"></div>
+      </div>
+    </div>
+  </template>
+
+  <template id="orderStatusConfirmTemplate">
+    <div class="admin-modal-backdrop" id="orderStatusConfirmBackdrop">
+      <div class="admin-modal" role="dialog" aria-modal="true" aria-labelledby="orderStatusConfirmTitle">
+        <div class="admin-modal__body">
+          <div class="admin-confirm-icon admin-confirm-icon--danger" aria-hidden="true">!</div>
+          <h2 id="orderStatusConfirmTitle">Cancel this order?</h2>
+          <p style="color: var(--admin-text-muted); font-size: var(--admin-fs-sm); margin-top: var(--admin-sp-2);">This marks the order as Cancelled. This cannot be undone from here.</p>
+          <div class="admin-form-actions">
+            <button class="admin-btn admin-btn--secondary" id="orderStatusConfirmCancelBtn" type="button">Go back</button>
+            <button class="admin-btn admin-btn--danger" id="orderStatusConfirmOkBtn" type="button">
+              <span id="orderStatusConfirmOkText">Cancel Order</span>
+            </button>
+          </div>
         </div>
       </div>
     </div>
-    <script src="../../frontend/js/config.js"></script>
-    <script src="../js/ui.js"></script>
-    <script src="../js/layout.js"></script>
+  </template>
 
-    <script src="../js/orders.js"></script>
-  </body>
+  <script src="../js/config.js"></script>
+  <script src="../js/services/apiClient.js"></script>
+  <script src="../js/services/authService.js"></script>
+  <script src="../js/services/orderService.js"></script>
+  <script src="../js/state/authState.js"></script>
+  <script src="../js/utils/toast.js"></script>
+  <script src="../js/utils/format.js"></script>
+  <script src="../js/utils/debounce.js"></script>
+  <script src="../js/layout.js"></script>
+  <script src="../js/pages/orders.js"></script>
+</body>
 </html>
