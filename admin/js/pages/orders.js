@@ -72,7 +72,7 @@
   const renderTable = (orders) => {
     cardBody().innerHTML = `
       <div class="admin-table-wrap">
-        <table class="admin-table">
+        <table class="admin-table admin-table--orders">
           <thead>
             <tr><th>Order ID</th><th>Customer</th><th>Items</th><th>Total</th><th>Status</th><th>Placed</th><th></th></tr>
           </thead>

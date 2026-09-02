@@ -54,10 +54,21 @@ const AdminConfig = (() => {
 
   const getPath = (relativePath = "") => new URL(relativePath, ADMIN_BASE_URL).href;
 
+  // The real storefront homepage - admin/ and frontend/ are sibling folders
+  // in this repo, so this is derived the same way ADMIN_BASE_URL is, one
+  // level further up. This assumes admin and storefront are served from the
+  // same origin (true for local dev and for a typical single-host deploy);
+  // if they're ever split across two different production hosts, this
+  // constant is the one place to point at the real storefront domain.
+  const STOREFRONT_URL = IS_LOCAL_DEVELOPMENT
+  ? new URL("../frontend/index.html", ADMIN_BASE_URL).href
+  : "https://unimartstore.vercel.app/";
+
   return Object.freeze({
     IS_LOCAL_DEVELOPMENT,
     API_BASE_URL,
     ADMIN_BASE_URL,
+    STOREFRONT_URL,
     getUrl,
     getPath,
   });

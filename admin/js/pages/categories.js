@@ -57,7 +57,7 @@
 
     cardBody().innerHTML = `
       <div class="admin-table-wrap">
-        <table class="admin-table">
+        <table class="admin-table admin-table--categories">
           <thead>
             <tr>
               <th>Name</th>

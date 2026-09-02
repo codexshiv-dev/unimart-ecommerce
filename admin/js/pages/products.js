@@ -147,7 +147,7 @@
 
       cardBody().innerHTML = `
         <div class="admin-table-wrap">
-          <table class="admin-table">
+          <table class="admin-table admin-table--products">
             <thead>
               <tr><th></th><th>Name</th><th>Category</th><th>Price</th><th>Stock</th><th>Status</th><th></th></tr>
             </thead>

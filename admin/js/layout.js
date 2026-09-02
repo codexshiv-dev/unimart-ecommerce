@@ -195,8 +195,8 @@ const AdminLayout = (() => {
         </div>
         <nav class="admin-sidebar__nav">${navHtml}</nav>
         <div class="admin-sidebar__footer">
-          <a class="admin-nav-link" href="${AdminConfig.getPath("index.html")}" data-storefront-link>
-            <span class="admin-nav-icon" aria-hidden="true">\u2192</span>
+          <a class="admin-nav-link" href="${AdminConfig.STOREFRONT_URL}" target="_blank" rel="noopener" data-storefront-link>
+            <span class="admin-nav-icon" aria-hidden="true">\u2197</span>
             <span>View Storefront</span>
           </a>
         </div>
