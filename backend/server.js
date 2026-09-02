@@ -42,8 +42,11 @@ app.use(mongoSanitize());
 // 4. CORS (moved before the rate limiter - a rate-limited response must
 // still carry CORS headers, otherwise the browser reports it as a CORS
 // failure instead of the real 429, masking the actual cause)
-const allowedOrigins = process.env.ALLOWED_ORIGINS ? process.env.ALLOWED_ORIGINS.split(",") : [];
+const allowedOrigins = process.env.ALLOWED_ORIGINS
+    ? process.env.ALLOWED_ORIGINS.split(",").map(origin => origin.trim())
+    : [];
 
+    
 app.use(cors({
     origin: function (origin, callback) {
         // ALLOW requests with no origin (like mobile apps, postman, or direct browser URLs)
