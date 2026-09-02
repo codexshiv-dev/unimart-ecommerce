@@ -78,8 +78,8 @@
     return `
       <tr>
         <td>${thumb ? `<img class="admin-thumb" src="${thumb}" alt="" />` : `<div class="admin-thumb" aria-hidden="true"></div>`}</td>
-        <td class="admin-cell-primary">${AdminFormat.escapeHtml(product.name)}</td>
-        <td class="admin-cell-muted">${AdminFormat.escapeHtml(categoryName)}</td>
+        <td class="admin-cell-primary admin-cell-truncate" title="${AdminFormat.escapeHtml(product.name)}">${AdminFormat.escapeHtml(product.name)}</td>
+        <td class="admin-cell-muted admin-cell-truncate" title="${AdminFormat.escapeHtml(categoryName)}">${AdminFormat.escapeHtml(categoryName)}</td>
         <td>${AdminFormat.currency(product.price)}</td>
         <td class="admin-cell-muted">${product.stockQuantity ?? 0}</td>
         <td><span class="admin-badge admin-badge--${AdminFormat.productStatusBadge(product.status)}">${AdminFormat.escapeHtml(product.status)}</span></td>

@@ -17,12 +17,16 @@
   --admin-text-faint: #94a3b8;
   --admin-text-on-accent: #ffffff;
 
-  /* ---- Color: accent ---- */
-  --admin-accent: #2563eb;
-  --admin-accent-hover: #1d4ed8;
-  --admin-accent-active: #1e40af;
-  --admin-accent-soft: #eff6ff;
-  --admin-accent-soft-border: #bfdbfe;
+  /* ---- Color: accent ----
+     Matches the storefront's brand palette (frontend/css/tokens.css:
+     --brand-primary #f59e0b / --brand-accent #d97706) so Admin and
+     Storefront read as the same product, while staying legible against
+     the darker, denser admin surfaces this palette needs to sit on. */
+  --admin-accent: #d97706;
+  --admin-accent-hover: #b45309;
+  --admin-accent-active: #92400e;
+  --admin-accent-soft: #fffbeb;
+  --admin-accent-soft-border: #fde68a;
 
   /* ---- Color: semantic ---- */
   --admin-success: #16a34a;
@@ -34,9 +38,9 @@
   --admin-danger-soft: #fef2f2;
   --admin-danger-soft-border: #fecaca;
 
-  --admin-warning: #d97706;
-  --admin-warning-soft: #fffbeb;
-  --admin-warning-soft-border: #fde68a;
+  --admin-warning: #ca8a04;
+  --admin-warning-soft: #fefce8;
+  --admin-warning-soft-border: #fef08a;
 
   --admin-info: #0891b2;
   --admin-info-soft: #ecfeff;
@@ -45,7 +49,7 @@
   /* ---- Sidebar (intentionally dark, distinct from the light content area) ---- */
   --admin-sidebar-bg: #0f172a;
   --admin-sidebar-bg-hover: #1e293b;
-  --admin-sidebar-bg-active: #1e40af;
+  --admin-sidebar-bg-active: #7c2d12;
   --admin-sidebar-text: #cbd5e1;
   --admin-sidebar-text-active: #ffffff;
   --admin-sidebar-border: #1e293b;

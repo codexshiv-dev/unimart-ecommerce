@@ -37,13 +37,26 @@
 
   const renderOrderRow = (order) => `
     <tr>
-      <td class="admin-cell-primary">${AdminFormat.escapeHtml(order.orderId)}</td>
-      <td>${AdminFormat.escapeHtml(order.customerName)}</td>
+      <td class="admin-cell-primary admin-cell-truncate" title="${AdminFormat.escapeHtml(order.orderId)}">${AdminFormat.escapeHtml(order.orderId)}</td>
+      <td class="admin-cell-truncate" title="${AdminFormat.escapeHtml(order.customerName)}">${AdminFormat.escapeHtml(order.customerName)}</td>
       <td>${AdminFormat.currency(order.totalAmount)}</td>
       <td><span class="admin-badge admin-badge--${AdminFormat.orderStatusBadge(order.status)}">${AdminFormat.escapeHtml(order.status)}</span></td>
       <td class="admin-cell-muted">${AdminFormat.date(order.createdAt)}</td>
     </tr>
   `;
+
+  const renderProductRow = (product) => {
+    const outOfStock = (product.stockQuantity ?? 0) === 0;
+    return `
+      <tr>
+        <td class="admin-cell-primary admin-cell-truncate" title="${AdminFormat.escapeHtml(product.name)}">${AdminFormat.escapeHtml(product.name)}</td>
+        <td class="admin-cell-muted">${AdminFormat.escapeHtml(product.category?.name || "—")}</td>
+        <td>${AdminFormat.currency(product.price)}</td>
+        <td>${outOfStock ? `<span class="admin-badge admin-badge--danger">Out of stock</span>` : (product.stockQuantity ?? 0)}</td>
+        <td><span class="admin-badge admin-badge--${AdminFormat.productStatusBadge(product.status)}">${AdminFormat.escapeHtml(product.status)}</span></td>
+      </tr>
+    `;
+  };
 
   const loadDashboard = async () => {
     renderLoading();
@@ -51,34 +64,55 @@
     const body = document.getElementById("dashboardBody");
 
     try {
-      // Three independent real endpoints. No dedicated stats endpoint exists
-      // on the backend, so counts are derived from what these already
-      // return - never invented client-side.
-      const [productsRes, categoriesRes, orders] = await Promise.all([
-        AdminProductService.getAll({ limit: 1 }),
+      // Independent real endpoints. No dedicated stats endpoint exists on
+      // the backend, so counts are derived from what these already return -
+      // never invented client-side. The products call also doubles as the
+      // source for the Inventory Overview sample (backend already sorts by
+      // createdAt desc), so we don't fetch the whole catalog just for a
+      // dashboard widget.
+      const [productsRes, activeProductsRes, categoriesRes, orders] = await Promise.all([
+        AdminProductService.getAll({ limit: 5 }),
+        AdminProductService.getAll({ limit: 1, onlyActive: "true" }),
         AdminCategoryService.getAll(),
         AdminOrderService.getAll(),
       ]);
 
       const totalProducts = productsRes?.pagination?.totalItems ?? 0;
-      const totalCategories = categoriesRes?.count ?? (categoriesRes?.data?.length || 0);
+      const activeProducts = activeProductsRes?.pagination?.totalItems ?? 0;
+      const categories = categoriesRes?.data || [];
+      const totalCategories = categoriesRes?.count ?? categories.length;
       const totalOrders = Array.isArray(orders) ? orders.length : 0;
       const pendingOrders = Array.isArray(orders) ? orders.filter((o) => o.status === "Pending").length : 0;
 
       const stats = document.getElementById("dashboardStats");
       stats.innerHTML = [
         renderStatCard("Total Products", totalProducts),
+        renderStatCard("Active Products", activeProducts),
         renderStatCard("Categories", totalCategories),
         renderStatCard("Total Orders", totalOrders),
-        renderStatCard("Pending Orders", pendingOrders),
       ].join("");
 
       const recentBody = document.getElementById("dashboardRecentOrdersBody");
-      const recent = (Array.isArray(orders) ? orders : []).slice(0, 5);
-      if (recent.length === 0) {
+      const recentOrders = (Array.isArray(orders) ? orders : []).slice(0, 5);
+      if (recentOrders.length === 0) {
         recentBody.innerHTML = `<tr><td colspan="5"><div class="admin-state" style="padding: var(--admin-sp-6);"><div class="admin-state__desc">No orders yet.</div></div></td></tr>`;
       } else {
-        recentBody.innerHTML = recent.map(renderOrderRow).join("");
+        recentBody.innerHTML = recentOrders.map(renderOrderRow).join("");
+      }
+
+      const inventoryBody = document.getElementById("dashboardInventoryBody");
+      const recentProducts = productsRes?.data || [];
+      if (recentProducts.length === 0) {
+        inventoryBody.innerHTML = `<tr><td colspan="5"><div class="admin-state" style="padding: var(--admin-sp-6);"><div class="admin-state__desc">No products yet.</div></div></td></tr>`;
+      } else {
+        inventoryBody.innerHTML = recentProducts.map(renderProductRow).join("");
+      }
+
+      const categoriesBody = document.getElementById("dashboardCategoriesBody");
+      if (categories.length === 0) {
+        categoriesBody.innerHTML = `<div class="admin-state" style="padding: var(--admin-sp-6);"><div class="admin-state__desc">No categories yet.</div></div>`;
+      } else {
+        categoriesBody.innerHTML = `<div class="admin-category-chip-list">${categories.map((c) => `<a class="admin-category-chip" href="products.html">${AdminFormat.escapeHtml(c.name)}</a>`).join("")}</div>`;
       }
 
       area.innerHTML = "";

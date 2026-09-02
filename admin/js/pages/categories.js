@@ -43,7 +43,7 @@
   const renderTable = () => {
     const rows = categories.map((cat) => `
       <tr>
-        <td class="admin-cell-primary">${AdminFormat.escapeHtml(cat.name)}</td>
+        <td class="admin-cell-primary admin-cell-truncate" title="${AdminFormat.escapeHtml(cat.name)}">${AdminFormat.escapeHtml(cat.name)}</td>
         <td class="admin-cell-muted">${AdminFormat.escapeHtml(cat.slug)}</td>
         <td class="admin-cell-muted">${AdminFormat.date(cat.createdAt)}</td>
         <td>

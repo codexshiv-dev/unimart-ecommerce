@@ -55,8 +55,8 @@
 
   const renderRow = (order) => `
     <tr>
-      <td class="admin-cell-primary">${AdminFormat.escapeHtml(order.orderId)}</td>
-      <td>${AdminFormat.escapeHtml(order.customerName)}</td>
+      <td class="admin-cell-primary admin-cell-truncate" title="${AdminFormat.escapeHtml(order.orderId)}">${AdminFormat.escapeHtml(order.orderId)}</td>
+      <td class="admin-cell-truncate" title="${AdminFormat.escapeHtml(order.customerName)}">${AdminFormat.escapeHtml(order.customerName)}</td>
       <td>${order.items?.length ?? 0}</td>
       <td>${AdminFormat.currency(order.totalAmount)}</td>
       <td><span class="admin-badge admin-badge--${AdminFormat.orderStatusBadge(order.status)}">${AdminFormat.escapeHtml(order.status)}</span></td>
